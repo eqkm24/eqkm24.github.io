@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>루나월드 강화 시뮬레이터</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #0b0b0f;
+  --surface:  #111118;
+  --surface2: #18181f;
+  --surface3: #202028;
+  --border:   #28283a;
+  --border2:  #34344a;
+
+  --text:   #e4e4f0;
+  --sub:    #8888a8;
+  --muted:  #44445a;
+
+  --c:   #9ca3af;   /* 커먼 */
+  --uc:  #4ade80;   /* 언커먼 */
+  --r:   #818cf8;   /* 레어 */
+  --tri: #c084fc;   /* 트라이어드 */
+  --fix: #60a5fa;   /* 고정 스탯 */
+
+  --semi:  #4ade80;
+  --final: #c084fc;
+  --warn:  #f87171;
+  --gold:  #f59e0b;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(11,11,15,0.92);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.site-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, #818cf8, #c084fc);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.logo-text {
+  font-size: 14px; font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.logo-text span { color: var(--r); }
+.header-tag {
+  font-size: 11px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+/* ── LAYOUT ── */
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── PANEL BASE ── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.panel-title {
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
+.panel-badge {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 3px;
+  letter-spacing: 0.5px;
+}
+.badge-input  { background: #1a1a30; color: var(--r); border: 1px solid #2a2a50; }
+.badge-sim    { background: #0a1a1a; color: var(--uc); border: 1px solid #0a3a2a; }
+.badge-result { background: #1a0a2a; color: var(--tri); border: 1px solid #3a1a5a; }
+.panel-body { padding: 20px; }
+
+/* ── INPUT SECTION ── */
+.armor-inputs { display: flex; flex-direction: column; gap: 10px; }
+.armor-input-row {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  transition: border-color 0.15s;
+}
+.armor-input-row:focus-within { border-color: var(--border2); }
+.armor-input-label {
+  display: flex; align-items: center; gap: 8px;
+}
+.armor-pixel { flex-shrink: 0; image-rendering: pixelated; }
+.armor-label-text { font-size: 13px; font-weight: 500; }
+.armor-label-sub  { font-size: 10px; color: var(--sub); margin-top: 1px; }
+
+.stat-input-wrap {
+  display: flex; align-items: center;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.stat-input-wrap:focus-within { border-color: var(--r); }
+.stat-input-prefix {
+  padding: 0 8px;
+  font-size: 13px; font-weight: 700;
+  color: var(--tri);
+  font-family: 'JetBrains Mono', monospace;
+  border-right: 1px solid var(--border2);
+}
+.stat-input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 8px 10px;
+  font-size: 14px; font-weight: 700;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+}
+
+.preset-row {
+  margin-top: 14px;
+}
+.preset-label {
+  font-size: 11px; color: var(--sub);
+  margin-bottom: 8px; letter-spacing: 0.5px;
+}
+.preset-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.preset-btn {
+  font-size: 11px; font-weight: 500;
+  padding: 4px 10px; border-radius: 4px;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  color: var(--sub);
+  cursor: pointer;
+  font-family: 'Noto Sans KR', sans-serif;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--tri); color: var(--tri); }
+
+/* ── SCROLL SECTION ── */
+.fixed-pills {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 18px;
+}
+.fixed-pill {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.fp-left { font-size: 11px; color: var(--sub); line-height: 1.6; }
+.fp-val  { font-size: 16px; font-weight: 700; }
+
+.scroll-sliders { display: flex; flex-direction: column; gap: 14px; }
+.sl-block {}
+.sl-head {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 5px;
+}
+.sl-name { font-size: 13px; font-weight: 500; }
+.sl-gain { font-size: 11px; color: var(--sub); margin-left: 4px; }
+.sl-range { font-size: 10px; color: var(--muted); }
+.sl-count {
+  font-size: 13px; font-weight: 700;
+  padding: 2px 10px; border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 36px; text-align: center;
+}
+.slc-r  { background: #10102a; color: var(--r); }
+.slc-uc { background: #0f2010; color: var(--uc); }
+.slc-c  { background: #252528; color: var(--c); border: 1px solid var(--border2); }
+
+/* custom range */
+input[type=range] {
+  width: 100%; height: 4px;
+  -webkit-appearance: none;
+  background: var(--border2);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  border: 2px solid var(--bg);
+  cursor: pointer; transition: transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+#sl-r::-webkit-slider-thumb  { background: var(--r); }
+#sl-uc::-webkit-slider-thumb { background: var(--uc); }
+#sl-c::-webkit-slider-thumb  { background: var(--c); }
+#sl-r::-webkit-slider-runnable-track  { background: linear-gradient(to right, var(--r) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
+#sl-uc::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--uc) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
+#sl-c::-webkit-slider-runnable-track  { background: linear-gradient(to right, var(--c) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
+
+.total-slots {
+  margin-top: 10px;
+  display: flex; gap: 5px; align-items: center;
+}
+.slot {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  background: var(--surface3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  transition: all 0.15s;
+}
+.slot.used-r  { background: #10102a; border-color: var(--r);  color: var(--r); }
+.slot.used-uc { background: #0f2010; border-color: var(--uc); color: var(--uc); }
+.slot.used-c  { background: #252528; border-color: #555;      color: var(--c); }
+.slot-label { font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+.warn-box {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #1e0808;
+  border: 1px solid #5a1a1a;
+  border-radius: var(--radius-sm);
+  font-size: 12px; color: var(--warn);
+  display: none;
+}
+
+/* ── RESULT PANEL ── */
+.result-hero {
+  text-align: center;
+  padding: 24px 20px 20px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+.result-hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 0%, rgba(129,140,248,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.rh-label  { font-size: 11px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.rh-val    { font-size: 52px; font-weight: 900; line-height: 1; font-family: 'JetBrains Mono', monospace; }
+.rh-sub    { font-size: 12px; color: var(--sub); margin-top: 6px; }
+.rh-tier   {
+  display: inline-block; margin-top: 10px;
+  font-size: 12px; font-weight: 700;
+  padding: 4px 16px; border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* stat bar */
+.stat-bar-wrap {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.sb-label { font-size: 11px; color: var(--sub); margin-bottom: 8px; letter-spacing: 0.5px; }
+.stat-bar {
+  height: 28px; border-radius: 5px;
+  display: flex; overflow: hidden;
+  background: var(--surface3);
+}
+.sb-seg {
+  height: 100%; display: flex; align-items: center;
+  justify-content: center; font-size: 11px; font-weight: 700;
+  overflow: hidden; white-space: nowrap;
+  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.sb-triad { background: #2a1a3a; color: var(--tri); }
+.sb-fix   { background: #0d1a2a; color: var(--fix); }
+.sb-r     { background: #0e0e22; color: var(--r); }
+.sb-uc    { background: #0a1a0a; color: var(--uc); }
+.sb-cc    { background: #1e1e20; color: var(--c); }
+.bar-legend {
+  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
+}
+.bl-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--sub); }
+.bl-dot  { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+
+/* pieces */
+.pieces-wrap {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.pieces-grid { display: flex; flex-direction: column; gap: 8px; }
+.piece-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 60px;
+  align-items: center; gap: 10px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.piece-name { font-size: 12px; font-weight: 500; }
+.piece-base { font-size: 10px; color: var(--sub); margin-top: 1px; }
+.piece-bar  { height: 18px; display: flex; border-radius: 3px; overflow: hidden; }
+.pb-seg { height: 100%; display: flex; align-items: center; justify-content: center;
+          font-size: 10px; font-weight: 700; overflow: hidden; white-space: nowrap;
+          transition: width 0.4s; }
+.piece-total { font-size: 16px; font-weight: 700; text-align: right; font-family: 'JetBrains Mono', monospace; }
+
+/* fullset */
+.fullset-wrap { padding: 20px; }
+.fs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.fs-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 10px; text-align: center;
+}
+.fs-label { font-size: 10px; color: var(--sub); margin-bottom: 4px; line-height: 1.4; }
+.fs-val   { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.fs-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* all cases */
+.cases-wrap { padding: 0 20px 20px; }
+.cases-toggle {
+  width: 100%; padding: 10px 14px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); color: var(--sub);
+  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; text-align: left; display: flex;
+  justify-content: space-between; align-items: center;
+  transition: border-color 0.15s;
+}
+.cases-toggle:hover { border-color: var(--border2); color: var(--text); }
+.cases-table-wrap {
+  margin-top: 8px; max-height: 320px; overflow-y: auto;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  display: none;
+}
+.cases-table-wrap.open { display: block; }
+.ct { width: 100%; border-collapse: collapse; font-size: 12px; }
+.ct thead th {
+  position: sticky; top: 0;
+  text-align: left; padding: 7px 10px;
+  font-size: 10px; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted);
+  background: var(--surface3);
+  border-bottom: 1px solid var(--border2);
+}
+.ct td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--sub); }
+.ct tr:last-child td { border-bottom: none; }
+.ct tr.cur td { background: #14141e; }
+.ct tr:hover td { background: var(--surface2); cursor: pointer; }
+.ct td:first-child { color: var(--muted); font-size: 11px; }
+
+/* scroll thin */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+  .page-wrap { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="site-logo">
+    <div class="logo-mark">⚙</div>
+    <div>
+      <div class="logo-text">루나월드 <span>강화</span> 시뮬레이터</div>
+    </div>
+  </div>
+  <div class="header-tag">LUNA WORLD · ENHANCE SIM</div>
+</header>
+
+<div class="page-wrap">
+
+  <!-- LEFT COLUMN -->
+  <div style="display:flex; flex-direction:column; gap:16px;">
+
+    <!-- 장비 수치 입력 -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-badge badge-input">STEP 1</span>
+        <span class="panel-title">트라이어드 장비 수치 입력</span>
+      </div>
+      <div class="panel-body">
+        <div class="armor-inputs">
+
+          <!-- 투구 -->
+          <div class="armor-input-row">
+            <div class="armor-input-label">
+              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
+                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2"
+                alt="트라이어드 투구">
+              <div>
+                <div class="armor-label-text">투구</div>
+                <div class="armor-label-sub">기본 1~3 / 맥스 +4.2</div>
+              </div>
+            </div>
+            <div class="stat-input-wrap">
+              <div class="stat-input-prefix">+</div>
+              <input class="stat-input" id="inp-helmet" type="number" step="0.1" min="0" max="10" value="4.2" oninput="update()">
+            </div>
+          </div>
+
+          <!-- 흉갑 -->
+          <div class="armor-input-row">
+            <div class="armor-input-label">
+              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
+                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2"
+                alt="트라이어드 흉갑">
+              <div>
+                <div class="armor-label-text">흉갑</div>
+                <div class="armor-label-sub">기본 1~5 / 맥스 +6.5</div>
+              </div>
+            </div>
+            <div class="stat-input-wrap">
+              <div class="stat-input-prefix">+</div>
+              <input class="stat-input" id="inp-chest" type="number" step="0.1" min="0" max="15" value="6.5" oninput="update()">
+            </div>
+          </div>
+
+          <!-- 레깅스 -->
+          <div class="armor-input-row">
+            <div class="armor-input-label">
+              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
+                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2"
+                alt="트라이어드 레깅스">
+              <div>
+                <div class="armor-label-text">레깅스</div>
+                <div class="armor-label-sub">기본 1~4 / 맥스 +5.5</div>
+              </div>
+            </div>
+            <div class="stat-input-wrap">
+              <div class="stat-input-prefix">+</div>
+              <input class="stat-input" id="inp-legs" type="number" step="0.1" min="0" max="12" value="5.5" oninput="update()">
+            </div>
+          </div>
+
+          <!-- 부츠 -->
+          <div class="armor-input-row">
+            <div class="armor-input-label">
+              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
+                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2"
+                alt="트라이어드 부츠">
+              <div>
+                <div class="armor-label-text">부츠</div>
+                <div class="armor-label-sub">기본 1~3 / 맥스 +4.5</div>
+              </div>
+            </div>
+            <div class="stat-input-wrap">
+              <div class="stat-input-prefix">+</div>
+              <input class="stat-input" id="inp-boots" type="number" step="0.1" min="0" max="10" value="4.5" oninput="update()">
+            </div>
+          </div>
+        </div>
+
+        <!-- 프리셋 -->
+        <div class="preset-row">
+          <div class="preset-label">빠른 프리셋</div>
+          <div class="preset-btns">
+            <button class="preset-btn" onclick="setPreset([4.2,6.5,5.5,4.5])">맥스치</button>
+            <button class="preset-btn" onclick="setPreset([3.0,5.0,4.0,3.0])">중간치</button>
+            <button class="preset-btn" onclick="setPreset([1.0,1.0,1.0,1.0])">최솟값</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 스크롤 강화 설정 -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-badge badge-sim">STEP 2</span>
+        <span class="panel-title">6~9강 스크롤 조합 설정</span>
+      </div>
+      <div class="panel-body">
+
+        <!-- 고정 구간 -->
+        <div style="margin-bottom:16px;">
+          <div style="font-size:11px; color:var(--sub); margin-bottom:8px; letter-spacing:0.5px;">0~6강 고정 스탯 (커먼×3 + 언커먼×3)</div>
+          <div class="fixed-pills">
+            <div class="fixed-pill">
+              <div class="fp-left">0→3강 커먼×3<br><span style="font-size:10px; color:var(--muted);">70%~60%</span></div>
+              <div class="fp-val" style="color:var(--c);">+3</div>
+            </div>
+            <div class="fixed-pill">
+              <div class="fp-left">3→6강 언커먼×3<br><span style="font-size:10px; color:var(--muted);">45%~31%</span></div>
+              <div class="fp-val" style="color:var(--uc);">+6</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:var(--sub); margin-bottom:12px; letter-spacing:0.5px;">6~9강 구간 · 총 4회 슬롯</div>
+
+        <!-- 슬롯 표시 -->
+        <div class="total-slots" id="slot-row">
+          <div class="slot" id="slot0"></div>
+          <div class="slot" id="slot1"></div>
+          <div class="slot" id="slot2"></div>
+          <div class="slot" id="slot3"></div>
+          <div class="slot-label" id="slot-remain">0 / 4 사용</div>
+        </div>
+
+        <div style="height:14px;"></div>
+
+        <!-- 레어 -->
+        <div class="scroll-sliders">
+          <div class="sl-block">
+            <div class="sl-head">
+              <div>
+                <span class="sl-name" style="color:var(--r);">레어</span>
+                <span class="sl-gain">+4 / 회</span>
+                <span class="sl-range">· 6~9강</span>
+              </div>
+              <div class="sl-count slc-r" id="cnt-r">0</div>
+            </div>
+            <input type="range" id="sl-r" min="0" max="4" value="0" step="1" oninput="update()">
+          </div>
+          <div class="sl-block">
+            <div class="sl-head">
+              <div>
+                <span class="sl-name" style="color:var(--uc);">언커먼</span>
+                <span class="sl-gain">+2 / 회</span>
+                <span class="sl-range">· 3~9강</span>
+              </div>
+              <div class="sl-count slc-uc" id="cnt-uc">0</div>
+            </div>
+            <input type="range" id="sl-uc" min="0" max="4" value="0" step="1" oninput="update()">
+          </div>
+          <div class="sl-block">
+            <div class="sl-head">
+              <div>
+                <span class="sl-name" style="color:var(--c);">커먼</span>
+                <span class="sl-gain">+1 / 회</span>
+                <span class="sl-range">· 1~9강</span>
+              </div>
+              <div class="sl-count slc-c" id="cnt-c">0</div>
+            </div>
+            <input type="range" id="sl-c" min="0" max="4" value="0" step="1" oninput="update()">
+          </div>
+        </div>
+
+        <div class="warn-box" id="warn-box">
+          총 선택 횟수가 4회를 초과했어요. 슬라이더를 조정해주세요.
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: RESULTS -->
+  <div class="panel" style="position:sticky; top:72px;">
+
+    <!-- HERO -->
+    <div class="result-hero">
+      <div class="rh-label">부위 1개 · 스크롤 누적 스탯</div>
+      <div class="rh-val" id="rh-val" style="color:var(--r);">+9</div>
+      <div class="rh-sub" id="rh-sub">고정 +9 · 6~9강 +0</div>
+      <div class="rh-tier" id="rh-tier" style="background:#12102a; color:var(--r);">슬라이더를 설정해보세요</div>
+    </div>
+
+    <!-- 스탯 바 -->
+    <div class="stat-bar-wrap">
+      <div class="sb-label">스탯 구성 비율</div>
+      <div class="stat-bar" id="stat-bar">
+        <div class="sb-seg sb-triad" id="sb-triad" style="width:30%;">트라이어드</div>
+        <div class="sb-seg sb-fix"   id="sb-fix"   style="width:25%;">고정</div>
+        <div class="sb-seg sb-r"     id="sb-r"     style="width:0%;"></div>
+        <div class="sb-seg sb-uc"    id="sb-uc"    style="width:0%;"></div>
+        <div class="sb-seg sb-cc"    id="sb-cc"    style="width:0%;"></div>
+        <div class="sb-seg"          id="sb-empty" style="width:45%; background:var(--surface3); color:var(--muted);">←설정 대기</div>
+      </div>
+      <div class="bar-legend">
+        <div class="bl-item"><div class="bl-dot" style="background:#2a1a3a;"></div>트라이어드</div>
+        <div class="bl-item"><div class="bl-dot" style="background:#0d1a2a;"></div>고정(0~6강)</div>
+        <div class="bl-item"><div class="bl-dot" style="background:#0e0e22;"></div>레어</div>
+        <div class="bl-item"><div class="bl-dot" style="background:#0a1a0a;"></div>언커먼</div>
+        <div class="bl-item"><div class="bl-dot" style="background:#1e1e20;"></div>커먼</div>
+      </div>
+    </div>
+
+    <!-- 부위별 수치 -->
+    <div class="pieces-wrap">
+      <div style="font-size:11px; color:var(--sub); margin-bottom:10px; letter-spacing:0.5px;">부위별 최종 수치</div>
+      <div class="pieces-grid" id="pieces-grid"></div>
+    </div>
+
+    <!-- 풀셋 합산 -->
+    <div class="fullset-wrap">
+      <div style="font-size:11px; color:var(--sub); margin-bottom:10px; letter-spacing:0.5px;">풀셋 합산</div>
+      <div class="fs-grid">
+        <div class="fs-card">
+          <div class="fs-label">트라이어드<br>풀셋</div>
+          <div class="fs-val" id="fs-triad" style="color:var(--tri);">—</div>
+          <div class="fs-sub">맥스치 기준</div>
+        </div>
+        <div class="fs-card">
+          <div class="fs-label">스크롤<br>풀셋</div>
+          <div class="fs-val" id="fs-scroll" style="color:var(--r);">—</div>
+          <div class="fs-sub" id="fs-scroll-sub">× 4 부위</div>
+        </div>
+        <div class="fs-card" style="border-color:var(--border2);">
+          <div class="fs-label">최종<br>총합</div>
+          <div class="fs-val" id="fs-total" style="color:var(--tri);">—</div>
+          <div class="fs-sub">트라이어드 + 스크롤</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전체 경우의 수 -->
+    <div class="cases-wrap">
+      <button class="cases-toggle" id="cases-toggle-btn" onclick="toggleCases()">
+        <span>6~9강 모든 조합 (15가지) 보기</span>
+        <span style="font-size:10px;">▸</span>
+      </button>
+      <div class="cases-table-wrap" id="cases-table-wrap">
+        <table class="ct" id="cases-table"></table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PIECES = [
+  { id: 'helmet', name: '투구',   defaultVal: 4.2 },
+  { id: 'chest',  name: '흉갑',   defaultVal: 6.5 },
+  { id: 'legs',   name: '레깅스', defaultVal: 5.5 },
+  { id: 'boots',  name: '부츠',   defaultVal: 4.5 },
+];
+const FIXED = 9; // 0~6강 고정
+
+function getInputs() {
+  return PIECES.map(p => ({
+    ...p,
+    val: parseFloat(document.getElementById('inp-' + p.id).value) || 0
+  }));
+}
+
+function getTier(scrollPer) {
+  const total = FIXED + scrollPer;
+  if (scrollPer === 0) return { label: '미강화', bg: '#1a1a1a', color: '#666' };
+  if (total >= 34)     return { label: '종결',          bg: '#12102a', color: '#c084fc' };
+  if (total >= 25)     return { label: '준종결',         bg: '#0f2a10', color: '#4ade80' };
+  if (total >= 17)     return { label: '준종결 하위',    bg: '#1a1608', color: '#f59e0b' };
+  if (total >= 9)      return { label: '강화 진행 중',   bg: '#1a1a1a', color: '#9ca3af' };
+  return               { label: '설정해보세요',          bg: '#12102a', color: '#818cf8' };
+}
+
+function updateSliderTrack(id, val, max) {
+  const pct = (val / max * 100).toFixed(1) + '%';
+  document.getElementById(id).style.setProperty('--pct', pct);
+}
+
+let casesOpen = false;
+let casesBuilt = false;
+
+function update() {
+  const sr  = parseInt(document.getElementById('sl-r').value);
+  const suc = parseInt(document.getElementById('sl-uc').value);
+  const sc  = parseInt(document.getElementById('sl-c').value);
+  const usedTotal = sr + suc + sc;
+
+  // 슬라이더 트랙
+  updateSliderTrack('sl-r',  sr,  4);
+  updateSliderTrack('sl-uc', suc, 4);
+  updateSliderTrack('sl-c',  sc,  4);
+
+  // 카운터
+  document.getElementById('cnt-r').textContent  = sr;
+  document.getElementById('cnt-uc').textContent = suc;
+  document.getElementById('cnt-c').textContent  = sc;
+
+  // 슬롯 시각화
+  const slots = [];
+  for (let i = 0; i < sr;  i++) slots.push('r');
+  for (let i = 0; i < suc; i++) slots.push('uc');
+  for (let i = 0; i < sc;  i++) slots.push('c');
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('slot' + i);
+    if (i < slots.length) {
+      const t = slots[i];
+      el.className = 'slot used-' + t;
+      el.textContent = t === 'r' ? 'R' : t === 'uc' ? 'U' : 'C';
+    } else {
+      el.className = 'slot';
+      el.textContent = '';
+    }
+  }
+  document.getElementById('slot-remain').textContent =
+    Math.min(usedTotal, 4) + ' / 4 사용';
+
+  // 경고
+  const warnEl = document.getElementById('warn-box');
+  warnEl.style.display = usedTotal > 4 ? 'block' : 'none';
+
+  if (usedTotal > 4) return;
+
+  const rStat  = sr  * 4;
+  const ucStat = suc * 2;
+  const cStat  = sc  * 1;
+  const scroll69 = rStat + ucStat + cStat;
+  const scrollPer = FIXED + scroll69;
+
+  const pieces = getInputs();
+  const triadSum = pieces.reduce((a, p) => a + p.val, 0);
+
+  const tier = getTier(scroll69);
+  const color = tier.color;
+
+  // HERO
+  document.getElementById('rh-val').textContent = '+' + scrollPer;
+  document.getElementById('rh-val').style.color = color;
+  document.getElementById('rh-sub').textContent =
+    `고정 +${FIXED}  ·  6~9강 +${scroll69}`;
+  const tierEl = document.getElementById('rh-tier');
+  tierEl.textContent = tier.label;
+  tierEl.style.background = tier.bg;
+  tierEl.style.color = tier.color;
+
+  // 스탯 바 (풀셋 기준 비율)
+  const totalRef = triadSum + scrollPer * 4;
+  const triadPct = Math.round(triadSum    / totalRef * 100);
+  const fixPct   = Math.round(FIXED * 4  / totalRef * 100);
+  const rPct     = Math.round(rStat * 4  / totalRef * 100);
+  const ucPct    = Math.round(ucStat * 4 / totalRef * 100);
+  const cPct2    = Math.round(cStat * 4  / totalRef * 100);
+  const emPct    = Math.max(0, 100 - triadPct - fixPct - rPct - ucPct - cPct2);
+
+  function setW(id, w, txt) {
+    const el = document.getElementById(id);
+    el.style.width = w + '%';
+    if (txt !== undefined) el.textContent = w > 8 ? txt : '';
+  }
+  setW('sb-triad', triadPct, '트라이어드');
+  setW('sb-fix',   fixPct,   '고정');
+  setW('sb-r',     rPct,     rStat > 0 ? '+' + rStat * 4 : '');
+  setW('sb-uc',    ucPct,    ucStat > 0 ? '+' + ucStat * 4 : '');
+  setW('sb-cc',    cPct2,    cStat > 0 ? '+' + cStat * 4 : '');
+  const emEl = document.getElementById('sb-empty');
+  emEl.style.width = emPct + '%';
+  emEl.textContent = emPct > 12 ? '←설정 대기' : '';
+
+  // 부위별
+  const maxPiece = Math.max(...pieces.map(p => p.val)) + scrollPer;
+  let pHtml = '';
+  pieces.forEach(p => {
+    const tot = p.val + scrollPer;
+    const tW  = Math.round(p.val  / tot * 100);
+    const fW  = Math.round(FIXED  / tot * 100);
+    const rW  = Math.round(rStat  / tot * 100);
+    const uW  = Math.round(ucStat / tot * 100);
+    const cW2 = Math.round(cStat  / tot * 100);
+    pHtml += `<div class="piece-row">
+      <div>
+        <div class="piece-name">${p.name}</div>
+        <div class="piece-base">트라이어드 +${p.val.toFixed(1)}</div>
+      </div>
+      <div class="piece-bar">
+        <div class="pb-seg sb-triad" style="width:${tW}%;">${tW>14?'+'+p.val.toFixed(1):''}</div>
+        <div class="pb-seg sb-fix"   style="width:${fW}%;">${fW>10?'+'+FIXED:''}</div>
+        <div class="pb-seg sb-r"     style="width:${rW}%;">${rW>8?'+'+rStat:''}</div>
+        <div class="pb-seg sb-uc"    style="width:${uW}%;">${uW>8?'+'+ucStat:''}</div>
+        <div class="pb-seg sb-cc"    style="width:${cW2}%;">${cW2>6?'+'+cStat:''}</div>
+      </div>
+      <div class="piece-total" style="color:${color};">+${tot.toFixed(1)}</div>
+    </div>`;
+  });
+  document.getElementById('pieces-grid').innerHTML = pHtml;
+
+  // 풀셋
+  const scrollFull = scrollPer * 4;
+  const grandTotal = (triadSum + scrollFull).toFixed(1);
+  document.getElementById('fs-triad').textContent  = '+' + triadSum.toFixed(1);
+  document.getElementById('fs-triad').style.color  = '#c084fc';
+  document.getElementById('fs-scroll').textContent = '+' + scrollFull;
+  document.getElementById('fs-scroll').style.color = color;
+  document.getElementById('fs-scroll-sub').textContent = `부위당 +${scrollPer} × 4`;
+  document.getElementById('fs-total').textContent  = '+' + grandTotal;
+  document.getElementById('fs-total').style.color  = color;
+
+  // 경우의 수 테이블 현재 행 하이라이트
+  if (casesBuilt) highlightCurrentCase(sr, suc, sc);
+}
+
+function setPreset(vals) {
+  ['helmet','chest','legs','boots'].forEach((id, i) => {
+    document.getElementById('inp-' + id).value = vals[i];
+  });
+  update();
+}
+
+function buildCasesTable() {
+  const cases = [];
+  for (let r = 0; r <= 4; r++)
+    for (let uc = 0; uc <= 4 - r; uc++) {
+      const c = 4 - r - uc;
+      const s69 = r * 4 + uc * 2 + c;
+      const total = FIXED + s69;
+      const tier = getTier(s69);
+      const pieces = getInputs();
+      const triadSum = pieces.reduce((a, p) => a + p.val, 0);
+      const grandTotal = (triadSum + total * 4).toFixed(1);
+      cases.push({ r, uc, c, s69, total, tier, grandTotal });
+    }
+  cases.sort((a, b) => b.total - a.total);
+
+  let html = `<thead><tr>
+    <th>#</th><th>레어</th><th>언커먼</th><th>커먼</th>
+    <th>6~9강</th><th>부위합산</th><th>풀셋총합</th><th>등급</th>
+  </tr></thead><tbody>`;
+  cases.forEach((cas, i) => {
+    const sr  = parseInt(document.getElementById('sl-r').value);
+    const suc = parseInt(document.getElementById('sl-uc').value);
+    const sc  = parseInt(document.getElementById('sl-c').value);
+    const isCur = cas.r === sr && cas.uc === suc && cas.c === sc;
+    html += `<tr class="${isCur ? 'cur' : ''}" data-r="${cas.r}" data-uc="${cas.uc}" data-c="${cas.c}"
+      onclick="applyCase(${cas.r},${cas.uc},${cas.c})">
+      <td>${i + 1}</td>
+      <td style="color:${cas.r>0?'var(--r)':'var(--muted)'};">${cas.r > 0 ? cas.r + '회' : '—'}</td>
+      <td style="color:${cas.uc>0?'var(--uc)':'var(--muted)'};">${cas.uc > 0 ? cas.uc + '회' : '—'}</td>
+      <td style="color:${cas.c>0?'var(--c)':'var(--muted)'};">${cas.c > 0 ? cas.c + '회' : '—'}</td>
+      <td style="color:${cas.tier.color}; font-weight:700;">+${cas.s69}</td>
+      <td style="color:${cas.tier.color}; font-weight:700;">+${cas.total}</td>
+      <td style="color:var(--sub);">+${cas.grandTotal}</td>
+      <td><span style="font-size:10px; padding:2px 6px; border-radius:3px;
+        background:${cas.tier.bg}; color:${cas.tier.color};">${cas.tier.label}</span></td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  document.getElementById('cases-table').innerHTML = html;
+  casesBuilt = true;
+}
+
+function highlightCurrentCase(r, uc, c) {
+  document.querySelectorAll('#cases-table tr[data-r]').forEach(row => {
+    const match = parseInt(row.dataset.r) === r &&
+                  parseInt(row.dataset.uc) === uc &&
+                  parseInt(row.dataset.c) === c;
+    row.className = match ? 'cur' : '';
+  });
+}
+
+function applyCase(r, uc, c) {
+  document.getElementById('sl-r').value  = r;
+  document.getElementById('sl-uc').value = uc;
+  document.getElementById('sl-c').value  = c;
+  update();
+}
+
+function toggleCases() {
+  casesOpen = !casesOpen;
+  const wrap = document.getElementById('cases-table-wrap');
+  const btn  = document.getElementById('cases-toggle-btn');
+  wrap.className = 'cases-table-wrap' + (casesOpen ? ' open' : '');
+  btn.querySelector('span:last-child').textContent = casesOpen ? '▾' : '▸';
+  btn.querySelector('span:first-child').textContent =
+    casesOpen ? '전체 조합 닫기' : '6~9강 모든 조합 (15가지) 보기';
+  if (casesOpen) buildCasesTable();
+}
+
+// 장비 수치 변경 시 경우의 수 테이블 재빌드
+document.querySelectorAll('.stat-input').forEach(el => {
+  el.addEventListener('input', () => {
+    if (casesOpen) buildCasesTable();
+  });
+});
+
+update();
+</script>
+</body>
+</html>

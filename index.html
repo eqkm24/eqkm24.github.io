@@ -254,13 +254,14 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 [data-theme="light"] .fskill-tag{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
 [data-theme="light"] .fskill-tag:hover{background:#e5d5ff;color:#6d28d9;}
 .food-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;padding-top:1px;}
-.food-price{display:flex;flex-direction:column;align-items:flex-end;gap:2px;margin-top:3px;padding-top:5px;border-top:1px solid var(--b1);}
-.fp-row{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--muted);}
-.fp-grade{font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:2px;}
+.food-price{display:flex;align-items:center;gap:6px;margin-top:3px;padding-top:5px;border-top:1px solid var(--b1);}
+.fp-row{display:inline-flex;align-items:center;gap:2px;}
+.fp-grade{font-size:9px;font-weight:700;padding:0 4px;border-radius:2px;line-height:16px;}
 .fp-n {background:#1e1e20;color:#9ca3af;border:1px solid #2e2e38;}
 .fp-a {background:#0c1c14;color:#4ade80;border:1px solid #1a4a24;}
 .fp-r {background:#0a1530;color:#60a5fa;border:1px solid #1a3a60;}
 .fp-val{font-size:11px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;}
+.fp-sep{color:var(--b2);font-size:9px;}
 .fp-sel{font-size:9.5px;color:var(--muted);}
 [data-theme="light"] .fp-n {background:#f1f5f9;color:#64748b;border-color:#d0d4e4;}
 [data-theme="light"] .fp-a {background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
@@ -709,7 +710,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">30초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -723,7 +724,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">30초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -737,7 +738,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">30초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -751,7 +752,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">30초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -765,7 +766,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">30초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -807,7 +808,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -821,7 +822,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -835,7 +836,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -849,7 +850,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -863,7 +864,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">100</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">106</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">100</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">106</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -877,7 +878,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -891,7 +892,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -905,7 +906,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
     <div class="food-card">
@@ -919,7 +920,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="chip c-n">40초</span>
         <span class="chip c-80">80%</span>
         <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
-        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span><span class="fp-sel">셀</span></div><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span><span class="fp-sel">셀</span></div></div>
+        <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
   </div>

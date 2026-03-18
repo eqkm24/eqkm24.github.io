@@ -246,6 +246,11 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .fe-stat  {background:#0a1e0a;color:#4ade80;border:1px solid #1a4a1a;}
 .fe-recov {background:#061520;color:#60a5fa;border:1px solid #1a3a60;}
 .fe-skill {background:#180828;color:#c084fc;border:1px solid #4a1a6a;}
+.food-skills{display:flex;flex-wrap:wrap;gap:4px;}
+.fskill-tag{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:3px;background:#180828;color:#c084fc;border:1px solid #4a1a6a;cursor:default;transition:background .12s,color .12s;}
+.fskill-tag:hover{background:#220a38;color:#d8b4fe;}
+[data-theme="light"] .fskill-tag{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
+[data-theme="light"] .fskill-tag:hover{background:#e5d5ff;color:#6d28d9;}
 .food-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;padding-top:1px;}
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 
@@ -671,7 +676,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="food-body">
         <div class="food-name">부야베스</div>
         <div class="food-ing">적색통돔 ×1 · 아귀 ×1 · 토마토 ×3 · 석류 ×3</div>
-        <span class="food-effect fe-skill">✦ 되뿌리기 · 수확의 손길 Lv.1</span>
+        <div class="food-skills"><span class="fskill-tag" data-tip="되뿌리기">✦ 되뿌리기 Lv.1</span><span class="fskill-tag" data-tip="수확의 손길">✦ 수확의 손길 Lv.1</span></div>
       </div>
       <div class="food-meta">
         <span class="chip c-n">40초</span>
@@ -684,7 +689,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="food-body">
         <div class="food-name">치오피노</div>
         <div class="food-ing">다랑어 ×1 · 랍스터 ×1 · 토마토 ×3 · 파인애플 ×3</div>
-        <span class="food-effect fe-skill">✦ 떼낚시 · 쌍걸이 Lv.1</span>
+        <div class="food-skills"><span class="fskill-tag" data-tip="떼낚시">✦ 떼낚시 Lv.1</span><span class="fskill-tag" data-tip="쌍걸이">✦ 쌍걸이 Lv.1</span></div>
       </div>
       <div class="food-meta">
         <span class="chip c-n">40초</span>
@@ -697,7 +702,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="food-body">
         <div class="food-name">파에야</div>
         <div class="food-ing">농어 ×1 · 숭어 ×1 · 옥수수 ×3 · 토마토 ×3</div>
-        <span class="food-effect fe-skill">✦ 연회 준비 · 즉시 완성 Lv.1</span>
+        <div class="food-skills"><span class="fskill-tag" data-tip="연회 준비">✦ 연회 준비 Lv.1</span><span class="fskill-tag" data-tip="즉시 완성">✦ 즉시 완성 Lv.1</span></div>
       </div>
       <div class="food-meta">
         <span class="chip c-n">40초</span>
@@ -710,7 +715,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <div class="food-body">
         <div class="food-name">세비체</div>
         <div class="food-ing">블루탱 ×1 · 흰동가리 ×1 · 레몬 ×3 · 딸기 ×3</div>
-        <span class="food-effect fe-skill">✦ 폭발적인 채광 · 광맥 탐지 Lv.1</span>
+        <div class="food-skills"><span class="fskill-tag" data-tip="폭발적인 채광">✦ 폭발적인 채광 Lv.1</span><span class="fskill-tag" data-tip="광맥 탐지">✦ 광맥 탐지 Lv.1</span></div>
       </div>
       <div class="food-meta">
         <span class="chip c-n">40초</span>

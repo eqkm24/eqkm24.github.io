@@ -184,7 +184,8 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .divider{height:1px;background:var(--b1);margin:20px 0;}
 
 /* chips */
-.chip{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.fm-lbl{font-size:8.5px;font-weight:500;opacity:.7;letter-spacing:.3px;}
 .c-n {background:var(--s3);color:var(--sub);border:1px solid var(--b2);}
 .c-100{background:#0a1e0a;color:#4ade80;border:1px solid #143a14;}
 .c-90{background:#0c1c14;color:#6ee7b7;border:1px solid #0a3628;}
@@ -707,9 +708,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 행운 +2</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">30초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 30초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
@@ -721,9 +722,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 감각 +4</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">30초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 30초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
@@ -735,9 +736,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 손재주 +4</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">30초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 30초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
@@ -749,9 +750,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 인내력 +10</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">30초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 30초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
@@ -763,9 +764,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 노련함 +8</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">30초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 30초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-n">일반</span><span class="fp-val">51</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">54</span></div></div>
       </div>
     </div>
@@ -777,9 +778,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-recov">◈ 갈증 4 회복</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">15초</span>
-        <span class="chip c-90">90%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">즉시</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 15초</span>
+        <span class="chip c-90"><span class="fm-lbl">✓ 확률</span> 90%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 즉시</span>
         
       </div>
     </div>
@@ -791,9 +792,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-recov">◈ 마나 10 회복</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">15초</span>
-        <span class="chip c-90">90%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">즉시</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 15초</span>
+        <span class="chip c-90"><span class="fm-lbl">✓ 확률</span> 90%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 즉시</span>
         
       </div>
     </div>
@@ -805,9 +806,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="food-skills"><span class="fskill-tag" data-tip="되뿌리기">✦ 되뿌리기 Lv.1</span><span class="fskill-tag" data-tip="수확의 손길">✦ 수확의 손길 Lv.1</span></div>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 60초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -819,9 +820,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="food-skills"><span class="fskill-tag" data-tip="떼낚시">✦ 떼낚시 Lv.1</span><span class="fskill-tag" data-tip="쌍걸이">✦ 쌍걸이 Lv.1</span></div>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 60초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -833,9 +834,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="food-skills"><span class="fskill-tag" data-tip="연회 준비">✦ 연회 준비 Lv.1</span><span class="fskill-tag" data-tip="즉시 완성">✦ 즉시 완성 Lv.1</span></div>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 60초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -847,9 +848,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <div class="food-skills"><span class="fskill-tag" data-tip="폭발적인 채광">✦ 폭발적인 채광 Lv.1</span><span class="fskill-tag" data-tip="광맥 탐지">✦ 광맥 탐지 Lv.1</span></div>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">60초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 60초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -861,9 +862,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 행운 +5</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">100</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">106</span></div></div>
       </div>
     </div>
@@ -875,9 +876,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 감각 +8</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -889,9 +890,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 손재주 +7</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -903,9 +904,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 인내력 +15</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>
@@ -917,9 +918,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
         <span class="food-effect fe-stat">▲ 노련함 +10</span>
       </div>
       <div class="food-meta">
-        <span class="chip c-n">40초</span>
-        <span class="chip c-80">80%</span>
-        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);">600초</span>
+        <span class="chip c-n"><span class="fm-lbl">⏱ 제작</span> 40초</span>
+        <span class="chip c-80"><span class="fm-lbl">✓ 확률</span> 80%</span>
+        <span class="chip c-n" style="font-size:9.5px;color:var(--muted);"><span class="fm-lbl">⏳ 지속</span> 600초</span>
         <div class="food-price"><div class="fp-row"><span class="fp-grade fp-a">고급</span><span class="fp-val">85</span></div><span class="fp-sep">·</span><div class="fp-row"><span class="fp-grade fp-r">희귀</span><span class="fp-val">90</span></div></div>
       </div>
     </div>

@@ -777,9 +777,9 @@ const SC = { helmet:{r:0,uc:0,c:0}, chest:{r:0,uc:0,c:0}, legs:{r:0,uc:0,c:0}, b
 function getTier(s69) {
   const t = FIXED + s69;
   if (s69===0)  return {label:'미강화',    bg:'#1a1a1a',color:'#555'};
-  if (t>=34)    return {label:'종결',       bg:'#12102a',color:'#c084fc'};
-  if (t>=25)    return {label:'준종결',     bg:'#0f2a10',color:'#4ade80'};
-  if (t>=17)    return {label:'준종결 하위',bg:'#1a1608',color:'#f59e0b'};
+  if (t>=25)    return {label:'종결',       bg:'#12102a',color:'#c084fc'};
+  if (t>=20)    return {label:'준종결',     bg:'#0f2a10',color:'#4ade80'};
+  if (t>=15)    return {label:'준종결 하위',bg:'#1a1608',color:'#f59e0b'};
   if (t>=9)     return {label:'진행 중',    bg:'#1a1a1a',color:'#9ca3af'};
   return              {label:'설정해보세요',bg:'#12102a',color:'#818cf8'};
 }

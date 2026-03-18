@@ -3,920 +3,919 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>강화 시뮬레이터</title>
+<title>루나월드 가이드 — 제작 & 강화</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
+/* ═══════════ RESET & TOKENS ═══════════ */
 :root {
-  --bg:       #0b0b0f;
-  --surface:  #111118;
-  --surface2: #18181f;
-  --surface3: #202028;
-  --border:   #28283a;
-  --border2:  #34344a;
+  --bg:   #0b0b0f; --s1:#111118; --s2:#17171f; --s3:#1e1e28; --s4:#252530;
+  --b1:#28283a; --b2:#34344a; --b3:#44446a;
+  --text:#e2e2ee; --sub:#8080a8; --muted:#44445a;
+  --bench:#60a5fa; --brazier:#f97316; --counter:#22c55e;
+  --tri:#c084fc; --scrl:#60a5fa; --orb:#f59e0b;
+  --r-n:#9ca3af; --r-a:#4ade80; --r-r:#60a5fa; --r-h:#c084fc;
+  --sl-r:#818cf8; --sl-uc:#4ade80; --sl-c:#9ca3af;
+  --warn:#f87171; --gold:#f59e0b;
+  --rad:10px; --rad-s:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);min-height:100vh;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
 
-  --text:   #e4e4f0;
-  --sub:    #8888a8;
-  --muted:  #44445a;
+/* ═══════════ TOPNAV ═══════════ */
+.topnav{
+  position:sticky;top:0;z-index:300;
+  height:54px;padding:0 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(11,11,15,.94);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--b1);
+}
+.nav-logo{display:flex;align-items:center;gap:10px;}
+.nav-logo-mark{
+  width:30px;height:30px;border-radius:7px;
+  background:linear-gradient(135deg,#818cf8,#c084fc);
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+}
+.nav-logo-text{font-size:14px;font-weight:700;letter-spacing:.3px;}
+.nav-logo-text em{color:var(--sl-r);font-style:normal;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{
+  padding:7px 18px;border-radius:20px;font-size:13px;font-weight:500;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+  background:transparent;border:1px solid transparent;
+  color:var(--sub);transition:all .15s;letter-spacing:.2px;
+}
+.nav-tab:hover{color:var(--text);border-color:var(--b1);}
+.nav-tab.t-recipe.on {background:#061520;color:var(--bench);border-color:#1e3a60;}
+.nav-tab.t-enhance.on{background:#120820;color:var(--tri); border-color:#4a1a6a;}
+.nav-tab.t-sim.on   {background:#0a1a08;color:var(--sl-uc);border-color:#1a4a1a;}
+.nav-source{font-size:10px;color:var(--muted);border:1px solid var(--b1);padding:3px 10px;border-radius:20px;letter-spacing:.5px;}
 
-  --c:   #9ca3af;   /* 커먼 */
-  --uc:  #4ade80;   /* 언커먼 */
-  --r:   #818cf8;   /* 레어 */
-  --tri: #c084fc;   /* 트라이어드 */
-  --fix: #60a5fa;   /* 고정 스탯 */
+/* ═══════════ PAGE SWITCH ═══════════ */
+.page{display:none;}
+.page.on{display:block;animation:fade .18s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.wrap{max-width:1100px;margin:0 auto;padding:28px 24px 80px;}
 
-  --semi:  #4ade80;
-  --final: #c084fc;
-  --warn:  #f87171;
-  --gold:  #f59e0b;
+/* ═══════════ PAGE HEADERS ═══════════ */
+.ph{margin-bottom:24px;}
+.ph-title{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:5px;}
+.ph-sub{font-size:13px;color:var(--sub);line-height:1.7;}
+.ph-title .hl-b{color:var(--bench);}
+.ph-title .hl-t{color:var(--tri);}
+.ph-title .hl-g{color:var(--sl-uc);}
 
-  --radius: 10px;
-  --radius-sm: 6px;
-}
+/* ═══════════ SHARED COMPONENTS ═══════════ */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);}
+.card-hd{padding:12px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;}
+.card-title{font-size:13px;font-weight:700;}
+.badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.5px;}
+.bd-bench {background:#061520;color:var(--bench);border:1px solid #1a3a60;}
+.bd-brazier{background:#1a0a00;color:var(--brazier);border:1px solid #5a2800;}
+.bd-counter{background:#041008;color:var(--counter);border:1px solid #0a3a14;}
+.bd-scroll {background:#061520;color:var(--scrl);border:1px solid #1a3a60;}
+.bd-orb   {background:#1a1000;color:var(--orb);border:1px solid #4a3000;}
+.bd-sim   {background:#081408;color:var(--sl-uc);border:1px solid #1a4a14;}
+.bd-res   {background:#180828;color:var(--tri);border:1px solid #3a1460;}
+.bd-step  {background:#1e1e2a;color:var(--sub);border:1px solid var(--b2);}
+.divider{height:1px;background:var(--b1);margin:20px 0;}
 
-* { margin:0; padding:0; box-sizing:border-box; }
+/* chips */
+.chip{display:inline-block;font-size:10.5px;font-weight:600;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.c-n {background:var(--s3);color:var(--sub);border:1px solid var(--b2);}
+.c-100{background:#0a1e0a;color:#4ade80;border:1px solid #143a14;}
+.c-90{background:#0c1c14;color:#6ee7b7;border:1px solid #0a3628;}
+.c-80{background:#1c1a08;color:#d4d432;border:1px solid #3a3808;}
+.c-70{background:#1c1408;color:#fb923c;border:1px solid #5a2e08;}
+.c-60{background:#18082a;color:#c084fc;border:1px solid #4a1a6a;}
+.c-30{background:#1e0808;color:#f87171;border:1px solid #6a1414;}
 
-body {
-  background: var(--bg);
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text);
-  min-height: 100vh;
-}
+/* rarity dots */
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;position:relative;top:-1px;}
+.dn{background:var(--r-n);box-shadow:0 0 4px var(--r-n);}
+.da{background:var(--r-a);box-shadow:0 0 4px var(--r-a);}
+.dr{background:var(--r-r);box-shadow:0 0 4px var(--r-r);}
+.dh{background:var(--r-h);box-shadow:0 0 5px var(--r-h);}
 
-/* ── HEADER ── */
-.site-header {
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  background: rgba(11,11,15,0.92);
-  backdrop-filter: blur(12px);
-  z-index: 100;
-}
-.site-logo {
-  display: flex; align-items: center; gap: 10px;
-}
-.logo-mark {
-  width: 28px; height: 28px;
-  background: linear-gradient(135deg, #818cf8, #c084fc);
-  border-radius: 6px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-}
-.logo-text {
-  font-size: 14px; font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--text);
-}
-.logo-text span { color: var(--r); }
-.header-tag {
-  font-size: 11px;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  padding: 3px 10px;
-  border-radius: 20px;
-  letter-spacing: 1px;
-}
+/* ingredient tags */
+.itag{display:inline-block;font-size:10.5px;background:var(--s3);border:1px solid var(--b2);padding:1px 5px;border-radius:3px;color:var(--sub);margin:1px 2px 1px 0;}
+.itag.k{border-color:#4a4a70;color:#c8c8f0;}
 
-/* ── LAYOUT ── */
-.page-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 32px 24px 80px;
-  display: grid;
-  grid-template-columns: 340px 1fr;
-  gap: 24px;
-  align-items: start;
-}
+/* ═══════════ RECIPE PAGE ═══════════ */
+/* sys info cards */
+.sys-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
+.sys-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:14px 16px;}
+.sys-lbl{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.sys-body{font-size:12px;color:var(--sub);line-height:1.8;}
+.sys-body strong{color:var(--text);}
+.sys-formula{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;background:var(--s3);padding:2px 6px;border-radius:3px;color:#f9a8d4;margin-top:2px;}
+.warn-pill{display:inline-flex;align-items:center;gap:4px;margin-top:6px;background:#1e0a00;border:1px solid #6a3000;color:#fb923c;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;}
 
-/* ── PANEL BASE ── */
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-.panel-header {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 8px;
-}
-.panel-title {
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 0.5px;
-  color: var(--text);
-}
-.panel-badge {
-  font-size: 10px; font-weight: 700;
-  padding: 2px 7px; border-radius: 3px;
-  letter-spacing: 0.5px;
-}
-.badge-input  { background: #1a1a30; color: var(--r); border: 1px solid #2a2a50; }
-.badge-sim    { background: #0a1a1a; color: var(--uc); border: 1px solid #0a3a2a; }
-.badge-result { background: #1a0a2a; color: var(--tri); border: 1px solid #3a1a5a; }
-.panel-body { padding: 20px; }
+/* section header */
+.sec-hd{display:flex;align-items:center;gap:10px;margin:22px 0 12px;}
+.sec-line{flex:1;height:1px;background:var(--b1);}
+.sec-limit{font-size:10px;color:var(--muted);border:1px solid var(--b1);padding:2px 8px;border-radius:20px;}
 
-/* ── INPUT SECTION ── */
-.armor-inputs { display: flex; flex-direction: column; gap: 10px; }
-.armor-input-row {
-  display: grid;
-  grid-template-columns: 1fr 110px;
-  align-items: center;
-  gap: 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  transition: border-color 0.15s;
-}
-.armor-input-row:focus-within { border-color: var(--border2); }
-.armor-input-label {
-  display: flex; align-items: center; gap: 8px;
-}
-.armor-pixel { flex-shrink: 0; image-rendering: pixelated; }
-.armor-label-text { font-size: 13px; font-weight: 500; }
-.armor-label-sub  { font-size: 10px; color: var(--sub); margin-top: 1px; }
+/* sub label */
+.sub-lbl{font-size:10px;color:var(--sub);letter-spacing:1.5px;text-transform:uppercase;margin:14px 0 7px;display:flex;align-items:center;gap:6px;}
+.sub-lbl::before{content:'';width:3px;height:10px;border-radius:2px;}
+.sub-lbl.bench::before{background:var(--bench);}
+.sub-lbl.brazier::before{background:var(--brazier);}
+.sub-lbl.counter::before{background:var(--counter);}
 
-.stat-input-wrap {
-  display: flex; align-items: center;
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.stat-input-wrap:focus-within { border-color: var(--r); }
-.stat-input-prefix {
-  padding: 0 8px;
-  font-size: 13px; font-weight: 700;
-  color: var(--tri);
-  font-family: 'JetBrains Mono', monospace;
-  border-right: 1px solid var(--border2);
-}
-.stat-input {
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 8px 10px;
-  font-size: 14px; font-weight: 700;
-  color: var(--text);
-  font-family: 'JetBrains Mono', monospace;
-  text-align: right;
-}
+/* recipe table */
+.rt{width:100%;border-collapse:collapse;font-size:12px;}
+.rt th{text-align:left;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:6px 10px;background:var(--s2);border-bottom:1px solid var(--b2);}
+.rt th:first-child{border-radius:4px 0 0 0;}.rt th:last-child{border-radius:0 4px 0 0;}
+.rt td{padding:7px 10px;border-bottom:1px solid var(--b1);color:var(--sub);vertical-align:middle;}
+.rt tr:last-child td{border-bottom:none;}.rt tr:hover td{background:var(--s2);}
+.rt td.nm{color:var(--text);font-weight:500;}
+.rt td.nm-flex{color:var(--text);font-weight:500;display:flex;align-items:center;gap:8px;}
+.ritem-img{width:26px;height:26px;object-fit:contain;image-rendering:pixelated;background:var(--s3);border:1px solid var(--b2);border-radius:3px;padding:1px;flex-shrink:0;}
 
-.preset-row {
-  margin-top: 14px;
-}
-.preset-label {
-  font-size: 11px; color: var(--sub);
-  margin-bottom: 8px; letter-spacing: 0.5px;
-}
-.preset-btns { display: flex; gap: 6px; flex-wrap: wrap; }
-.preset-btn {
-  font-size: 11px; font-weight: 500;
-  padding: 4px 10px; border-radius: 4px;
-  background: var(--surface3);
-  border: 1px solid var(--border2);
-  color: var(--sub);
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  transition: all 0.15s;
-}
-.preset-btn:hover { border-color: var(--tri); color: var(--tri); }
+/* food grid */
+.food-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;}
+.food-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:9px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.food-name{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.food-ing{font-size:10.5px;color:var(--muted);line-height:1.5;}
+.food-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 
-/* ── SCROLL SECTION ── */
-.fixed-pills {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 8px; margin-bottom: 18px;
-}
-.fixed-pill {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.fp-left { font-size: 11px; color: var(--sub); line-height: 1.6; }
-.fp-val  { font-size: 16px; font-weight: 700; }
+/* ═══════════ ENHANCE PAGE ═══════════ */
+.ov-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px;}
+.ov-card{border-radius:var(--rad);padding:18px 20px;position:relative;overflow:hidden;}
+.ov-card::before{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;border-radius:50%;opacity:.07;}
+.ovc-scroll{background:#0d1e35;border:1px solid #1e3a60;}.ovc-scroll::before{background:var(--scrl);}
+.ovc-orb   {background:#1e1505;border:1px solid #4a3210;}.ovc-orb::before{background:var(--orb);}
+.ov-icon{font-size:20px;margin-bottom:7px;}
+.ov-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.ovc-scroll .ov-title{color:var(--scrl);}
+.ovc-orb    .ov-title{color:var(--orb);}
+.ov-desc{font-size:12px;color:var(--sub);line-height:1.7;}
+.ov-badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;}
+.ovc-scroll .ov-badge{background:#1a3a60;color:#93c5fd;}
+.ovc-orb    .ov-badge{background:#3a2800;color:#fbbf24;}
 
-.scroll-sliders { display: flex; flex-direction: column; gap: 14px; }
-.sl-block {}
-.sl-head {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 5px;
-}
-.sl-name { font-size: 13px; font-weight: 500; }
-.sl-gain { font-size: 11px; color: var(--sub); margin-left: 4px; }
-.sl-range { font-size: 10px; color: var(--muted); }
-.sl-count {
-  font-size: 13px; font-weight: 700;
-  padding: 2px 10px; border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
-  min-width: 36px; text-align: center;
-}
-.slc-r  { background: #10102a; color: var(--r); }
-.slc-uc { background: #0f2010; color: var(--uc); }
-.slc-c  { background: #252528; color: var(--c); border: 1px solid var(--border2); }
+/* enhance tabs */
+.etabs{display:flex;gap:4px;margin-bottom:0;}
+.etab{padding:9px 20px;font-size:13px;font-weight:700;font-family:'Noto Sans KR',sans-serif;background:transparent;border:1px solid var(--b1);border-bottom:none;color:var(--muted);cursor:pointer;border-radius:7px 7px 0 0;transition:all .15s;}
+.etab:hover{color:var(--sub);background:var(--s2);}
+.etab.es{background:#0d1e35;color:var(--scrl);border-color:#1e3a60;}
+.etab.eo{background:#1e1505;color:var(--orb);border-color:#4a3210;}
+.etab-panel{display:none;border-radius:0 8px 8px 8px;border:1px solid;padding:22px;animation:fade .18s ease;}
+.etab-panel.eps{background:#0d1e35;border-color:#1e3a60;border-top:none;}
+.etab-panel.epo{background:#1e1505;border-color:#4a3210;border-top:none;}
+.etab-panel.eon{display:block;}
+.et-sec{margin-bottom:20px;}.et-sec:last-child{margin-bottom:0;}
+.et-title{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.et-title::after{content:'';flex:1;height:1px;background:var(--b2);}
+.eps .et-title{color:#93c5fd;}.epo .et-title{color:#fbbf24;}
 
-/* custom range */
-input[type=range] {
-  width: 100%; height: 4px;
-  -webkit-appearance: none;
-  background: var(--border2);
-  border-radius: 2px; outline: none; cursor: pointer;
-}
-input[type=range]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 16px; height: 16px;
-  border-radius: 50%;
-  border: 2px solid var(--bg);
-  cursor: pointer; transition: transform 0.1s;
-}
-input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
-#sl-r::-webkit-slider-thumb  { background: var(--r); }
-#sl-uc::-webkit-slider-thumb { background: var(--uc); }
-#sl-c::-webkit-slider-thumb  { background: var(--c); }
-#sl-r::-webkit-slider-runnable-track  { background: linear-gradient(to right, var(--r) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
-#sl-uc::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--uc) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
-#sl-c::-webkit-slider-runnable-track  { background: linear-gradient(to right, var(--c) var(--pct, 0%), var(--border2) var(--pct, 0%)); border-radius:2px; }
+/* item cards (enhance page) */
+.item-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.item-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:10px 12px;display:flex;align-items:flex-start;gap:10px;}
+.item-img{width:40px;height:40px;object-fit:contain;flex-shrink:0;image-rendering:pixelated;border-radius:4px;background:var(--s2);border:1px solid var(--b2);padding:2px;}
+.item-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.item-tags{display:flex;flex-wrap:wrap;gap:3px;}
+.etag{font-size:10.5px;background:var(--s2);border:1px solid var(--b2);padding:1px 5px;border-radius:3px;color:var(--sub);}
 
-.total-slots {
-  margin-top: 10px;
-  display: flex; gap: 5px; align-items: center;
-}
-.slot {
-  width: 28px; height: 28px;
-  border-radius: 4px;
-  border: 1px solid var(--border2);
-  background: var(--surface3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700;
-  transition: all 0.15s;
-}
-.slot.used-r  { background: #10102a; border-color: var(--r);  color: var(--r); }
-.slot.used-uc { background: #0f2010; border-color: var(--uc); color: var(--uc); }
-.slot.used-c  { background: #252528; border-color: #555;      color: var(--c); }
-.slot-label { font-size: 11px; color: var(--muted); margin-left: 4px; }
+/* steps */
+.steps{display:flex;flex-direction:column;gap:6px;}
+.step{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--sub);line-height:1.6;background:var(--s1);border:1px solid var(--b2);border-radius:5px;padding:8px 12px;}
+.snum{min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;}
+.eps .snum{background:#1e3a60;color:var(--scrl);}
+.epo .snum{background:#4a3210;color:var(--orb);}
+.step strong{color:var(--text);}
 
-.warn-box {
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: #1e0808;
-  border: 1px solid #5a1a1a;
-  border-radius: var(--radius-sm);
-  font-size: 12px; color: var(--warn);
-  display: none;
-}
+/* prob tables */
+.prob2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pb-row{display:grid;grid-template-columns:58px 1fr 42px;align-items:center;gap:8px;margin-bottom:5px;}
+.pb-lbl{font-size:12px;color:var(--sub);text-align:right;}
+.pb-track{height:20px;border-radius:3px;background:var(--s3);overflow:hidden;}
+.pb-fill{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:6px;font-size:11px;font-weight:600;}
+.pb-pct{font-size:12px;font-weight:600;text-align:right;}
+.drop-tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:3px;}
+.dt-lo{background:#0f1e0d;color:#4ade80;}.dt-mid{background:#1c1508;color:#f59e0b;}.dt-hi{background:#200808;color:#f87171;}
 
-/* ── RESULT PANEL ── */
-.result-hero {
-  text-align: center;
-  padding: 24px 20px 20px;
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
-}
-.result-hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(129,140,248,0.06) 0%, transparent 60%);
-  pointer-events: none;
-}
-.rh-label  { font-size: 11px; color: var(--sub); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.rh-val    { font-size: 52px; font-weight: 900; line-height: 1; font-family: 'JetBrains Mono', monospace; }
-.rh-sub    { font-size: 12px; color: var(--sub); margin-top: 6px; }
-.rh-tier   {
-  display: inline-block; margin-top: 10px;
-  font-size: 12px; font-weight: 700;
-  padding: 4px 16px; border-radius: 20px;
-  letter-spacing: 0.5px;
-}
+/* boost */
+.boost-row{display:flex;gap:8px;}
+.boost-card{flex:1;background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:12px;text-align:center;}
+.boost-lv{font-size:26px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.boost-lv span{font-size:11px;color:var(--muted);font-weight:400;}
+.boost-cnt{font-size:13px;font-weight:600;color:var(--text);margin-top:4px;}
+.boost-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
 
-/* stat bar */
-.stat-bar-wrap {
-  padding: 20px;
-  border-bottom: 1px solid var(--border);
-}
-.sb-label { font-size: 11px; color: var(--sub); margin-bottom: 8px; letter-spacing: 0.5px; }
-.stat-bar {
-  height: 28px; border-radius: 5px;
-  display: flex; overflow: hidden;
-  background: var(--surface3);
-}
-.sb-seg {
-  height: 100%; display: flex; align-items: center;
-  justify-content: center; font-size: 11px; font-weight: 700;
-  overflow: hidden; white-space: nowrap;
-  transition: width 0.4s cubic-bezier(0.4,0,0.2,1);
-}
-.sb-triad { background: #2a1a3a; color: var(--tri); }
-.sb-fix   { background: #0d1a2a; color: var(--fix); }
-.sb-r     { background: #0e0e22; color: var(--r); }
-.sb-uc    { background: #0a1a0a; color: var(--uc); }
-.sb-cc    { background: #1e1e20; color: var(--c); }
-.bar-legend {
-  display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
-}
-.bl-item { display: flex; align-items: center; gap: 4px; font-size: 11px; color: var(--sub); }
-.bl-dot  { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+/* rule list */
+.rules{display:flex;flex-direction:column;gap:6px;}
+.rule{background:var(--s1);border:1px solid var(--b2);border-left:3px solid;border-radius:0 5px 5px 0;padding:9px 13px;font-size:12.5px;color:var(--sub);line-height:1.6;}
+.eps .rule{border-left-color:var(--scrl);}
+.epo .rule{border-left-color:var(--orb);}
+.rule strong{color:var(--text);}
+.warnbox{display:flex;gap:8px;background:#1e0f00;border:1px solid #6a3a00;border-radius:var(--rad-s);padding:10px 13px;font-size:12.5px;color:#fdba74;line-height:1.7;margin-top:8px;}
 
-/* pieces */
-.pieces-wrap {
-  padding: 20px;
-  border-bottom: 1px solid var(--border);
-}
-.pieces-grid { display: flex; flex-direction: column; gap: 8px; }
-.piece-row {
-  display: grid;
-  grid-template-columns: 90px 1fr 60px;
-  align-items: center; gap: 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-}
-.piece-name { font-size: 12px; font-weight: 500; }
-.piece-base { font-size: 10px; color: var(--sub); margin-top: 1px; }
-.piece-bar  { height: 18px; display: flex; border-radius: 3px; overflow: hidden; }
-.pb-seg { height: 100%; display: flex; align-items: center; justify-content: center;
-          font-size: 10px; font-weight: 700; overflow: hidden; white-space: nowrap;
-          transition: width 0.4s; }
-.piece-total { font-size: 16px; font-weight: 700; text-align: right; font-family: 'JetBrains Mono', monospace; }
+/* orb skills */
+.orb-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.orb-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:11px 13px;}
+.orb-name{font-size:13px;font-weight:700;margin-bottom:6px;}
+.skill-tags{display:flex;flex-wrap:wrap;gap:4px;}
+.stag{font-size:10.5px;padding:2px 7px;border-radius:3px;background:var(--s2);border:1px solid var(--b2);color:var(--sub);}
 
-/* fullset */
-.fullset-wrap { padding: 20px; }
-.fs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.fs-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 10px; text-align: center;
-}
-.fs-label { font-size: 10px; color: var(--sub); margin-bottom: 4px; line-height: 1.4; }
-.fs-val   { font-size: 20px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
-.fs-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; }
+/* mini cards */
+.mini2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mini-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:12px 14px;}
+.mini-title{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;color:var(--orb);}
+.mini-body{font-size:12px;color:var(--sub);line-height:1.7;}
+.mini-body strong{color:var(--text);}
 
-/* all cases */
-.cases-wrap { padding: 0 20px 20px; }
-.cases-toggle {
-  width: 100%; padding: 10px 14px;
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: var(--radius-sm); color: var(--sub);
-  font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; text-align: left; display: flex;
-  justify-content: space-between; align-items: center;
-  transition: border-color 0.15s;
-}
-.cases-toggle:hover { border-color: var(--border2); color: var(--text); }
-.cases-table-wrap {
-  margin-top: 8px; max-height: 320px; overflow-y: auto;
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  display: none;
-}
-.cases-table-wrap.open { display: block; }
-.ct { width: 100%; border-collapse: collapse; font-size: 12px; }
-.ct thead th {
-  position: sticky; top: 0;
-  text-align: left; padding: 7px 10px;
-  font-size: 10px; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--muted);
-  background: var(--surface3);
-  border-bottom: 1px solid var(--border2);
-}
-.ct td { padding: 6px 10px; border-bottom: 1px solid var(--border); color: var(--sub); }
-.ct tr:last-child td { border-bottom: none; }
-.ct tr.cur td { background: #14141e; }
-.ct tr:hover td { background: var(--surface2); cursor: pointer; }
-.ct td:first-child { color: var(--muted); font-size: 11px; }
+/* ═══════════ SIM PAGE ═══════════ */
+.sim-layout{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+.sim-left{display:flex;flex-direction:column;gap:16px;}
+.sim-right{display:flex;flex-direction:column;gap:16px;position:sticky;top:70px;}
 
-/* scroll thin */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+/* armor inputs */
+.armor-inputs{display:flex;flex-direction:column;gap:10px;}
+.a-row{display:grid;grid-template-columns:1fr 110px;align-items:center;gap:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:11px 14px;transition:border-color .15s;}
+.a-row:focus-within{border-color:var(--b2);}
+.a-label{display:flex;align-items:center;gap:8px;}
+.a-img{width:34px;height:34px;object-fit:contain;flex-shrink:0;image-rendering:pixelated;border-radius:4px;background:var(--s3);border:1px solid var(--b2);padding:2px;}
+.a-name{font-size:13px;font-weight:500;}
+.a-hint{font-size:10px;color:var(--sub);margin-top:1px;}
+.stat-wrap{display:flex;align-items:center;background:var(--s3);border:1px solid var(--b2);border-radius:var(--rad-s);overflow:hidden;}
+.stat-wrap:focus-within{border-color:var(--sl-r);}
+.stat-pfx{padding:0 8px;font-size:13px;font-weight:700;color:var(--tri);font-family:'JetBrains Mono',monospace;border-right:1px solid var(--b2);}
+.stat-inp{width:100%;background:transparent;border:none;outline:none;padding:8px 10px;font-size:14px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;text-align:right;}
 
-/* ── RESPONSIVE ── */
-@media (max-width: 800px) {
-  .page-wrap { grid-template-columns: 1fr; }
+/* preset */
+.preset-lbl{font-size:11px;color:var(--sub);margin-bottom:7px;letter-spacing:.5px;}
+.preset-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.pbtn{font-size:11px;font-weight:500;padding:4px 10px;border-radius:4px;background:var(--s3);border:1px solid var(--b2);color:var(--sub);cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all .15s;}
+.pbtn:hover{border-color:var(--tri);color:var(--tri);}
+
+/* fixed pills */
+.fixed-pills{display:flex;gap:8px;margin-bottom:16px;}
+.fpill{flex:1;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px 12px;display:flex;justify-content:space-between;align-items:center;}
+.fpill-l{font-size:11px;color:var(--sub);line-height:1.6;}
+.fpill-v{font-size:16px;font-weight:700;}
+
+/* piece slider blocks */
+.psl-block{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);overflow:hidden;}
+.psl-hd{display:flex;align-items:center;gap:10px;padding:10px 14px 8px;border-bottom:1px solid var(--b1);}
+.psl-img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated;background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:2px;flex-shrink:0;}
+.psl-name{font-size:13px;font-weight:600;flex:1;}
+.psl-score{font-size:15px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:right;}
+.psl-sub{font-size:10px;color:var(--muted);text-align:right;margin-top:1px;}
+.psl-tier{font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;white-space:nowrap;}
+.psl-body{padding:10px 14px 12px;display:flex;flex-direction:column;gap:7px;}
+.psl-row{display:grid;grid-template-columns:52px 1fr 30px;align-items:center;gap:8px;}
+.psl-lbl{font-size:11px;font-weight:500;}
+.psl-cnt{font-size:11px;font-weight:700;font-family:'JetBrains Mono',monospace;text-align:right;}
+
+/* sliders */
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:var(--b2);border-radius:2px;outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;border:2px solid var(--bg);cursor:pointer;transition:transform .1s;}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
+
+/* result cards */
+.presult-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:12px 14px;}
+.presult-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.presult-img{width:32px;height:32px;object-fit:contain;image-rendering:pixelated;background:var(--s3);border:1px solid var(--b2);border-radius:4px;padding:2px;flex-shrink:0;}
+.presult-name{font-size:13px;font-weight:600;flex:1;}
+.presult-total{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.presult-bar{height:20px;display:flex;border-radius:4px;overflow:hidden;margin-bottom:6px;}
+.presult-meta{display:flex;gap:5px;flex-wrap:wrap;}
+.pmtag{font-size:10.5px;padding:2px 7px;border-radius:3px;}
+.pmt-tri{background:#2a1a3a;color:var(--tri);}
+.pmt-fix{background:#0d1a2a;color:#60a5fa;}
+.pmt-r  {background:#0e0e22;color:var(--sl-r);}
+.pmt-uc {background:#0a1a0a;color:var(--sl-uc);}
+.pmt-c  {background:#1e1e20;color:var(--sl-c);}
+
+/* stat bar segs */
+.sb-triad{background:#2a1a3a;color:var(--tri);}
+.sb-fix  {background:#0d1a2a;color:#60a5fa;}
+.sb-r    {background:#0e0e22;color:var(--sl-r);}
+.sb-uc   {background:#0a1a0a;color:var(--sl-uc);}
+.sb-cc   {background:#1e1e20;color:var(--sl-c);}
+
+/* fs cards */
+.fs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.fs-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:12px;text-align:center;}
+.fs-lbl{font-size:10px;color:var(--sub);margin-bottom:4px;line-height:1.5;}
+.fs-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.fs-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* seg style shared */
+.pb-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;overflow:hidden;white-space:nowrap;transition:width .35s;}
+
+@media(max-width:860px){
+  .sys-row{grid-template-columns:repeat(2,1fr);}
+  .two-col,.ov-row,.mini2,.orb-grid,.prob2{grid-template-columns:1fr;}
+  .sim-layout{grid-template-columns:1fr;}
+  .sim-right{position:static;}
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="site-header">
-  <div class="site-logo">
-    <div class="logo-mark">⚙</div>
+<!-- ═══ TOPNAV ═══ -->
+<nav class="topnav">
+  <div class="nav-logo">
+    <div class="nav-logo-mark">🌙</div>
+    <div class="nav-logo-text">루나월드 <em>가이드</em></div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab t-recipe on"  onclick="go('recipe')">🛠 제작 레시피</button>
+    <button class="nav-tab t-enhance"    onclick="go('enhance')">⚙ 강화 가이드</button>
+    <button class="nav-tab t-sim"        onclick="go('sim')">🎮 강화 시뮬레이터</button>
+  </div>
+  <div class="nav-source">lunawiki.gitbook.io</div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 1 : 제작 레시피
+══════════════════════════════════════════════════════════ -->
+<div class="page on" id="pg-recipe">
+<div class="wrap">
+
+  <div class="ph">
+    <div class="ph-title">🛠 제작 <span class="hl-b">레시피</span></div>
+    <div class="ph-sub">루나월드 커스텀 제작 시스템 · 편백나무 제작대 / 허름한 화로 / 허름한 조리대</div>
+  </div>
+
+  <!-- 시스템 정보 -->
+  <div class="sys-row">
+    <div class="sys-card">
+      <div class="sys-lbl">제작 가능 장소</div>
+      <div class="sys-body"><strong>자신의 마을 월드</strong> 또는<br><strong>본인 점유지(클레임)</strong> 내부</div>
+    </div>
+    <div class="sys-card">
+      <div class="sys-lbl">설치 수량 제한</div>
+      <div class="sys-body">허름한 조리대 <strong>최대 6개</strong><br>편백나무 제작대 <strong>최대 3개</strong><br>허름한 화로 <strong>최대 3개</strong></div>
+    </div>
+    <div class="sys-card">
+      <div class="sys-lbl">내구도 감소 (1회)</div>
+      <div class="sys-body">
+        조리대 <span class="sys-formula">0.7 - (0.003 × 노련함)</span><br>
+        제작대 <span class="sys-formula">0.9 - (0.004 × 노련함)</span><br>
+        화로 <span class="sys-formula">1.0 - (0.004 × 노련함)</span>
+      </div>
+    </div>
+    <div class="sys-card">
+      <div class="sys-lbl">편의 / 주의</div>
+      <div class="sys-body">레시피 아이콘 <strong>좌클릭</strong> → 재료 자동 배치<br>대체 재료 가능 (석탄 → 목탄)<br><span class="warn-pill">⚠ Shift+우클릭 취소 시 재료 소멸</span></div>
+    </div>
+  </div>
+
+  <!-- ── 편백나무 제작대 ── -->
+  <div class="sec-hd"><span class="badge bd-bench">🧰 편백나무 제작대</span><div class="sec-line"></div><span class="sec-limit">최대 3개</span></div>
+  <div class="two-col">
     <div>
-      <div class="logo-text"><span>강화</span> 시뮬레이터</div>
+      <div class="sub-lbl bench">강화 (스크롤 / 보주)</div>
+      <table class="rt">
+        <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><span class="dot dn"></span>일반 별빛 스크롤</td><td><span class="itag">별빛 스크롤 조각(일반) ×8</span><span class="itag">일반 달빛 촉매제 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 별빛 스크롤</td><td><span class="itag">별빛 스크롤 조각(고급) ×8</span><span class="itag">고급 달빛 촉매제 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dr"></span>희귀 별빛 스크롤</td><td><span class="itag">별빛 스크롤 조각(희귀) ×8</span><span class="itag">희귀 달빛 촉매제 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 별의 보주</td><td><span class="itag k">희귀 별의 조각 ×8</span><span class="itag k">희귀 별가루 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-60">60%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 바다의 보주</td><td><span class="itag k">희귀 별의 조각 ×8</span><span class="itag k">희귀 별가루 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-60">60%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 태양의 보주</td><td><span class="itag k">희귀 별의 조각 ×8</span><span class="itag k">희귀 별가루 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-60">60%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 대지의 보주</td><td><span class="itag k">희귀 별의 조각 ×8</span><span class="itag k">희귀 별가루 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-60">60%</span></td></tr>
+        </tbody>
+      </table>
+
+      <div class="sub-lbl bench" style="margin-top:16px;">트라이어드 장비</div>
+      <table class="rt">
+        <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+        <tbody>
+          <tr><td class="nm-flex"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2" alt="">투구</td><td><span class="itag k">네더라이트 투구 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm-flex"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2" alt="">흉갑</td><td><span class="itag k">네더라이트 흉갑 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm-flex"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2" alt="">레깅스</td><td><span class="itag k">네더라이트 레깅스 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm-flex"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2" alt="">부츠</td><td><span class="itag k">네더라이트 부츠 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <div class="sub-lbl bench">가구·설비</div>
+      <table class="rt">
+        <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+        <tbody>
+          <tr><td class="nm">허름한 화로</td><td><span class="itag">심층암 ×15</span><span class="itag">용광로 ×1</span><span class="itag">모닥불 ×1</span><span class="itag">마그마 블록 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm">허름한 조리대</td><td><span class="itag">편백나무 원목 ×10</span><span class="itag">철 창살 ×5</span><span class="itag">가마솥 ×1</span><span class="itag">모닥불 ×1</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm">허수아비</td><td><span class="itag">대나무 블록 ×10</span><span class="itag">가죽 풀세트</span><span class="itag">갑옷 거치대 ×1</span></td><td><span class="chip c-n">60초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm">비닐하우스</td><td><span class="itag">유리 ×16</span><span class="itag">차광 유리 ×1</span></td><td><span class="chip c-n">60초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dn"></span>일반 평범한 화분통</td><td><span class="itag">편백나무 원목 ×2</span><span class="itag">퇴비통 ×1</span><span class="itag">흙 ×3</span></td><td><span class="chip c-n">60초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 깔끔한 화분통</td><td><span class="itag k">평범한 화분통 ×1</span><span class="itag">편백나무 원목 ×5</span><span class="itag">회백토 ×3</span></td><td><span class="chip c-n">60초</span></td><td><span class="chip c-100">100%</span></td></tr>
+        </tbody>
+      </table>
+      <div class="sub-lbl bench" style="margin-top:14px;">농사 — 물뿌리개 / 스프링클러</div>
+      <table class="rt">
+        <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><span class="dot dn"></span>일반 구리 물뿌리개</td><td><span class="itag">물 양동이 ×1</span><span class="itag">구리 블록 ×5</span><span class="itag">철 블록 ×3</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 철 물뿌리개</td><td><span class="itag k">구리 물뿌리개 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-90">90%</span></td></tr>
+          <tr><td class="nm"><span class="dot dr"></span>희귀 금 물뿌리개</td><td><span class="itag k">철 물뿌리개 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-70">70%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 트라이어드 물뿌리개</td><td><span class="itag k">금 물뿌리개 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-30">30%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 철제 스프링클러</td><td><span class="itag">물 양동이 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dr"></span>희귀 금 스프링클러</td><td><span class="itag k">철제 스프링클러 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-80">80%</span></td></tr>
+          <tr><td class="nm"><span class="dot dh"></span>영웅 트라이어드 스프링클러</td><td><span class="itag k">금 스프링클러 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-60">60%</span></td></tr>
+        </tbody>
+      </table>
+      <div class="sub-lbl bench" style="margin-top:14px;">낚시 — 미끼 / 떡밥</div>
+      <table class="rt">
+        <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><span class="dot dn"></span>일반 지렁이 미끼</td><td><span class="itag">일반↑ 말린 농작물 ×10</span><span class="itag">일반↑ 말린 물고기 ×10</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 어분 미끼</td><td><span class="itag">고급↑ 말린 농작물 ×10</span><span class="itag">고급↑ 말린 물고기 ×10</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dr"></span>희귀 루어 미끼</td><td><span class="itag">희귀↑ 말린 농작물 ×20</span><span class="itag">희귀↑ 말린 물고기 ×10</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dn"></span>일반 평범한 떡밥</td><td><span class="itag k">지렁이 미끼 ×1</span><span class="itag">일반↑ 말린 농작물 ×1</span><span class="itag">일반↑ 말린 물고기 ×1</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot da"></span>고급 잘만든 떡밥</td><td><span class="itag k">어분 미끼 ×1</span><span class="itag">고급↑ 말린 농작물 ×1</span><span class="itag">고급↑ 말린 물고기 ×1</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr><td class="nm"><span class="dot dr"></span>희귀 무지개 떡밥</td><td><span class="itag k">루어 미끼 ×1</span><span class="itag">희귀↑ 말린 농작물 ×2</span><span class="itag">희귀↑ 말린 물고기 ×1</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
-  <div class="header-tag">LUNA WORLD · ENHANCE SIM</div>
-</header>
 
-<div class="page-wrap">
+  <!-- ── 허름한 화로 ── -->
+  <div class="sec-hd"><span class="badge bd-brazier">🔥 허름한 화로</span><div class="sec-line"></div><span class="sec-limit">최대 3개</span></div>
+  <table class="rt">
+    <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
+    <tbody>
+      <tr><td class="nm">말린 농작물</td><td><span class="itag">농작물 ×10</span><span class="itag">마그마 블록 ×5</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+      <tr><td class="nm">말린 물고기</td><td><span class="itag">물고기 ×10</span><span class="itag">마그마 블록 ×5</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
+      <tr><td class="nm">미스릴 주괴</td><td><span class="itag k">일반 미스릴 원석 ×3</span><span class="itag">마그마 블록 ×4</span></td><td><span class="chip c-n">15초</span></td><td><span class="chip c-100">100%</span></td></tr>
+      <tr><td class="nm">아르젠타이트 주괴</td><td><span class="itag k">일반 아르젠타이트 원석 ×3</span><span class="itag">마그마 블록 ×4</span></td><td><span class="chip c-n">15초</span></td><td><span class="chip c-100">100%</span></td></tr>
+      <tr><td class="nm">벨리움 주괴</td><td><span class="itag k">일반 벨리움 원석 ×3</span><span class="itag">마그마 블록 ×4</span></td><td><span class="chip c-n">15초</span></td><td><span class="chip c-100">100%</span></td></tr>
+    </tbody>
+  </table>
 
-  <!-- LEFT COLUMN -->
-  <div style="display:flex; flex-direction:column; gap:16px;">
-
-    <!-- 장비 수치 입력 -->
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-badge badge-input">STEP 1</span>
-        <span class="panel-title">트라이어드 장비 수치 입력</span>
-      </div>
-      <div class="panel-body">
-        <div class="armor-inputs">
-
-          <!-- 투구 -->
-          <div class="armor-input-row">
-            <div class="armor-input-label">
-              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
-                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2"
-                alt="트라이어드 투구">
-              <div>
-                <div class="armor-label-text">투구</div>
-                <div class="armor-label-sub">기본 1~3 / 맥스 +4.2</div>
-              </div>
-            </div>
-            <div class="stat-input-wrap">
-              <div class="stat-input-prefix">+</div>
-              <input class="stat-input" id="inp-helmet" type="number" step="0.1" min="0" max="10" value="4.2" oninput="update()">
-            </div>
-          </div>
-
-          <!-- 흉갑 -->
-          <div class="armor-input-row">
-            <div class="armor-input-label">
-              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
-                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2"
-                alt="트라이어드 흉갑">
-              <div>
-                <div class="armor-label-text">흉갑</div>
-                <div class="armor-label-sub">기본 1~5 / 맥스 +6.5</div>
-              </div>
-            </div>
-            <div class="stat-input-wrap">
-              <div class="stat-input-prefix">+</div>
-              <input class="stat-input" id="inp-chest" type="number" step="0.1" min="0" max="15" value="6.5" oninput="update()">
-            </div>
-          </div>
-
-          <!-- 레깅스 -->
-          <div class="armor-input-row">
-            <div class="armor-input-label">
-              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
-                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2"
-                alt="트라이어드 레깅스">
-              <div>
-                <div class="armor-label-text">레깅스</div>
-                <div class="armor-label-sub">기본 1~4 / 맥스 +5.5</div>
-              </div>
-            </div>
-            <div class="stat-input-wrap">
-              <div class="stat-input-prefix">+</div>
-              <input class="stat-input" id="inp-legs" type="number" step="0.1" min="0" max="12" value="5.5" oninput="update()">
-            </div>
-          </div>
-
-          <!-- 부츠 -->
-          <div class="armor-input-row">
-            <div class="armor-input-label">
-              <img class="armor-pixel" width="36" height="36" style="object-fit:contain; border-radius:4px; background:#1a1020; padding:2px; border:1px solid var(--border2);"
-                src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2"
-                alt="트라이어드 부츠">
-              <div>
-                <div class="armor-label-text">부츠</div>
-                <div class="armor-label-sub">기본 1~3 / 맥스 +4.5</div>
-              </div>
-            </div>
-            <div class="stat-input-wrap">
-              <div class="stat-input-prefix">+</div>
-              <input class="stat-input" id="inp-boots" type="number" step="0.1" min="0" max="10" value="4.5" oninput="update()">
-            </div>
-          </div>
-        </div>
-
-        <!-- 프리셋 -->
-        <div class="preset-row">
-          <div class="preset-label">빠른 프리셋</div>
-          <div class="preset-btns">
-            <button class="preset-btn" onclick="setPreset([4.2,6.5,5.5,4.5])">맥스치</button>
-            <button class="preset-btn" onclick="setPreset([3.0,5.0,4.0,3.0])">중간치</button>
-            <button class="preset-btn" onclick="setPreset([1.0,1.0,1.0,1.0])">최솟값</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 스크롤 강화 설정 — 부위별 -->
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-badge badge-sim">STEP 2</span>
-        <span class="panel-title">부위별 6~9강 스크롤 설정</span>
-      </div>
-      <div class="panel-body" style="padding:16px 20px;">
-
-        <!-- 고정 안내 -->
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <div class="fixed-pill" style="flex:1;">
-            <div class="fp-left">0→3강 커먼×3<br><span style="font-size:10px;color:var(--muted);">70%~60%</span></div>
-            <div class="fp-val" style="color:var(--c);">+3</div>
-          </div>
-          <div class="fixed-pill" style="flex:1;">
-            <div class="fp-left">3→6강 언커먼×3<br><span style="font-size:10px;color:var(--muted);">45%~31%</span></div>
-            <div class="fp-val" style="color:var(--uc);">+6</div>
-          </div>
-        </div>
-
-        <!-- 부위별 슬라이더 블록 -->
-        <div id="piece-sliders" style="display:flex;flex-direction:column;gap:12px;"></div>
-
-        <!-- 전체 일괄 적용 -->
-        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
-          <div style="font-size:11px;color:var(--sub);margin-bottom:8px;letter-spacing:0.5px;">전체 부위 일괄 적용</div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="preset-btn" onclick="applyAll(4,0,0)">전부 레어×4</button>
-            <button class="preset-btn" onclick="applyAll(0,4,0)">전부 언커먼×4</button>
-            <button class="preset-btn" onclick="applyAll(1,3,0)">레어1+언커먼3</button>
-            <button class="preset-btn" onclick="applyAll(2,2,0)">레어2+언커먼2</button>
-            <button class="preset-btn" onclick="applyAll(0,0,0)">초기화</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
+  <!-- ── 허름한 조리대 ── -->
+  <div class="sec-hd"><span class="badge bd-counter">🥣 허름한 조리대</span><div class="sec-line"></div><span class="sec-limit">최대 6개 · 30~40초 · 80~90%</span></div>
+  <div class="food-grid">
+    <div class="food-card"><div><div class="food-name">쌈밥</div><div class="food-ing">잡어 ×1 · 상추 ×2 · 옥수수 ×2</div></div><div class="food-meta"><span class="chip c-n">30초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">옥수수 전</div><div class="food-ing">정어리 ×1 · 상추 ×2 · 옥수수 ×2</div></div><div class="food-meta"><span class="chip c-n">30초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">전골</div><div class="food-ing">메기 ×1 · 양배추 ×2 · 무 ×2</div></div><div class="food-meta"><span class="chip c-n">30초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">무조림</div><div class="food-ing">잉어 ×1 · 양배추 ×2 · 무 ×2</div></div><div class="food-meta"><span class="chip c-n">30초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">가스파초</div><div class="food-ing">잡어 ×1 · 무 ×2 · 옥수수 ×2</div></div><div class="food-meta"><span class="chip c-n">30초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">옥수수 착즙 주스</div><div class="food-ing">옥수수 ×1 · 상추 ×1</div></div><div class="food-meta"><span class="chip c-n">15초</span><span class="chip c-90">90%</span></div></div>
+    <div class="food-card"><div><div class="food-name">무 착즙 주스</div><div class="food-ing">무 ×2 · 양배추 ×2</div></div><div class="food-meta"><span class="chip c-n">15초</span><span class="chip c-90">90%</span></div></div>
+    <div class="food-card"><div><div class="food-name">부야베스</div><div class="food-ing">적색통돔 ×1 · 아귀 ×1 · 토마토 ×3 · 석류 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">치오피노</div><div class="food-ing">다랑어 ×1 · 랍스터 ×1 · 토마토 ×3 · 파인애플 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">파에야</div><div class="food-ing">농어 ×1 · 숭어 ×1 · 옥수수 ×3 · 토마토 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">세비체</div><div class="food-ing">블루탱 ×1 · 흰동가리 ×1 · 레몬 ×3 · 딸기 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">페페스</div><div class="food-ing">개복치 ×1 · 줄돔 ×1 · 습지개구리 ×1 · 바나나 ×3 · 토마토 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">해산물 그릴 플래터</div><div class="food-ing">만타가오리 ×1 · 문어 ×1 · 파인애플 ×3 · 오렌지 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">데리야끼</div><div class="food-ing">연어 ×1 · 철갑상어 ×1 · 오렌지 ×3 · 파인애플 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">에스카베체</div><div class="food-ing">강꼬치고기 ×1 · 금붕어 ×1 · 석류 ×3 · 레몬 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
+    <div class="food-card"><div><div class="food-name">양장피</div><div class="food-ing">푸른해파리 ×1 · 뱀장어 ×1 · 양배추 ×3 · 무 ×3</div></div><div class="food-meta"><span class="chip c-n">40초</span><span class="chip c-80">80%</span></div></div>
   </div>
 
-  <!-- RIGHT COLUMN: RESULTS -->
-  <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:72px;">
+</div></div>
 
-    <!-- 부위별 결과 카드 -->
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-badge badge-result">RESULT</span>
-        <span class="panel-title">부위별 최종 수치</span>
-      </div>
-      <div id="result-pieces" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;"></div>
-    </div>
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 2 : 강화 가이드
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-enhance">
+<div class="wrap">
 
-    <!-- 풀셋 합산 -->
-    <div class="panel">
-      <div class="panel-header">
-        <span class="panel-badge badge-result">TOTAL</span>
-        <span class="panel-title">풀셋 합산</span>
-      </div>
-      <div style="padding:16px 20px;">
-        <div class="fullset-wrap" style="padding:0;">
-          <div class="fs-grid">
-            <div class="fs-card">
-              <div class="fs-label">트라이어드<br>합산</div>
-              <div class="fs-val" id="fs-triad" style="color:var(--tri);">—</div>
-              <div class="fs-sub">4부위 합계</div>
-            </div>
-            <div class="fs-card">
-              <div class="fs-label">스크롤<br>합산</div>
-              <div class="fs-val" id="fs-scroll" style="color:var(--r);">—</div>
-              <div class="fs-sub" id="fs-scroll-sub">고정+6~9강 합계</div>
-            </div>
-            <div class="fs-card" style="border-color:var(--border2);">
-              <div class="fs-label">최종<br>총합</div>
-              <div class="fs-val" id="fs-total" style="color:var(--tri);">—</div>
-              <div class="fs-sub">트라이어드+스크롤</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+  <div class="ph">
+    <div class="ph-title">⚙ 강화 <span class="hl-t">시스템</span> 가이드</div>
+    <div class="ph-sub">모든 장비는 강화 진행 시 본인 귀속 · 진행 장소: 스폰 → [대장간] 붉은 모루의 화로</div>
   </div>
-</div>
 
-<style>
-/* 부위별 슬라이더 블록 */
-.piece-sl-block {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-}
-.piece-sl-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px 8px;
-  border-bottom: 1px solid var(--border);
-}
-.piece-sl-img {
-  width: 32px; height: 32px;
-  object-fit: contain; image-rendering: pixelated;
-  background: var(--surface3); border: 1px solid var(--border2);
-  border-radius: 4px; padding: 2px; flex-shrink: 0;
-}
-.piece-sl-name { font-size: 13px; font-weight: 600; flex: 1; }
-.piece-sl-score {
-  font-size: 15px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  text-align: right;
-}
-.piece-sl-sub { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
-.piece-sl-tier {
-  font-size: 10px; font-weight: 700;
-  padding: 2px 7px; border-radius: 3px;
-  white-space: nowrap;
-}
-.piece-sl-body { padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 7px; }
-.piece-sl-row { display: grid; grid-template-columns: 52px 1fr 30px; align-items: center; gap: 8px; }
-.piece-sl-label { font-size: 11px; font-weight: 500; }
-.piece-sl-cnt {
-  font-size: 11px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-  text-align: right;
-}
-/* piece result card */
-.presult-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-}
-.presult-top {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
-}
-.presult-img {
-  width: 32px; height: 32px; object-fit: contain;
-  image-rendering: pixelated; background: var(--surface3);
-  border: 1px solid var(--border2); border-radius: 4px; padding: 2px; flex-shrink: 0;
-}
-.presult-name { font-size: 13px; font-weight: 600; flex: 1; }
-.presult-total {
-  font-size: 20px; font-weight: 700;
-  font-family: 'JetBrains Mono', monospace;
-}
-.presult-bar { height: 20px; display: flex; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
-.presult-meta {
-  display: flex; gap: 6px; flex-wrap: wrap;
-}
-.pmeta-tag {
-  font-size: 10.5px; padding: 2px 7px; border-radius: 3px;
-}
-.pmt-tri { background: #2a1a3a; color: var(--tri); }
-.pmt-fix { background: #0d1a2a; color: #60a5fa; }
-.pmt-r   { background: #0e0e22; color: var(--r); }
-.pmt-uc  { background: #0a1a0a; color: var(--uc); }
-.pmt-c   { background: #1e1e20; color: var(--c); }
-</style>
+  <div class="ov-row">
+    <div class="ov-card ovc-scroll">
+      <div class="ov-icon">📜</div><div class="ov-title">주문서 강화</div>
+      <div class="ov-desc">네더라이트 상위 장비에 <strong>스텟을 부여</strong>합니다. 스텟 레벨은 제한 없이 올릴 수 있습니다.</div>
+      <div class="ov-badge">스텟 강화 · 제한 없음</div>
+    </div>
+    <div class="ov-card ovc-orb">
+      <div class="ov-icon">🔶</div><div class="ov-title">보주 개방</div>
+      <div class="ov-desc">장비에 <strong>스킬 레벨을 획득/성장</strong>시킵니다. 모든 요소 합쳐 최대 <strong>30레벨</strong>까지 달성 가능.</div>
+      <div class="ov-badge">스킬 부여 · 최대 30레벨</div>
+    </div>
+  </div>
 
-<script>
-const PIECES = [
-  { id: 'helmet', name: '투구',   defaultVal: 4.2,
-    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2' },
-  { id: 'chest',  name: '흉갑',   defaultVal: 6.5,
-    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2' },
-  { id: 'legs',   name: '레깅스', defaultVal: 5.5,
-    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2' },
-  { id: 'boots',  name: '부츠',   defaultVal: 4.5,
-    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2' },
-];
-const FIXED = 9;
+  <div class="etabs">
+    <button class="etab es on" onclick="switchEtab('scroll')">📜 주문서 강화</button>
+    <button class="etab" id="etab-orb-btn" onclick="switchEtab('orb')">🔶 보주 강화</button>
+  </div>
 
-// 부위별 슬라이더 상태
-const pieceScrolls = { helmet:{r:0,uc:0,c:0}, chest:{r:0,uc:0,c:0}, legs:{r:0,uc:0,c:0}, boots:{r:0,uc:0,c:0} };
-
-function getTier(scroll69) {
-  const total = FIXED + scroll69;
-  if (scroll69 === 0) return { label: '미강화', bg: '#1a1a1a', color: '#555' };
-  if (total >= 34)    return { label: '종결',        bg: '#12102a', color: '#c084fc' };
-  if (total >= 25)    return { label: '준종결',       bg: '#0f2a10', color: '#4ade80' };
-  if (total >= 17)    return { label: '준종결 하위',  bg: '#1a1608', color: '#f59e0b' };
-  if (total >= 9)     return { label: '진행 중',      bg: '#1a1a1a', color: '#9ca3af' };
-  return              { label: '설정해보세요',         bg: '#12102a', color: '#818cf8' };
-}
-
-function setTrack(el, val) {
-  el.style.setProperty('--pct', (val / 4 * 100).toFixed(1) + '%');
-}
-
-function getTriadVal(id) {
-  return parseFloat(document.getElementById('inp-' + id).value) || 0;
-}
-
-function calcScroll69(sc) {
-  return sc.r * 4 + sc.uc * 2 + sc.c;
-}
-
-// 부위별 슬라이더 DOM 생성
-function buildPieceSliders() {
-  const wrap = document.getElementById('piece-sliders');
-  wrap.innerHTML = '';
-  PIECES.forEach(p => {
-    const sc = pieceScrolls[p.id];
-    const div = document.createElement('div');
-    div.className = 'piece-sl-block';
-    div.id = 'psb-' + p.id;
-    div.innerHTML = `
-      <div class="piece-sl-header">
-        <img class="piece-sl-img" src="${p.img}" alt="${p.name}">
-        <div style="flex:1;">
-          <div class="piece-sl-name">${p.name}</div>
-          <div style="font-size:10px;color:var(--muted);">트라이어드 +${p.defaultVal}</div>
+  <!-- 주문서 탭 -->
+  <div class="etab-panel eps eon" id="etab-scroll">
+    <div class="et-sec">
+      <div class="et-title">핵심 아이템 &amp; 획득처</div>
+      <div class="item-grid">
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FxjA3FyB5slccgyYc7fQC%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520134814.png%3Falt%3Dmedia%26token%3D624cc0db-9a91-4875-9428-0fb89fb4bb08&width=300&dpr=1&quality=100&sign=efdfc738&sv=2" alt=""><div><div class="item-name">별빛 주문서 조각</div><div class="item-tags"><span class="etag">농사</span><span class="etag">낚시</span><span class="etag">요리</span><span class="etag">채광</span><span class="etag">편백나무 벌목</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FdJi31uoFWGiBIQqKFKa4%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520134922.png%3Falt%3Dmedia%26token%3Dfe8aa86c-1dee-4a5a-baee-c30bef923bd5&width=300&dpr=1&quality=100&sign=807b9d21&sv=2" alt=""><div><div class="item-name">별빛 주문서</div><div class="item-tags"><span class="etag">제작</span><span class="etag">접속 보상</span><span class="etag">낚시 보물</span><span class="etag">후원 강화패키지</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fm3sqCUM1iPLHrcO3KpaZ%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520135059.png%3Falt%3Dmedia%26token%3Df5627315-9b5a-4230-8401-0f661e9c680d&width=300&dpr=1&quality=100&sign=8de4d67e&sv=2" alt=""><div><div class="item-name">달빛 촉매제</div><div class="item-tags"><span class="etag">스폰 강화 상점</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FARyAnU2IVTaFzk546rCH%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520135206.png%3Falt%3Dmedia%26token%3Dce065db0-a9a9-463f-9508-d7445412a581&width=300&dpr=1&quality=100&sign=66a6684f&sv=2" alt=""><div><div class="item-name">달빛 기운 농축액</div><div class="item-tags"><span class="etag">스폰 강화 상점</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fpp2YdlvBCGVDLGJvCvGe%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520135307.png%3Falt%3Dmedia%26token%3D02335eb6-b5c5-4e29-a011-bb33081c946c&width=300&dpr=1&quality=100&sign=93a5e677&sv=2" alt=""><div><div class="item-name">달빛 부적</div><div class="item-tags"><span class="etag">후원 상점</span><span class="etag">강화 상점</span><span class="etag">낚시 보물</span><span class="etag">접속 보상</span></div></div></div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">제작 &amp; 교환 순서</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div>별빛 주문서 조각 <strong>×8</strong> + 달빛 촉매제 → <strong>편백나무 제작대</strong>에서 별빛 주문서 제작</div></div>
+        <div class="step"><div class="snum">2</div><div><strong>연금 공방</strong>에서 별빛 주문서를 원하는 <strong>스텟 주문서</strong>로 교환</div></div>
+        <div class="step"><div class="snum">3</div><div>스폰 <strong>붉은 모루의 화로</strong>에서 장비에 스텟 주문서 사용</div></div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">주문서 등급별 효과</div>
+      <div class="warnbox">⚠ 강화 성공 확률은 주문서 등급이 아니라 <strong>현재 강화 레벨</strong>에 따라 결정됩니다.</div>
+      <br>
+      <table class="rt">
+        <thead><tr><th>등급</th><th>사용 레벨</th><th>성공 시</th><th>실패 시 달빛 기운</th></tr></thead>
+        <tbody>
+          <tr><td class="nm"><span style="background:#1e2025;color:#9ca3af;border:1px solid #333;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:3px;">커먼</span></td><td>0~9강</td><td>스텟 <strong>+1</strong></td><td style="color:#f87171;">−5</td></tr>
+          <tr><td class="nm"><span style="background:#0a1e12;color:#4ade80;border:1px solid #1a5432;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:3px;">언커먼</span></td><td>3~9강</td><td>스텟 <strong>+2</strong></td><td style="color:#f87171;">−10</td></tr>
+          <tr><td class="nm"><span style="background:#0a1530;color:#60a5fa;border:1px solid #1a3a60;font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:3px;">레어</span></td><td>6~9강</td><td>스텟 <strong>+4</strong></td><td style="color:#f87171;">−20</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">강화 확률표</div>
+      <div class="prob2">
+        <div>
+          <div style="font-size:11px;color:var(--sub);margin-bottom:7px;">▸ 강화 성공 확률</div>
+          <div class="pb-row"><div class="pb-lbl">0→1강</div><div class="pb-track"><div class="pb-fill" style="width:70%;background:#4ade80;color:#173404;">70%</div></div><div class="pb-pct" style="color:#4ade80;">70%</div></div>
+          <div class="pb-row"><div class="pb-lbl">1→2강</div><div class="pb-track"><div class="pb-fill" style="width:65%;background:#63d68a;color:#173404;">65%</div></div><div class="pb-pct" style="color:#63d68a;">65%</div></div>
+          <div class="pb-row"><div class="pb-lbl">2→3강</div><div class="pb-track"><div class="pb-fill" style="width:60%;background:#86efac;color:#173404;">60%</div></div><div class="pb-pct" style="color:#86efac;">60%</div></div>
+          <div class="pb-row"><div class="pb-lbl">3→4강</div><div class="pb-track"><div class="pb-fill" style="width:45%;background:#facc15;color:#412402;">45%</div></div><div class="pb-pct" style="color:#facc15;">45%</div></div>
+          <div class="pb-row"><div class="pb-lbl">4→5강</div><div class="pb-track"><div class="pb-fill" style="width:38%;background:#fb923c;color:#412402;">38%</div></div><div class="pb-pct" style="color:#fb923c;">38%</div></div>
+          <div class="pb-row"><div class="pb-lbl">5→6강</div><div class="pb-track"><div class="pb-fill" style="width:31%;background:#f97316;color:#412402;">31%</div></div><div class="pb-pct" style="color:#f97316;">31%</div></div>
+          <div class="pb-row"><div class="pb-lbl">6→7강</div><div class="pb-track"><div class="pb-fill" style="width:18%;background:#ef4444;color:#fff;">18%</div></div><div class="pb-pct" style="color:#ef4444;">18%</div></div>
+          <div class="pb-row"><div class="pb-lbl">7→8강</div><div class="pb-track"><div class="pb-fill" style="width:12%;background:#dc2626;color:#fff;"></div></div><div class="pb-pct" style="color:#dc2626;">12%</div></div>
+          <div class="pb-row"><div class="pb-lbl">8→9강</div><div class="pb-track"><div class="pb-fill" style="width:7%;background:#b91c1c;color:#fff;"></div></div><div class="pb-pct" style="color:#b91c1c;">7%</div></div>
+          <div class="pb-row"><div class="pb-lbl">9→10강</div><div class="pb-track"><div class="pb-fill" style="width:4%;background:#991b1b;color:#fff;"></div></div><div class="pb-pct" style="color:#991b1b;">4%</div></div>
         </div>
         <div>
-          <div class="piece-sl-score" id="psc-score-${p.id}">+${(FIXED + p.defaultVal).toFixed(1)}</div>
-          <div class="piece-sl-sub" id="psc-sub-${p.id}">6~9강 +0</div>
+          <div style="font-size:11px;color:var(--sub);margin-bottom:7px;">▸ 실패 시 레벨 하락 확률</div>
+          <table class="rt"><thead><tr><th>현재 레벨</th><th>하락 확률</th></tr></thead>
+          <tbody>
+            <tr><td>3강</td><td><span class="drop-tag dt-lo">10%</span></td></tr>
+            <tr><td>4강</td><td><span class="drop-tag dt-lo">15%</span></td></tr>
+            <tr><td>5강</td><td><span class="drop-tag dt-mid">20%</span></td></tr>
+            <tr><td>6강</td><td><span class="drop-tag dt-mid">25%</span></td></tr>
+            <tr><td>7강</td><td><span class="drop-tag dt-mid">30%</span></td></tr>
+            <tr><td>8강</td><td><span class="drop-tag dt-hi">35%</span></td></tr>
+            <tr><td>9강</td><td><span class="drop-tag dt-hi">40%</span></td></tr>
+          </tbody></table>
+          <div class="rules" style="margin-top:10px;">
+            <div class="rule">레벨 하락 시 <strong>직전 획득 스텟 증가분 차감</strong></div>
+            <div class="rule"><strong>달빛 부적</strong> — 강화창 보조칸에 넣으면 하락 방지 (하락 없으면 소모 안 됨)</div>
+          </div>
         </div>
-        <div class="piece-sl-tier" id="psc-tier-${p.id}" style="background:#1a1a1a;color:#555;">미강화</div>
       </div>
-      <div class="piece-sl-body">
-        <div class="piece-sl-row">
-          <div class="piece-sl-label" style="color:var(--r);">레어 +4</div>
-          <input type="range" id="psl-${p.id}-r" min="0" max="4" value="${sc.r}" step="1"
-            style="--pct:${sc.r/4*100}%"
-            oninput="onPieceSlide('${p.id}','r',this)">
-          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-r" style="color:var(--r);">${sc.r}</div>
-        </div>
-        <div class="piece-sl-row">
-          <div class="piece-sl-label" style="color:var(--uc);">언커먼 +2</div>
-          <input type="range" id="psl-${p.id}-uc" min="0" max="4" value="${sc.uc}" step="1"
-            style="--pct:${sc.uc/4*100}%"
-            oninput="onPieceSlide('${p.id}','uc',this)">
-          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-uc" style="color:var(--uc);">${sc.uc}</div>
-        </div>
-        <div class="piece-sl-row">
-          <div class="piece-sl-label" style="color:var(--c);">커먼 +1</div>
-          <input type="range" id="psl-${p.id}-c" min="0" max="4" value="${sc.c}" step="1"
-            style="--pct:${sc.c/4*100}%"
-            oninput="onPieceSlide('${p.id}','c',this)">
-          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-c" style="color:var(--c);">${sc.c}</div>
-        </div>
-        <div id="psl-warn-${p.id}" style="display:none;font-size:11px;color:#f87171;background:#1e0808;border:1px solid #5a1a1a;padding:5px 8px;border-radius:4px;">
-          총 ${sc.r+sc.uc+sc.c}회 — 4회 초과입니다
-        </div>
-      </div>`;
-    wrap.appendChild(div);
+    </div>
+    <div class="et-sec">
+      <div class="et-title">달빛 기운 규칙 &amp; 복구</div>
+      <div class="rules">
+        <div class="rule">달빛 기운 최댓값은 <strong>100</strong>입니다.</div>
+        <div class="rule">강화 실패 시 주문서 등급에 따라 달빛 기운 감소.</div>
+        <div class="rule"><strong>달빛 기운이 감소할 수치보다 부족하면</strong> 강화 시도 불가.</div>
+      </div>
+      <div style="font-size:11px;color:var(--sub);margin:10px 0 6px;">▸ 복구 방법</div>
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><div>강화창 <strong>우측 슬롯</strong>에 복구할 대상 장비 삽입</div></div>
+        <div class="step"><div class="snum">2</div><div>강화창 <strong>주문서 위치</strong>에 <strong>동일 장비</strong> 또는 <strong>달빛 기운 농축액</strong> 삽입</div></div>
+        <div class="step"><div class="snum">3</div><div>복구 진행</div></div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">보주 개방 기회 연계 (스크롤 강화 → 보주)</div>
+      <div class="boost-row">
+        <div class="boost-card"><div class="boost-lv" style="color:#9ca3af;">8<span>강</span></div><div class="boost-cnt">2회</div><div class="boost-lbl">개방 기회</div></div>
+        <div class="boost-card"><div class="boost-lv" style="color:#60a5fa;">9<span>강</span></div><div class="boost-cnt">3회</div><div class="boost-lbl">개방 기회</div></div>
+        <div class="boost-card"><div class="boost-lv" style="color:#c084fc;">10<span>강</span></div><div class="boost-cnt">5회</div><div class="boost-lbl">개방 기회</div></div>
+      </div>
+    </div>
+  </div>
 
-    // 슬라이더 트랙 컬러 CSS 주입
-    injectSliderStyle(p.id);
+  <!-- 보주 탭 -->
+  <div class="etab-panel epo" id="etab-orb">
+    <div class="et-sec">
+      <div class="et-title">핵심 아이템 &amp; 획득처</div>
+      <div class="item-grid">
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiOaW6qpugTOU7c1zjMe6%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520140044-Photoroom.png%3Falt%3Dmedia%26token%3D251e066e-a0a1-4d56-bce8-8e0cce86ba28&width=300&dpr=1&quality=100&sign=8bd09397&sv=2" alt=""><div><div class="item-name">별의 조각</div><div class="item-tags"><span class="etag">접속 보상</span><span class="etag">퀘스트</span><span class="etag">후원 강화 패키지</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F9ChnSkXhYuWD6nCcxgHb%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520135852.png%3Falt%3Dmedia%26token%3Dc1c0cf7b-ae1b-4619-9e17-074abf26cd73&width=300&dpr=1&quality=100&sign=8dde81a6&sv=2" alt=""><div><div class="item-name">보주</div><div class="item-tags"><span class="etag">제작</span><span class="etag">낚시 보물</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FkL2roI09pGr4GqzHlpLr%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520140140.png%3Falt%3Dmedia%26token%3D8cd5ebd1-78a3-4123-84c0-daec9f6d0b6d&width=300&dpr=1&quality=100&sign=640d9670&sv=2" alt=""><div><div class="item-name">정화의 잎사귀</div><div class="item-tags"><span class="etag">강화 상점</span><span class="etag">편백나무 벌목</span><span class="etag">연금 공방</span><span class="etag">낚시 보물</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3t9HvSB5hsivqtlvwVQR%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520140216.png%3Falt%3Dmedia%26token%3D85a7ac29-19ae-483d-a1d8-15dae3548c70&width=300&dpr=1&quality=100&sign=6f62e68d&sv=2" alt=""><div><div class="item-name">별가루</div><div class="item-tags"><span class="etag">강화 상점</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3mcO4UyXNmRKRhDqcrIT%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520140359.png%3Falt%3Dmedia%26token%3Df407a34e-aa0e-4127-92d2-8e8d0cb7abc0&width=300&dpr=1&quality=100&sign=bbb8ae47&sv=2" alt=""><div><div class="item-name">달인의 각인서</div><div class="item-tags"><span class="etag">후원 상점</span><span class="etag">강화 상점</span><span class="etag">낚시 보물</span><span class="etag">접속 보상</span></div></div></div>
+        <div class="item-card"><img class="item-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FXUZnSfuNpQYn9jTzPoGA%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520140323-Photoroom.png%3Falt%3Dmedia%26token%3D97cecbd1-6d2d-4539-8b62-4cef8e385dc3&width=300&dpr=1&quality=100&sign=9e84b543&sv=2" alt=""><div><div class="item-name">영혼 용해제</div><div class="item-tags"><span class="etag">후원 상점</span><span class="etag">강화 상점</span><span class="etag">낚시 보물</span></div></div></div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">개방 조건 &amp; 성공/실패 규칙</div>
+      <div class="rules">
+        <div class="rule">보주 개방에는 <strong>스크롤 강화로 획득한 "보주 개방 기회"</strong>가 필요합니다.</div>
+        <div class="rule">보주 개방 성공 확률은 <strong>60%</strong>입니다.</div>
+        <div class="rule">성공 시 보주 종류에 따라 <strong>랜덤 스킬 1개를 1레벨 획득</strong>합니다.</div>
+        <div class="rule">실패 시 <strong>보주 개방 기회 1회 차감</strong>됩니다.</div>
+        <div class="rule">보주 제작: <strong>별의 조각 + 별가루</strong> → 편백나무 제작대</div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">보주 종류 &amp; 획득 가능 스킬 (랜덤 1개)</div>
+      <div class="orb-grid">
+        <div class="orb-card"><div class="orb-name" style="color:#f59e0b;">⭐ 별의 보주</div><div class="skill-tags"><span class="stag">개간의서약</span><span class="stag">풍년의 축복</span><span class="stag">비옥한 토양</span><span class="stag">수확의 손길</span><span class="stag">되뿌리기</span></div></div>
+        <div class="orb-card"><div class="orb-name" style="color:#38bdf8;">🌊 바다의 보주</div><div class="skill-tags"><span class="stag">보물 감지</span><span class="stag">소문난 미끼</span><span class="stag">낚싯줄 장력</span><span class="stag">떼낚시</span><span class="stag">쌍걸이</span></div></div>
+        <div class="orb-card"><div class="orb-name" style="color:#fb923c;">☀️ 태양의 보주</div><div class="skill-tags"><span class="stag">단련된 곡괭이</span><span class="stag">광맥 감각</span><span class="stag">광맥 흐름</span><span class="stag">폭발적인 채광</span><span class="stag">광맥 탐지</span></div></div>
+        <div class="orb-card"><div class="orb-name" style="color:#86efac;">🌿 대지의 보주</div><div class="skill-tags"><span class="stag">손질 달인</span><span class="stag">맛의 균형</span><span class="stag">미식가</span><span class="stag">연회 준비</span><span class="stag">즉시 완성</span></div></div>
+      </div>
+    </div>
+    <div class="et-sec">
+      <div class="et-title">추가 기능</div>
+      <div class="mini2">
+        <div class="mini-card"><div class="mini-title">달인의 각인서 — 기회 복구</div><div class="mini-body">차감된 보주 개방 기회를 <strong>30% 확률</strong>로 복구합니다.<br>사용 횟수 제한 없음. 단, <strong>획득한 총 기회 횟수 범위 내</strong>에서만 가능.<br><br><strong>방법:</strong> 강화 UI 보주 슬롯에 각인서 → 장비 삽입 → 복구 시도</div></div>
+        <div class="mini-card"><div class="mini-title">정화의 잎사귀 — 스킬 롤백</div><div class="mini-body">획득한 스킬을 <strong>바로 전 단계로 롤백</strong>합니다.<br>사용 시 <strong>스킬만 삭제</strong> (보주·기회 재지급 없음).<br>단, 해당 기회는 <strong>달인의 각인서로 1회 회복 가능 상태</strong>로 변경.</div></div>
+        <div class="mini-card" style="grid-column:span 2;"><div class="mini-title">영혼 용해제 — 귀속 해제</div><div class="mini-body">스크롤 강화 또는 보주 개방을 1회라도 진행하면 장비가 <strong>본인 귀속</strong>됩니다.<br>영혼 용해제로 귀속 해제 가능, 장비당 <strong>최대 5회</strong>까지 제한. 귀속 해제는 <strong>보주 개방 UI</strong>에서 진행합니다.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 3 : 강화 시뮬레이터
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-sim">
+<div class="wrap">
+
+  <div class="ph">
+    <div class="ph-title">🎮 강화 <span class="hl-g">시뮬레이터</span></div>
+    <div class="ph-sub">트라이어드 장비 수치를 입력하고 부위별 스크롤 조합을 설정해 최종 스탯을 확인하세요.</div>
+  </div>
+
+  <div class="sim-layout">
+    <div class="sim-left">
+
+      <!-- STEP 1 장비 수치 -->
+      <div class="card">
+        <div class="card-hd"><span class="badge bd-step">STEP 1</span><span class="card-title">트라이어드 장비 수치 입력</span></div>
+        <div style="padding:18px 20px;">
+          <div class="armor-inputs">
+            <div class="a-row">
+              <div class="a-label">
+                <img class="a-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2" alt="투구">
+                <div><div class="a-name">투구</div><div class="a-hint">기본 1~3 / 맥스 +4.2</div></div>
+              </div>
+              <div class="stat-wrap"><div class="stat-pfx">+</div><input class="stat-inp" id="inp-helmet" type="number" step="0.1" min="0" max="10" value="4.2" oninput="simUpdate()"></div>
+            </div>
+            <div class="a-row">
+              <div class="a-label">
+                <img class="a-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2" alt="흉갑">
+                <div><div class="a-name">흉갑</div><div class="a-hint">기본 1~5 / 맥스 +6.5</div></div>
+              </div>
+              <div class="stat-wrap"><div class="stat-pfx">+</div><input class="stat-inp" id="inp-chest" type="number" step="0.1" min="0" max="15" value="6.5" oninput="simUpdate()"></div>
+            </div>
+            <div class="a-row">
+              <div class="a-label">
+                <img class="a-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2" alt="레깅스">
+                <div><div class="a-name">레깅스</div><div class="a-hint">기본 1~4 / 맥스 +5.5</div></div>
+              </div>
+              <div class="stat-wrap"><div class="stat-pfx">+</div><input class="stat-inp" id="inp-legs" type="number" step="0.1" min="0" max="12" value="5.5" oninput="simUpdate()"></div>
+            </div>
+            <div class="a-row">
+              <div class="a-label">
+                <img class="a-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2" alt="부츠">
+                <div><div class="a-name">부츠</div><div class="a-hint">기본 1~3 / 맥스 +4.5</div></div>
+              </div>
+              <div class="stat-wrap"><div class="stat-pfx">+</div><input class="stat-inp" id="inp-boots" type="number" step="0.1" min="0" max="10" value="4.5" oninput="simUpdate()"></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;"><div class="preset-lbl">빠른 프리셋</div>
+            <div class="preset-btns">
+              <button class="pbtn" onclick="setPreset([4.2,6.5,5.5,4.5])">맥스치</button>
+              <button class="pbtn" onclick="setPreset([3.0,5.0,4.0,3.0])">중간치</button>
+              <button class="pbtn" onclick="setPreset([1.0,1.0,1.0,1.0])">최솟값</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2 부위별 슬라이더 -->
+      <div class="card">
+        <div class="card-hd"><span class="badge bd-sim">STEP 2</span><span class="card-title">부위별 6~9강 스크롤 설정</span></div>
+        <div style="padding:16px 20px;">
+          <div class="fixed-pills">
+            <div class="fpill"><div class="fpill-l">0→3강 커먼×3<br><span style="font-size:10px;color:var(--muted);">70%~60%</span></div><div class="fpill-v" style="color:var(--sl-c);">+3</div></div>
+            <div class="fpill"><div class="fpill-l">3→6강 언커먼×3<br><span style="font-size:10px;color:var(--muted);">45%~31%</span></div><div class="fpill-v" style="color:var(--sl-uc);">+6</div></div>
+          </div>
+          <div id="piece-sliders" style="display:flex;flex-direction:column;gap:12px;"></div>
+          <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--b1);">
+            <div class="preset-lbl">전체 일괄 적용</div>
+            <div class="preset-btns">
+              <button class="pbtn" onclick="applyAll(4,0,0)">레어×4</button>
+              <button class="pbtn" onclick="applyAll(0,4,0)">언커먼×4</button>
+              <button class="pbtn" onclick="applyAll(2,2,0)">레어2+언커먼2</button>
+              <button class="pbtn" onclick="applyAll(1,3,0)">레어1+언커먼3</button>
+              <button class="pbtn" onclick="applyAll(0,0,0)">초기화</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sim-left -->
+
+    <div class="sim-right">
+      <!-- 부위별 결과 -->
+      <div class="card">
+        <div class="card-hd"><span class="badge bd-res">RESULT</span><span class="card-title">부위별 최종 수치</span></div>
+        <div id="result-pieces" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+      <!-- 풀셋 합산 -->
+      <div class="card">
+        <div class="card-hd"><span class="badge bd-res">TOTAL</span><span class="card-title">풀셋 합산</span></div>
+        <div style="padding:16px 20px;">
+          <div class="fs-grid">
+            <div class="fs-card"><div class="fs-lbl">트라이어드<br>합산</div><div class="fs-val" id="fs-triad" style="color:var(--tri);">—</div><div class="fs-sub">4부위</div></div>
+            <div class="fs-card"><div class="fs-lbl">스크롤<br>합산</div><div class="fs-val" id="fs-scroll" style="color:var(--sl-r);">—</div><div class="fs-sub" id="fs-sub2">고정+6~9강</div></div>
+            <div class="fs-card" style="border-color:var(--b2);"><div class="fs-lbl">최종<br>총합</div><div class="fs-val" id="fs-total" style="color:var(--tri);">—</div><div class="fs-sub">트라이어드+스크롤</div></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /sim-right -->
+  </div>
+
+</div></div>
+
+<!-- ═══════════ SCRIPTS ═══════════ -->
+<script>
+/* ── 페이지 전환 ── */
+function go(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('pg-' + tab).classList.add('on');
+  document.querySelector('.nav-tab.t-' + tab).classList.add('on');
+  if (tab === 'sim') { buildPieceSliders(); simUpdate(); }
+}
+
+/* ── 강화 가이드 탭 ── */
+function switchEtab(t) {
+  document.querySelectorAll('.etab-panel').forEach(p => p.classList.remove('eon'));
+  document.querySelectorAll('.etab').forEach(b => b.classList.remove('es','eo','on'));
+  document.getElementById('etab-' + t).classList.add('eon');
+  if (t === 'scroll') { document.querySelectorAll('.etab')[0].classList.add('es'); }
+  else                { document.querySelectorAll('.etab')[1].classList.add('eo'); }
+}
+
+/* ── 시뮬레이터 ── */
+const PIECES = [
+  { id:'helmet', name:'투구',   def:4.2, img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2' },
+  { id:'chest',  name:'흉갑',   def:6.5, img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2' },
+  { id:'legs',   name:'레깅스', def:5.5, img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2' },
+  { id:'boots',  name:'부츠',   def:4.5, img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2' },
+];
+const FIXED = 9;
+const SC = { helmet:{r:0,uc:0,c:0}, chest:{r:0,uc:0,c:0}, legs:{r:0,uc:0,c:0}, boots:{r:0,uc:0,c:0} };
+
+function getTier(s69) {
+  const t = FIXED + s69;
+  if (s69===0)  return {label:'미강화',    bg:'#1a1a1a',color:'#555'};
+  if (t>=34)    return {label:'종결',       bg:'#12102a',color:'#c084fc'};
+  if (t>=25)    return {label:'준종결',     bg:'#0f2a10',color:'#4ade80'};
+  if (t>=17)    return {label:'준종결 하위',bg:'#1a1608',color:'#f59e0b'};
+  if (t>=9)     return {label:'진행 중',    bg:'#1a1a1a',color:'#9ca3af'};
+  return              {label:'설정해보세요',bg:'#12102a',color:'#818cf8'};
+}
+
+function trk(el, v) { el.style.setProperty('--pct', (v/4*100).toFixed(1)+'%'); }
+function getVal(id) { return parseFloat(document.getElementById('inp-'+id).value)||0; }
+function calc69(sc) { return sc.r*4+sc.uc*2+sc.c; }
+
+function buildPieceSliders() {
+  const wrap = document.getElementById('piece-sliders');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  PIECES.forEach(p => {
+    const sc = SC[p.id];
+    const d = document.createElement('div');
+    d.className = 'psl-block'; d.id = 'psb-'+p.id;
+    d.innerHTML = `
+      <div class="psl-hd">
+        <img class="psl-img" src="${p.img}" alt="${p.name}">
+        <div style="flex:1;"><div class="psl-name">${p.name}</div><div style="font-size:10px;color:var(--muted);">트라이어드 +${p.def}</div></div>
+        <div><div class="psl-score" id="pss-${p.id}" style="color:#555;">+${(FIXED+p.def).toFixed(1)}</div><div class="psl-sub" id="pssb-${p.id}">6~9강 +0</div></div>
+        <div class="psl-tier" id="pst-${p.id}" style="background:#1a1a1a;color:#555;">미강화</div>
+      </div>
+      <div class="psl-body">
+        <div class="psl-row"><div class="psl-lbl" style="color:var(--sl-r);">레어 +4</div><input type="range" id="psl-${p.id}-r" min="0" max="4" value="${sc.r}" step="1" oninput="onSlide('${p.id}','r',this)"><div class="psl-cnt" id="psc-${p.id}-r" style="color:var(--sl-r);">${sc.r}</div></div>
+        <div class="psl-row"><div class="psl-lbl" style="color:var(--sl-uc);">언커먼 +2</div><input type="range" id="psl-${p.id}-uc" min="0" max="4" value="${sc.uc}" step="1" oninput="onSlide('${p.id}','uc',this)"><div class="psl-cnt" id="psc-${p.id}-uc" style="color:var(--sl-uc);">${sc.uc}</div></div>
+        <div class="psl-row"><div class="psl-lbl" style="color:var(--sl-c);">커먼 +1</div><input type="range" id="psl-${p.id}-c" min="0" max="4" value="${sc.c}" step="1" oninput="onSlide('${p.id}','c',this)"><div class="psl-cnt" id="psc-${p.id}-c" style="color:var(--sl-c);">${sc.c}</div></div>
+        <div id="psw-${p.id}" style="display:none;font-size:11px;color:#f87171;background:#1e0808;border:1px solid #5a1a1a;padding:5px 8px;border-radius:4px;"></div>
+      </div>`;
+    wrap.appendChild(d);
+    injectStyle(p.id);
+    trk(document.getElementById(`psl-${p.id}-r`),sc.r);
+    trk(document.getElementById(`psl-${p.id}-uc`),sc.uc);
+    trk(document.getElementById(`psl-${p.id}-c`),sc.c);
   });
 }
 
-function injectSliderStyle(pid) {
-  const id = 'psl-style-' + pid;
-  if (document.getElementById(id)) return;
-  const s = document.createElement('style');
-  s.id = id;
-  s.textContent = `
-    #psl-${pid}-r::-webkit-slider-thumb{background:var(--r);}
-    #psl-${pid}-r::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--r) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
-    #psl-${pid}-uc::-webkit-slider-thumb{background:var(--uc);}
-    #psl-${pid}-uc::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--uc) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
-    #psl-${pid}-c::-webkit-slider-thumb{background:var(--c);}
-    #psl-${pid}-c::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--c) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
-  `;
+function injectStyle(pid) {
+  if (document.getElementById('sty-'+pid)) return;
+  const s = document.createElement('style'); s.id='sty-'+pid;
+  s.textContent=`#psl-${pid}-r::-webkit-slider-thumb{background:var(--sl-r);}#psl-${pid}-r::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--sl-r) var(--pct,0%),var(--b2) var(--pct,0%));border-radius:2px;}#psl-${pid}-uc::-webkit-slider-thumb{background:var(--sl-uc);}#psl-${pid}-uc::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--sl-uc) var(--pct,0%),var(--b2) var(--pct,0%));border-radius:2px;}#psl-${pid}-c::-webkit-slider-thumb{background:var(--sl-c);}#psl-${pid}-c::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--sl-c) var(--pct,0%),var(--b2) var(--pct,0%));border-radius:2px;}`;
   document.head.appendChild(s);
 }
 
-function onPieceSlide(pid, type, el) {
-  pieceScrolls[pid][type] = parseInt(el.value);
-  setTrack(el, parseInt(el.value));
-  updatePieceHeader(pid);
-  updateResults();
+function onSlide(pid, type, el) {
+  SC[pid][type] = parseInt(el.value);
+  trk(el, parseInt(el.value));
+  updatePieceHd(pid);
+  simUpdate();
 }
 
-function updatePieceHeader(pid) {
-  const sc = pieceScrolls[pid];
-  const total = sc.r + sc.uc + sc.c;
-  const s69 = calcScroll69(sc);
+function updatePieceHd(pid) {
+  const sc = SC[pid];
+  const tot = sc.r+sc.uc+sc.c;
+  const s69 = calc69(sc);
   const tier = getTier(s69);
-  const triVal = getTriadVal(pid);
-
-  // 카운터
-  ['r','uc','c'].forEach(t => {
-    document.getElementById(`psl-cnt-${pid}-${t}`).textContent = sc[t];
-    const el = document.getElementById(`psl-${pid}-${t}`);
-    setTrack(el, sc[t]);
-  });
-
-  // 경고
-  const warnEl = document.getElementById(`psl-warn-${pid}`);
-  if (total > 4) {
-    warnEl.style.display = 'block';
-    warnEl.textContent = `총 ${total}회 — 4회를 초과했어요`;
-  } else {
-    warnEl.style.display = 'none';
-  }
-
-  // 헤더 수치
-  const finalTotal = triVal + FIXED + (total <= 4 ? s69 : 0);
-  document.getElementById(`psc-score-${pid}`).textContent = '+' + finalTotal.toFixed(1);
-  document.getElementById(`psc-score-${pid}`).style.color = total > 4 ? '#f87171' : tier.color;
-  document.getElementById(`psc-sub-${pid}`).textContent = total > 4 ? '초과!' : `6~9강 +${s69}`;
-  const tierEl = document.getElementById(`psc-tier-${pid}`);
-  tierEl.textContent = total > 4 ? '오류' : tier.label;
-  tierEl.style.background = total > 4 ? '#1e0808' : tier.bg;
-  tierEl.style.color = total > 4 ? '#f87171' : tier.color;
+  const tv = getVal(pid);
+  ['r','uc','c'].forEach(t => { document.getElementById(`psc-${pid}-${t}`).textContent=sc[t]; });
+  const wEl = document.getElementById(`psw-${pid}`);
+  wEl.style.display = tot>4?'block':'none';
+  if(tot>4) wEl.textContent=`총 ${tot}회 — 4회를 초과했어요`;
+  const fin = tv+FIXED+(tot<=4?s69:0);
+  document.getElementById(`pss-${pid}`).textContent='+'+fin.toFixed(1);
+  document.getElementById(`pss-${pid}`).style.color=tot>4?'#f87171':tier.color;
+  document.getElementById(`pssb-${pid}`).textContent=tot>4?'초과!':`6~9강 +${s69}`;
+  const te = document.getElementById(`pst-${pid}`);
+  te.textContent=tot>4?'오류':tier.label;
+  te.style.background=tot>4?'#1e0808':tier.bg;
+  te.style.color=tot>4?'#f87171':tier.color;
 }
 
-function updateResults() {
-  const resultWrap = document.getElementById('result-pieces');
-  let html = '';
-  let triadSum = 0, scrollSum = 0, hasError = false;
-
+function simUpdate() {
+  const rw = document.getElementById('result-pieces');
+  if (!rw) return;
+  let triadSum=0, scrollSum=0, err=false;
+  let html='';
   PIECES.forEach(p => {
-    const sc = pieceScrolls[p.id];
-    const total = sc.r + sc.uc + sc.c;
-    const s69 = total <= 4 ? calcScroll69(sc) : 0;
-    const triVal = getTriadVal(p.id);
-    const scrollPer = FIXED + s69;
-    const finalTot = triVal + scrollPer;
+    const sc = SC[p.id];
+    const tot = sc.r+sc.uc+sc.c;
+    const s69 = tot<=4?calc69(sc):0;
+    const tv = getVal(p.id);
+    const sp = FIXED+s69;
+    const fin = tv+sp;
     const tier = getTier(s69);
-
-    triadSum += triVal;
-    scrollSum += scrollPer;
-    if (total > 4) hasError = true;
-
-    // 바 비율
-    const ref = finalTot || 1;
-    const tW  = Math.round(triVal / ref * 100);
-    const fxW = Math.round(FIXED  / ref * 100);
-    const rW  = Math.round(sc.r * 4 / ref * 100);
-    const uW  = Math.round(sc.uc * 2 / ref * 100);
-    const cW  = Math.round(sc.c / ref * 100);
-
-    html += `
-      <div class="presult-card">
-        <div class="presult-top">
-          <img class="presult-img" src="${p.img}" alt="${p.name}">
-          <div style="flex:1;">
-            <div class="presult-name">${p.name}</div>
-            <div style="font-size:10px;color:var(--muted);">트라이어드 +${triVal.toFixed(1)} · 스크롤 +${scrollPer}</div>
-          </div>
-          <div>
-            <div class="presult-total" style="color:${tier.color};">+${finalTot.toFixed(1)}</div>
-            <div style="text-align:right;margin-top:3px;">
-              <span class="piece-sl-tier" style="background:${tier.bg};color:${tier.color};">${tier.label}</span>
-            </div>
-          </div>
-        </div>
-        <div class="presult-bar">
-          <div class="pb-seg sb-triad" style="width:${tW}%;">${tW>14?'+'+triVal.toFixed(1):''}</div>
-          <div class="pb-seg sb-fix"   style="width:${fxW}%;">${fxW>10?'+'+FIXED:''}</div>
-          <div class="pb-seg sb-r"     style="width:${rW}%;">${rW>8?'+'+sc.r*4:''}</div>
-          <div class="pb-seg sb-uc"    style="width:${uW}%;">${uW>8?'+'+sc.uc*2:''}</div>
-          <div class="pb-seg sb-cc"    style="width:${cW}%;">${cW>6?'+'+sc.c:''}</div>
-        </div>
-        <div class="presult-meta">
-          <span class="pmeta-tag pmt-tri">트라이어드 +${triVal.toFixed(1)}</span>
-          <span class="pmeta-tag pmt-fix">고정 +${FIXED}</span>
-          ${sc.r  > 0 ? `<span class="pmeta-tag pmt-r">레어×${sc.r} +${sc.r*4}</span>` : ''}
-          ${sc.uc > 0 ? `<span class="pmeta-tag pmt-uc">언커먼×${sc.uc} +${sc.uc*2}</span>` : ''}
-          ${sc.c  > 0 ? `<span class="pmeta-tag pmt-c">커먼×${sc.c} +${sc.c}</span>` : ''}
-        </div>
-      </div>`;
+    triadSum+=tv; scrollSum+=sp;
+    if(tot>4) err=true;
+    const ref=fin||1;
+    const tW=Math.round(tv/ref*100), fW=Math.round(FIXED/ref*100);
+    const rW=Math.round(sc.r*4/ref*100), uW=Math.round(sc.uc*2/ref*100), cW=Math.round(sc.c/ref*100);
+    html+=`<div class="presult-card">
+      <div class="presult-top">
+        <img class="presult-img" src="${p.img}" alt="${p.name}">
+        <div style="flex:1;"><div class="presult-name">${p.name}</div><div style="font-size:10px;color:var(--muted);">트라이어드 +${tv.toFixed(1)} · 스크롤 +${sp}</div></div>
+        <div><div class="presult-total" style="color:${tier.color};">+${fin.toFixed(1)}</div><div style="text-align:right;margin-top:3px;"><span class="psl-tier" style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;background:${tier.bg};color:${tier.color};">${tier.label}</span></div></div>
+      </div>
+      <div class="presult-bar">
+        <div class="pb-seg sb-triad" style="width:${tW}%;">${tW>14?'+'+tv.toFixed(1):''}</div>
+        <div class="pb-seg sb-fix"   style="width:${fW}%;">${fW>10?'+'+FIXED:''}</div>
+        <div class="pb-seg sb-r"     style="width:${rW}%;">${rW>8?'+'+sc.r*4:''}</div>
+        <div class="pb-seg sb-uc"    style="width:${uW}%;">${uW>8?'+'+sc.uc*2:''}</div>
+        <div class="pb-seg sb-cc"    style="width:${cW}%;">${cW>6?'+'+sc.c:''}</div>
+      </div>
+      <div class="presult-meta">
+        <span class="pmtag pmt-tri">트라이어드 +${tv.toFixed(1)}</span>
+        <span class="pmtag pmt-fix">고정 +${FIXED}</span>
+        ${sc.r>0?`<span class="pmtag pmt-r">레어×${sc.r} +${sc.r*4}</span>`:''}
+        ${sc.uc>0?`<span class="pmtag pmt-uc">언커먼×${sc.uc} +${sc.uc*2}</span>`:''}
+        ${sc.c>0?`<span class="pmtag pmt-c">커먼×${sc.c} +${sc.c}</span>`:''}
+      </div>
+    </div>`;
   });
-  resultWrap.innerHTML = html;
-
-  // 풀셋 합산
-  const grandTotal = triadSum + scrollSum;
-  document.getElementById('fs-triad').textContent = '+' + triadSum.toFixed(1);
-  document.getElementById('fs-scroll').textContent = '+' + scrollSum.toFixed(1);
-  document.getElementById('fs-scroll-sub').textContent = '4부위 스크롤 합계';
-  document.getElementById('fs-total').textContent = '+' + grandTotal.toFixed(1);
-  const avgScroll = scrollSum / 4;
-  const avgTier = getTier(avgScroll - FIXED);
-  document.getElementById('fs-total').style.color = hasError ? '#f87171' : avgTier.color;
-  document.getElementById('fs-scroll').style.color = hasError ? '#f87171' : avgTier.color;
+  rw.innerHTML=html;
+  const grand=triadSum+scrollSum;
+  const avgT=getTier((scrollSum/4)-FIXED);
+  document.getElementById('fs-triad').textContent='+'+triadSum.toFixed(1);
+  document.getElementById('fs-scroll').textContent='+'+scrollSum.toFixed(1);
+  document.getElementById('fs-scroll').style.color=err?'#f87171':avgT.color;
+  document.getElementById('fs-total').textContent='+'+grand.toFixed(1);
+  document.getElementById('fs-total').style.color=err?'#f87171':avgT.color;
 }
 
 function setPreset(vals) {
-  ['helmet','chest','legs','boots'].forEach((id, i) => {
-    document.getElementById('inp-' + id).value = vals[i];
-  });
-  updateResults();
+  ['helmet','chest','legs','boots'].forEach((id,i)=>{ document.getElementById('inp-'+id).value=vals[i]; });
+  PIECES.forEach(p=>updatePieceHd(p.id));
+  simUpdate();
 }
 
-function applyAll(r, uc, c) {
-  PIECES.forEach(p => {
-    pieceScrolls[p.id] = { r, uc, c };
-  });
+function applyAll(r,uc,c) {
+  PIECES.forEach(p=>{ SC[p.id]={r,uc,c}; });
   buildPieceSliders();
-  updateResults();
+  simUpdate();
 }
 
-// 장비 수치 변경 시 결과 갱신
-document.querySelectorAll('.stat-input').forEach(el => {
-  el.addEventListener('input', () => {
-    PIECES.forEach(p => updatePieceHeader(p.id));
-    updateResults();
-  });
-});
-
-// 초기화
+// 초기 실행
 buildPieceSliders();
-updateResults();
+simUpdate();
 </script>
 </body>
 </html>

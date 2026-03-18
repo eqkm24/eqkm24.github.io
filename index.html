@@ -511,81 +511,39 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       </div>
     </div>
 
-    <!-- 스크롤 강화 설정 -->
+    <!-- 스크롤 강화 설정 — 부위별 -->
     <div class="panel">
       <div class="panel-header">
         <span class="panel-badge badge-sim">STEP 2</span>
-        <span class="panel-title">6~9강 스크롤 조합 설정</span>
+        <span class="panel-title">부위별 6~9강 스크롤 설정</span>
       </div>
-      <div class="panel-body">
+      <div class="panel-body" style="padding:16px 20px;">
 
-        <!-- 고정 구간 -->
-        <div style="margin-bottom:16px;">
-          <div style="font-size:11px; color:var(--sub); margin-bottom:8px; letter-spacing:0.5px;">0~6강 고정 스탯 (커먼×3 + 언커먼×3)</div>
-          <div class="fixed-pills">
-            <div class="fixed-pill">
-              <div class="fp-left">0→3강 커먼×3<br><span style="font-size:10px; color:var(--muted);">70%~60%</span></div>
-              <div class="fp-val" style="color:var(--c);">+3</div>
-            </div>
-            <div class="fixed-pill">
-              <div class="fp-left">3→6강 언커먼×3<br><span style="font-size:10px; color:var(--muted);">45%~31%</span></div>
-              <div class="fp-val" style="color:var(--uc);">+6</div>
-            </div>
+        <!-- 고정 안내 -->
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <div class="fixed-pill" style="flex:1;">
+            <div class="fp-left">0→3강 커먼×3<br><span style="font-size:10px;color:var(--muted);">70%~60%</span></div>
+            <div class="fp-val" style="color:var(--c);">+3</div>
+          </div>
+          <div class="fixed-pill" style="flex:1;">
+            <div class="fp-left">3→6강 언커먼×3<br><span style="font-size:10px;color:var(--muted);">45%~31%</span></div>
+            <div class="fp-val" style="color:var(--uc);">+6</div>
           </div>
         </div>
 
-        <div style="font-size:11px; color:var(--sub); margin-bottom:12px; letter-spacing:0.5px;">6~9강 구간 · 총 4회 슬롯</div>
+        <!-- 부위별 슬라이더 블록 -->
+        <div id="piece-sliders" style="display:flex;flex-direction:column;gap:12px;"></div>
 
-        <!-- 슬롯 표시 -->
-        <div class="total-slots" id="slot-row">
-          <div class="slot" id="slot0"></div>
-          <div class="slot" id="slot1"></div>
-          <div class="slot" id="slot2"></div>
-          <div class="slot" id="slot3"></div>
-          <div class="slot-label" id="slot-remain">0 / 4 사용</div>
-        </div>
-
-        <div style="height:14px;"></div>
-
-        <!-- 레어 -->
-        <div class="scroll-sliders">
-          <div class="sl-block">
-            <div class="sl-head">
-              <div>
-                <span class="sl-name" style="color:var(--r);">레어</span>
-                <span class="sl-gain">+4 / 회</span>
-                <span class="sl-range">· 6~9강</span>
-              </div>
-              <div class="sl-count slc-r" id="cnt-r">0</div>
-            </div>
-            <input type="range" id="sl-r" min="0" max="4" value="0" step="1" oninput="update()">
+        <!-- 전체 일괄 적용 -->
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;color:var(--sub);margin-bottom:8px;letter-spacing:0.5px;">전체 부위 일괄 적용</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="preset-btn" onclick="applyAll(4,0,0)">전부 레어×4</button>
+            <button class="preset-btn" onclick="applyAll(0,4,0)">전부 언커먼×4</button>
+            <button class="preset-btn" onclick="applyAll(1,3,0)">레어1+언커먼3</button>
+            <button class="preset-btn" onclick="applyAll(2,2,0)">레어2+언커먼2</button>
+            <button class="preset-btn" onclick="applyAll(0,0,0)">초기화</button>
           </div>
-          <div class="sl-block">
-            <div class="sl-head">
-              <div>
-                <span class="sl-name" style="color:var(--uc);">언커먼</span>
-                <span class="sl-gain">+2 / 회</span>
-                <span class="sl-range">· 3~9강</span>
-              </div>
-              <div class="sl-count slc-uc" id="cnt-uc">0</div>
-            </div>
-            <input type="range" id="sl-uc" min="0" max="4" value="0" step="1" oninput="update()">
-          </div>
-          <div class="sl-block">
-            <div class="sl-head">
-              <div>
-                <span class="sl-name" style="color:var(--c);">커먼</span>
-                <span class="sl-gain">+1 / 회</span>
-                <span class="sl-range">· 1~9강</span>
-              </div>
-              <div class="sl-count slc-c" id="cnt-c">0</div>
-            </div>
-            <input type="range" id="sl-c" min="0" max="4" value="0" step="1" oninput="update()">
-          </div>
-        </div>
-
-        <div class="warn-box" id="warn-box">
-          총 선택 횟수가 4회를 초과했어요. 슬라이더를 조정해주세요.
         </div>
 
       </div>
@@ -594,324 +552,371 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   </div>
 
   <!-- RIGHT COLUMN: RESULTS -->
-  <div class="panel" style="position:sticky; top:72px;">
+  <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:72px;">
 
-    <!-- HERO -->
-    <div class="result-hero">
-      <div class="rh-label">부위 1개 · 스크롤 누적 스탯</div>
-      <div class="rh-val" id="rh-val" style="color:var(--r);">+9</div>
-      <div class="rh-sub" id="rh-sub">고정 +9 · 6~9강 +0</div>
-      <div class="rh-tier" id="rh-tier" style="background:#12102a; color:var(--r);">슬라이더를 설정해보세요</div>
-    </div>
-
-    <!-- 스탯 바 -->
-    <div class="stat-bar-wrap">
-      <div class="sb-label">스탯 구성 비율</div>
-      <div class="stat-bar" id="stat-bar">
-        <div class="sb-seg sb-triad" id="sb-triad" style="width:30%;">트라이어드</div>
-        <div class="sb-seg sb-fix"   id="sb-fix"   style="width:25%;">고정</div>
-        <div class="sb-seg sb-r"     id="sb-r"     style="width:0%;"></div>
-        <div class="sb-seg sb-uc"    id="sb-uc"    style="width:0%;"></div>
-        <div class="sb-seg sb-cc"    id="sb-cc"    style="width:0%;"></div>
-        <div class="sb-seg"          id="sb-empty" style="width:45%; background:var(--surface3); color:var(--muted);">←설정 대기</div>
+    <!-- 부위별 결과 카드 -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-badge badge-result">RESULT</span>
+        <span class="panel-title">부위별 최종 수치</span>
       </div>
-      <div class="bar-legend">
-        <div class="bl-item"><div class="bl-dot" style="background:#2a1a3a;"></div>트라이어드</div>
-        <div class="bl-item"><div class="bl-dot" style="background:#0d1a2a;"></div>고정(0~6강)</div>
-        <div class="bl-item"><div class="bl-dot" style="background:#0e0e22;"></div>레어</div>
-        <div class="bl-item"><div class="bl-dot" style="background:#0a1a0a;"></div>언커먼</div>
-        <div class="bl-item"><div class="bl-dot" style="background:#1e1e20;"></div>커먼</div>
-      </div>
-    </div>
-
-    <!-- 부위별 수치 -->
-    <div class="pieces-wrap">
-      <div style="font-size:11px; color:var(--sub); margin-bottom:10px; letter-spacing:0.5px;">부위별 최종 수치</div>
-      <div class="pieces-grid" id="pieces-grid"></div>
+      <div id="result-pieces" style="padding:16px 20px;display:flex;flex-direction:column;gap:10px;"></div>
     </div>
 
     <!-- 풀셋 합산 -->
-    <div class="fullset-wrap">
-      <div style="font-size:11px; color:var(--sub); margin-bottom:10px; letter-spacing:0.5px;">풀셋 합산</div>
-      <div class="fs-grid">
-        <div class="fs-card">
-          <div class="fs-label">트라이어드<br>풀셋</div>
-          <div class="fs-val" id="fs-triad" style="color:var(--tri);">—</div>
-          <div class="fs-sub">맥스치 기준</div>
-        </div>
-        <div class="fs-card">
-          <div class="fs-label">스크롤<br>풀셋</div>
-          <div class="fs-val" id="fs-scroll" style="color:var(--r);">—</div>
-          <div class="fs-sub" id="fs-scroll-sub">× 4 부위</div>
-        </div>
-        <div class="fs-card" style="border-color:var(--border2);">
-          <div class="fs-label">최종<br>총합</div>
-          <div class="fs-val" id="fs-total" style="color:var(--tri);">—</div>
-          <div class="fs-sub">트라이어드 + 스크롤</div>
-        </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-badge badge-result">TOTAL</span>
+        <span class="panel-title">풀셋 합산</span>
       </div>
-    </div>
-
-    <!-- 전체 경우의 수 -->
-    <div class="cases-wrap">
-      <button class="cases-toggle" id="cases-toggle-btn" onclick="toggleCases()">
-        <span>6~9강 모든 조합 (15가지) 보기</span>
-        <span style="font-size:10px;">▸</span>
-      </button>
-      <div class="cases-table-wrap" id="cases-table-wrap">
-        <table class="ct" id="cases-table"></table>
+      <div style="padding:16px 20px;">
+        <div class="fullset-wrap" style="padding:0;">
+          <div class="fs-grid">
+            <div class="fs-card">
+              <div class="fs-label">트라이어드<br>합산</div>
+              <div class="fs-val" id="fs-triad" style="color:var(--tri);">—</div>
+              <div class="fs-sub">4부위 합계</div>
+            </div>
+            <div class="fs-card">
+              <div class="fs-label">스크롤<br>합산</div>
+              <div class="fs-val" id="fs-scroll" style="color:var(--r);">—</div>
+              <div class="fs-sub" id="fs-scroll-sub">고정+6~9강 합계</div>
+            </div>
+            <div class="fs-card" style="border-color:var(--border2);">
+              <div class="fs-label">최종<br>총합</div>
+              <div class="fs-val" id="fs-total" style="color:var(--tri);">—</div>
+              <div class="fs-sub">트라이어드+스크롤</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
 </div>
 
+<style>
+/* 부위별 슬라이더 블록 */
+.piece-sl-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.piece-sl-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.piece-sl-img {
+  width: 32px; height: 32px;
+  object-fit: contain; image-rendering: pixelated;
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 4px; padding: 2px; flex-shrink: 0;
+}
+.piece-sl-name { font-size: 13px; font-weight: 600; flex: 1; }
+.piece-sl-score {
+  font-size: 15px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+}
+.piece-sl-sub { font-size: 10px; color: var(--muted); text-align: right; margin-top: 1px; }
+.piece-sl-tier {
+  font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 3px;
+  white-space: nowrap;
+}
+.piece-sl-body { padding: 10px 14px 12px; display: flex; flex-direction: column; gap: 7px; }
+.piece-sl-row { display: grid; grid-template-columns: 52px 1fr 30px; align-items: center; gap: 8px; }
+.piece-sl-label { font-size: 11px; font-weight: 500; }
+.piece-sl-cnt {
+  font-size: 11px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+}
+/* piece result card */
+.presult-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+}
+.presult-top {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+}
+.presult-img {
+  width: 32px; height: 32px; object-fit: contain;
+  image-rendering: pixelated; background: var(--surface3);
+  border: 1px solid var(--border2); border-radius: 4px; padding: 2px; flex-shrink: 0;
+}
+.presult-name { font-size: 13px; font-weight: 600; flex: 1; }
+.presult-total {
+  font-size: 20px; font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+.presult-bar { height: 20px; display: flex; border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+.presult-meta {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.pmeta-tag {
+  font-size: 10.5px; padding: 2px 7px; border-radius: 3px;
+}
+.pmt-tri { background: #2a1a3a; color: var(--tri); }
+.pmt-fix { background: #0d1a2a; color: #60a5fa; }
+.pmt-r   { background: #0e0e22; color: var(--r); }
+.pmt-uc  { background: #0a1a0a; color: var(--uc); }
+.pmt-c   { background: #1e1e20; color: var(--c); }
+</style>
+
 <script>
 const PIECES = [
-  { id: 'helmet', name: '투구',   defaultVal: 4.2 },
-  { id: 'chest',  name: '흉갑',   defaultVal: 6.5 },
-  { id: 'legs',   name: '레깅스', defaultVal: 5.5 },
-  { id: 'boots',  name: '부츠',   defaultVal: 4.5 },
+  { id: 'helmet', name: '투구',   defaultVal: 4.2,
+    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2' },
+  { id: 'chest',  name: '흉갑',   defaultVal: 6.5,
+    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2' },
+  { id: 'legs',   name: '레깅스', defaultVal: 5.5,
+    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2' },
+  { id: 'boots',  name: '부츠',   defaultVal: 4.5,
+    img: 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2' },
 ];
-const FIXED = 9; // 0~6강 고정
+const FIXED = 9;
 
-function getInputs() {
-  return PIECES.map(p => ({
-    ...p,
-    val: parseFloat(document.getElementById('inp-' + p.id).value) || 0
-  }));
+// 부위별 슬라이더 상태
+const pieceScrolls = { helmet:{r:0,uc:0,c:0}, chest:{r:0,uc:0,c:0}, legs:{r:0,uc:0,c:0}, boots:{r:0,uc:0,c:0} };
+
+function getTier(scroll69) {
+  const total = FIXED + scroll69;
+  if (scroll69 === 0) return { label: '미강화', bg: '#1a1a1a', color: '#555' };
+  if (total >= 34)    return { label: '종결',        bg: '#12102a', color: '#c084fc' };
+  if (total >= 25)    return { label: '준종결',       bg: '#0f2a10', color: '#4ade80' };
+  if (total >= 17)    return { label: '준종결 하위',  bg: '#1a1608', color: '#f59e0b' };
+  if (total >= 9)     return { label: '진행 중',      bg: '#1a1a1a', color: '#9ca3af' };
+  return              { label: '설정해보세요',         bg: '#12102a', color: '#818cf8' };
 }
 
-function getTier(scrollPer) {
-  const total = FIXED + scrollPer;
-  if (scrollPer === 0) return { label: '미강화', bg: '#1a1a1a', color: '#666' };
-  if (total >= 34)     return { label: '종결',          bg: '#12102a', color: '#c084fc' };
-  if (total >= 25)     return { label: '준종결',         bg: '#0f2a10', color: '#4ade80' };
-  if (total >= 17)     return { label: '준종결 하위',    bg: '#1a1608', color: '#f59e0b' };
-  if (total >= 9)      return { label: '강화 진행 중',   bg: '#1a1a1a', color: '#9ca3af' };
-  return               { label: '설정해보세요',          bg: '#12102a', color: '#818cf8' };
+function setTrack(el, val) {
+  el.style.setProperty('--pct', (val / 4 * 100).toFixed(1) + '%');
 }
 
-function updateSliderTrack(id, val, max) {
-  const pct = (val / max * 100).toFixed(1) + '%';
-  document.getElementById(id).style.setProperty('--pct', pct);
+function getTriadVal(id) {
+  return parseFloat(document.getElementById('inp-' + id).value) || 0;
 }
 
-let casesOpen = false;
-let casesBuilt = false;
+function calcScroll69(sc) {
+  return sc.r * 4 + sc.uc * 2 + sc.c;
+}
 
-function update() {
-  const sr  = parseInt(document.getElementById('sl-r').value);
-  const suc = parseInt(document.getElementById('sl-uc').value);
-  const sc  = parseInt(document.getElementById('sl-c').value);
-  const usedTotal = sr + suc + sc;
+// 부위별 슬라이더 DOM 생성
+function buildPieceSliders() {
+  const wrap = document.getElementById('piece-sliders');
+  wrap.innerHTML = '';
+  PIECES.forEach(p => {
+    const sc = pieceScrolls[p.id];
+    const div = document.createElement('div');
+    div.className = 'piece-sl-block';
+    div.id = 'psb-' + p.id;
+    div.innerHTML = `
+      <div class="piece-sl-header">
+        <img class="piece-sl-img" src="${p.img}" alt="${p.name}">
+        <div style="flex:1;">
+          <div class="piece-sl-name">${p.name}</div>
+          <div style="font-size:10px;color:var(--muted);">트라이어드 +${p.defaultVal}</div>
+        </div>
+        <div>
+          <div class="piece-sl-score" id="psc-score-${p.id}">+${(FIXED + p.defaultVal).toFixed(1)}</div>
+          <div class="piece-sl-sub" id="psc-sub-${p.id}">6~9강 +0</div>
+        </div>
+        <div class="piece-sl-tier" id="psc-tier-${p.id}" style="background:#1a1a1a;color:#555;">미강화</div>
+      </div>
+      <div class="piece-sl-body">
+        <div class="piece-sl-row">
+          <div class="piece-sl-label" style="color:var(--r);">레어 +4</div>
+          <input type="range" id="psl-${p.id}-r" min="0" max="4" value="${sc.r}" step="1"
+            style="--pct:${sc.r/4*100}%"
+            oninput="onPieceSlide('${p.id}','r',this)">
+          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-r" style="color:var(--r);">${sc.r}</div>
+        </div>
+        <div class="piece-sl-row">
+          <div class="piece-sl-label" style="color:var(--uc);">언커먼 +2</div>
+          <input type="range" id="psl-${p.id}-uc" min="0" max="4" value="${sc.uc}" step="1"
+            style="--pct:${sc.uc/4*100}%"
+            oninput="onPieceSlide('${p.id}','uc',this)">
+          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-uc" style="color:var(--uc);">${sc.uc}</div>
+        </div>
+        <div class="piece-sl-row">
+          <div class="piece-sl-label" style="color:var(--c);">커먼 +1</div>
+          <input type="range" id="psl-${p.id}-c" min="0" max="4" value="${sc.c}" step="1"
+            style="--pct:${sc.c/4*100}%"
+            oninput="onPieceSlide('${p.id}','c',this)">
+          <div class="piece-sl-cnt" id="psl-cnt-${p.id}-c" style="color:var(--c);">${sc.c}</div>
+        </div>
+        <div id="psl-warn-${p.id}" style="display:none;font-size:11px;color:#f87171;background:#1e0808;border:1px solid #5a1a1a;padding:5px 8px;border-radius:4px;">
+          총 ${sc.r+sc.uc+sc.c}회 — 4회 초과입니다
+        </div>
+      </div>`;
+    wrap.appendChild(div);
 
-  // 슬라이더 트랙
-  updateSliderTrack('sl-r',  sr,  4);
-  updateSliderTrack('sl-uc', suc, 4);
-  updateSliderTrack('sl-c',  sc,  4);
+    // 슬라이더 트랙 컬러 CSS 주입
+    injectSliderStyle(p.id);
+  });
+}
+
+function injectSliderStyle(pid) {
+  const id = 'psl-style-' + pid;
+  if (document.getElementById(id)) return;
+  const s = document.createElement('style');
+  s.id = id;
+  s.textContent = `
+    #psl-${pid}-r::-webkit-slider-thumb{background:var(--r);}
+    #psl-${pid}-r::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--r) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
+    #psl-${pid}-uc::-webkit-slider-thumb{background:var(--uc);}
+    #psl-${pid}-uc::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--uc) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
+    #psl-${pid}-c::-webkit-slider-thumb{background:var(--c);}
+    #psl-${pid}-c::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--c) var(--pct,0%),var(--border2) var(--pct,0%));border-radius:2px;}
+  `;
+  document.head.appendChild(s);
+}
+
+function onPieceSlide(pid, type, el) {
+  pieceScrolls[pid][type] = parseInt(el.value);
+  setTrack(el, parseInt(el.value));
+  updatePieceHeader(pid);
+  updateResults();
+}
+
+function updatePieceHeader(pid) {
+  const sc = pieceScrolls[pid];
+  const total = sc.r + sc.uc + sc.c;
+  const s69 = calcScroll69(sc);
+  const tier = getTier(s69);
+  const triVal = getTriadVal(pid);
 
   // 카운터
-  document.getElementById('cnt-r').textContent  = sr;
-  document.getElementById('cnt-uc').textContent = suc;
-  document.getElementById('cnt-c').textContent  = sc;
-
-  // 슬롯 시각화
-  const slots = [];
-  for (let i = 0; i < sr;  i++) slots.push('r');
-  for (let i = 0; i < suc; i++) slots.push('uc');
-  for (let i = 0; i < sc;  i++) slots.push('c');
-  for (let i = 0; i < 4; i++) {
-    const el = document.getElementById('slot' + i);
-    if (i < slots.length) {
-      const t = slots[i];
-      el.className = 'slot used-' + t;
-      el.textContent = t === 'r' ? 'R' : t === 'uc' ? 'U' : 'C';
-    } else {
-      el.className = 'slot';
-      el.textContent = '';
-    }
-  }
-  document.getElementById('slot-remain').textContent =
-    Math.min(usedTotal, 4) + ' / 4 사용';
+  ['r','uc','c'].forEach(t => {
+    document.getElementById(`psl-cnt-${pid}-${t}`).textContent = sc[t];
+    const el = document.getElementById(`psl-${pid}-${t}`);
+    setTrack(el, sc[t]);
+  });
 
   // 경고
-  const warnEl = document.getElementById('warn-box');
-  warnEl.style.display = usedTotal > 4 ? 'block' : 'none';
-
-  if (usedTotal > 4) return;
-
-  const rStat  = sr  * 4;
-  const ucStat = suc * 2;
-  const cStat  = sc  * 1;
-  const scroll69 = rStat + ucStat + cStat;
-  const scrollPer = FIXED + scroll69;
-
-  const pieces = getInputs();
-  const triadSum = pieces.reduce((a, p) => a + p.val, 0);
-
-  const tier = getTier(scroll69);
-  const color = tier.color;
-
-  // HERO
-  document.getElementById('rh-val').textContent = '+' + scrollPer;
-  document.getElementById('rh-val').style.color = color;
-  document.getElementById('rh-sub').textContent =
-    `고정 +${FIXED}  ·  6~9강 +${scroll69}`;
-  const tierEl = document.getElementById('rh-tier');
-  tierEl.textContent = tier.label;
-  tierEl.style.background = tier.bg;
-  tierEl.style.color = tier.color;
-
-  // 스탯 바 (풀셋 기준 비율)
-  const totalRef = triadSum + scrollPer * 4;
-  const triadPct = Math.round(triadSum    / totalRef * 100);
-  const fixPct   = Math.round(FIXED * 4  / totalRef * 100);
-  const rPct     = Math.round(rStat * 4  / totalRef * 100);
-  const ucPct    = Math.round(ucStat * 4 / totalRef * 100);
-  const cPct2    = Math.round(cStat * 4  / totalRef * 100);
-  const emPct    = Math.max(0, 100 - triadPct - fixPct - rPct - ucPct - cPct2);
-
-  function setW(id, w, txt) {
-    const el = document.getElementById(id);
-    el.style.width = w + '%';
-    if (txt !== undefined) el.textContent = w > 8 ? txt : '';
+  const warnEl = document.getElementById(`psl-warn-${pid}`);
+  if (total > 4) {
+    warnEl.style.display = 'block';
+    warnEl.textContent = `총 ${total}회 — 4회를 초과했어요`;
+  } else {
+    warnEl.style.display = 'none';
   }
-  setW('sb-triad', triadPct, '트라이어드');
-  setW('sb-fix',   fixPct,   '고정');
-  setW('sb-r',     rPct,     rStat > 0 ? '+' + rStat * 4 : '');
-  setW('sb-uc',    ucPct,    ucStat > 0 ? '+' + ucStat * 4 : '');
-  setW('sb-cc',    cPct2,    cStat > 0 ? '+' + cStat * 4 : '');
-  const emEl = document.getElementById('sb-empty');
-  emEl.style.width = emPct + '%';
-  emEl.textContent = emPct > 12 ? '←설정 대기' : '';
 
-  // 부위별
-  const maxPiece = Math.max(...pieces.map(p => p.val)) + scrollPer;
-  let pHtml = '';
-  pieces.forEach(p => {
-    const tot = p.val + scrollPer;
-    const tW  = Math.round(p.val  / tot * 100);
-    const fW  = Math.round(FIXED  / tot * 100);
-    const rW  = Math.round(rStat  / tot * 100);
-    const uW  = Math.round(ucStat / tot * 100);
-    const cW2 = Math.round(cStat  / tot * 100);
-    pHtml += `<div class="piece-row">
-      <div>
-        <div class="piece-name">${p.name}</div>
-        <div class="piece-base">트라이어드 +${p.val.toFixed(1)}</div>
-      </div>
-      <div class="piece-bar">
-        <div class="pb-seg sb-triad" style="width:${tW}%;">${tW>14?'+'+p.val.toFixed(1):''}</div>
-        <div class="pb-seg sb-fix"   style="width:${fW}%;">${fW>10?'+'+FIXED:''}</div>
-        <div class="pb-seg sb-r"     style="width:${rW}%;">${rW>8?'+'+rStat:''}</div>
-        <div class="pb-seg sb-uc"    style="width:${uW}%;">${uW>8?'+'+ucStat:''}</div>
-        <div class="pb-seg sb-cc"    style="width:${cW2}%;">${cW2>6?'+'+cStat:''}</div>
-      </div>
-      <div class="piece-total" style="color:${color};">+${tot.toFixed(1)}</div>
-    </div>`;
+  // 헤더 수치
+  const finalTotal = triVal + FIXED + (total <= 4 ? s69 : 0);
+  document.getElementById(`psc-score-${pid}`).textContent = '+' + finalTotal.toFixed(1);
+  document.getElementById(`psc-score-${pid}`).style.color = total > 4 ? '#f87171' : tier.color;
+  document.getElementById(`psc-sub-${pid}`).textContent = total > 4 ? '초과!' : `6~9강 +${s69}`;
+  const tierEl = document.getElementById(`psc-tier-${pid}`);
+  tierEl.textContent = total > 4 ? '오류' : tier.label;
+  tierEl.style.background = total > 4 ? '#1e0808' : tier.bg;
+  tierEl.style.color = total > 4 ? '#f87171' : tier.color;
+}
+
+function updateResults() {
+  const resultWrap = document.getElementById('result-pieces');
+  let html = '';
+  let triadSum = 0, scrollSum = 0, hasError = false;
+
+  PIECES.forEach(p => {
+    const sc = pieceScrolls[p.id];
+    const total = sc.r + sc.uc + sc.c;
+    const s69 = total <= 4 ? calcScroll69(sc) : 0;
+    const triVal = getTriadVal(p.id);
+    const scrollPer = FIXED + s69;
+    const finalTot = triVal + scrollPer;
+    const tier = getTier(s69);
+
+    triadSum += triVal;
+    scrollSum += scrollPer;
+    if (total > 4) hasError = true;
+
+    // 바 비율
+    const ref = finalTot || 1;
+    const tW  = Math.round(triVal / ref * 100);
+    const fxW = Math.round(FIXED  / ref * 100);
+    const rW  = Math.round(sc.r * 4 / ref * 100);
+    const uW  = Math.round(sc.uc * 2 / ref * 100);
+    const cW  = Math.round(sc.c / ref * 100);
+
+    html += `
+      <div class="presult-card">
+        <div class="presult-top">
+          <img class="presult-img" src="${p.img}" alt="${p.name}">
+          <div style="flex:1;">
+            <div class="presult-name">${p.name}</div>
+            <div style="font-size:10px;color:var(--muted);">트라이어드 +${triVal.toFixed(1)} · 스크롤 +${scrollPer}</div>
+          </div>
+          <div>
+            <div class="presult-total" style="color:${tier.color};">+${finalTot.toFixed(1)}</div>
+            <div style="text-align:right;margin-top:3px;">
+              <span class="piece-sl-tier" style="background:${tier.bg};color:${tier.color};">${tier.label}</span>
+            </div>
+          </div>
+        </div>
+        <div class="presult-bar">
+          <div class="pb-seg sb-triad" style="width:${tW}%;">${tW>14?'+'+triVal.toFixed(1):''}</div>
+          <div class="pb-seg sb-fix"   style="width:${fxW}%;">${fxW>10?'+'+FIXED:''}</div>
+          <div class="pb-seg sb-r"     style="width:${rW}%;">${rW>8?'+'+sc.r*4:''}</div>
+          <div class="pb-seg sb-uc"    style="width:${uW}%;">${uW>8?'+'+sc.uc*2:''}</div>
+          <div class="pb-seg sb-cc"    style="width:${cW}%;">${cW>6?'+'+sc.c:''}</div>
+        </div>
+        <div class="presult-meta">
+          <span class="pmeta-tag pmt-tri">트라이어드 +${triVal.toFixed(1)}</span>
+          <span class="pmeta-tag pmt-fix">고정 +${FIXED}</span>
+          ${sc.r  > 0 ? `<span class="pmeta-tag pmt-r">레어×${sc.r} +${sc.r*4}</span>` : ''}
+          ${sc.uc > 0 ? `<span class="pmeta-tag pmt-uc">언커먼×${sc.uc} +${sc.uc*2}</span>` : ''}
+          ${sc.c  > 0 ? `<span class="pmeta-tag pmt-c">커먼×${sc.c} +${sc.c}</span>` : ''}
+        </div>
+      </div>`;
   });
-  document.getElementById('pieces-grid').innerHTML = pHtml;
+  resultWrap.innerHTML = html;
 
-  // 풀셋
-  const scrollFull = scrollPer * 4;
-  const grandTotal = (triadSum + scrollFull).toFixed(1);
-  document.getElementById('fs-triad').textContent  = '+' + triadSum.toFixed(1);
-  document.getElementById('fs-triad').style.color  = '#c084fc';
-  document.getElementById('fs-scroll').textContent = '+' + scrollFull;
-  document.getElementById('fs-scroll').style.color = color;
-  document.getElementById('fs-scroll-sub').textContent = `부위당 +${scrollPer} × 4`;
-  document.getElementById('fs-total').textContent  = '+' + grandTotal;
-  document.getElementById('fs-total').style.color  = color;
-
-  // 경우의 수 테이블 현재 행 하이라이트
-  if (casesBuilt) highlightCurrentCase(sr, suc, sc);
+  // 풀셋 합산
+  const grandTotal = triadSum + scrollSum;
+  document.getElementById('fs-triad').textContent = '+' + triadSum.toFixed(1);
+  document.getElementById('fs-scroll').textContent = '+' + scrollSum.toFixed(1);
+  document.getElementById('fs-scroll-sub').textContent = '4부위 스크롤 합계';
+  document.getElementById('fs-total').textContent = '+' + grandTotal.toFixed(1);
+  const avgScroll = scrollSum / 4;
+  const avgTier = getTier(avgScroll - FIXED);
+  document.getElementById('fs-total').style.color = hasError ? '#f87171' : avgTier.color;
+  document.getElementById('fs-scroll').style.color = hasError ? '#f87171' : avgTier.color;
 }
 
 function setPreset(vals) {
   ['helmet','chest','legs','boots'].forEach((id, i) => {
     document.getElementById('inp-' + id).value = vals[i];
   });
-  update();
+  updateResults();
 }
 
-function buildCasesTable() {
-  const cases = [];
-  for (let r = 0; r <= 4; r++)
-    for (let uc = 0; uc <= 4 - r; uc++) {
-      const c = 4 - r - uc;
-      const s69 = r * 4 + uc * 2 + c;
-      const total = FIXED + s69;
-      const tier = getTier(s69);
-      const pieces = getInputs();
-      const triadSum = pieces.reduce((a, p) => a + p.val, 0);
-      const grandTotal = (triadSum + total * 4).toFixed(1);
-      cases.push({ r, uc, c, s69, total, tier, grandTotal });
-    }
-  cases.sort((a, b) => b.total - a.total);
-
-  let html = `<thead><tr>
-    <th>#</th><th>레어</th><th>언커먼</th><th>커먼</th>
-    <th>6~9강</th><th>부위합산</th><th>풀셋총합</th><th>등급</th>
-  </tr></thead><tbody>`;
-  cases.forEach((cas, i) => {
-    const sr  = parseInt(document.getElementById('sl-r').value);
-    const suc = parseInt(document.getElementById('sl-uc').value);
-    const sc  = parseInt(document.getElementById('sl-c').value);
-    const isCur = cas.r === sr && cas.uc === suc && cas.c === sc;
-    html += `<tr class="${isCur ? 'cur' : ''}" data-r="${cas.r}" data-uc="${cas.uc}" data-c="${cas.c}"
-      onclick="applyCase(${cas.r},${cas.uc},${cas.c})">
-      <td>${i + 1}</td>
-      <td style="color:${cas.r>0?'var(--r)':'var(--muted)'};">${cas.r > 0 ? cas.r + '회' : '—'}</td>
-      <td style="color:${cas.uc>0?'var(--uc)':'var(--muted)'};">${cas.uc > 0 ? cas.uc + '회' : '—'}</td>
-      <td style="color:${cas.c>0?'var(--c)':'var(--muted)'};">${cas.c > 0 ? cas.c + '회' : '—'}</td>
-      <td style="color:${cas.tier.color}; font-weight:700;">+${cas.s69}</td>
-      <td style="color:${cas.tier.color}; font-weight:700;">+${cas.total}</td>
-      <td style="color:var(--sub);">+${cas.grandTotal}</td>
-      <td><span style="font-size:10px; padding:2px 6px; border-radius:3px;
-        background:${cas.tier.bg}; color:${cas.tier.color};">${cas.tier.label}</span></td>
-    </tr>`;
+function applyAll(r, uc, c) {
+  PIECES.forEach(p => {
+    pieceScrolls[p.id] = { r, uc, c };
   });
-  html += '</tbody>';
-  document.getElementById('cases-table').innerHTML = html;
-  casesBuilt = true;
+  buildPieceSliders();
+  updateResults();
 }
 
-function highlightCurrentCase(r, uc, c) {
-  document.querySelectorAll('#cases-table tr[data-r]').forEach(row => {
-    const match = parseInt(row.dataset.r) === r &&
-                  parseInt(row.dataset.uc) === uc &&
-                  parseInt(row.dataset.c) === c;
-    row.className = match ? 'cur' : '';
-  });
-}
-
-function applyCase(r, uc, c) {
-  document.getElementById('sl-r').value  = r;
-  document.getElementById('sl-uc').value = uc;
-  document.getElementById('sl-c').value  = c;
-  update();
-}
-
-function toggleCases() {
-  casesOpen = !casesOpen;
-  const wrap = document.getElementById('cases-table-wrap');
-  const btn  = document.getElementById('cases-toggle-btn');
-  wrap.className = 'cases-table-wrap' + (casesOpen ? ' open' : '');
-  btn.querySelector('span:last-child').textContent = casesOpen ? '▾' : '▸';
-  btn.querySelector('span:first-child').textContent =
-    casesOpen ? '전체 조합 닫기' : '6~9강 모든 조합 (15가지) 보기';
-  if (casesOpen) buildCasesTable();
-}
-
-// 장비 수치 변경 시 경우의 수 테이블 재빌드
+// 장비 수치 변경 시 결과 갱신
 document.querySelectorAll('.stat-input').forEach(el => {
   el.addEventListener('input', () => {
-    if (casesOpen) buildCasesTable();
+    PIECES.forEach(p => updatePieceHeader(p.id));
+    updateResults();
   });
 });
 
-update();
+// 초기화
+buildPieceSliders();
+updateResults();
 </script>
 </body>
 </html>

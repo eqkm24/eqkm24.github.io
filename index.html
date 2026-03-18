@@ -18,9 +18,19 @@
   --warn:#dc2626; --gold:#f59e0b;
   --rad:10px; --rad-s:6px;
 }
+[data-theme="light"] {
+  --bg:#f4f5f9; --s1:#ffffff; --s2:#f0f1f6; --s3:#e8eaf0; --s4:#dde0ea;
+  --b1:#d0d4e4; --b2:#b8bdd4; --b3:#9098bc;
+  --text:#1a1a2e; --sub:#5a6070; --muted:#9098bc;
+  --bench:#2563eb; --brazier:#d97706; --counter:#16a34a;
+  --tri:#7c3aed; --scrl:#2563eb; --orb:#d97706;
+  --r-n:#64748b; --r-a:#16a34a; --r-r:#2563eb; --r-h:#7c3aed;
+  --sl-r:#4f46e5; --sl-uc:#16a34a; --sl-c:#64748b;
+  --warn:#dc2626; --gold:#d97706;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);min-height:100vh;}
+body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text);min-height:100vh;transition:background .2s,color .2s;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
@@ -30,7 +40,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
   position:sticky;top:0;z-index:300;
   height:54px;padding:0 28px;
   display:flex;align-items:center;justify-content:space-between;
-  background:rgba(11,11,15,.94);backdrop-filter:blur(16px);
+  background:rgba(11,11,15,.94);backdrop-filter:blur(16px);transition:background .2s;
   border-bottom:1px solid var(--b1);
 }
 .nav-logo{display:flex;align-items:center;gap:10px;}
@@ -53,6 +63,94 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .nav-tab.t-enhance.on{background:#120820;color:var(--tri); border-color:#4a1a6a;}
 .nav-tab.t-sim.on   {background:#0a1a08;color:var(--sl-uc);border-color:#1a4a1a;}
 .nav-source{font-size:10px;color:var(--muted);border:1px solid var(--b2);padding:3px 10px;border-radius:20px;letter-spacing:.5px;}
+/* ── 테마 토글 ── */
+.theme-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;cursor:pointer;
+  background:var(--s2);border:1px solid var(--b2);
+  font-size:12px;font-weight:600;font-family:'Noto Sans KR',sans-serif;
+  color:var(--sub);transition:all .15s;white-space:nowrap;
+}
+.theme-btn:hover{color:var(--text);border-color:var(--b3);}
+.theme-btn .t-icon{font-size:14px;transition:transform .3s;}
+.theme-btn:hover .t-icon{transform:rotate(20deg);}
+/* ── 라이트모드 색상 보정 ── */
+[data-theme="light"] .topnav { background:rgba(244,245,249,.96); }
+[data-theme="light"] .nav-tab.t-recipe.on  { background:#e8f1ff; border-color:#bdd4ff; }
+[data-theme="light"] .nav-tab.t-enhance.on { background:#f0eaff; border-color:#d4b8ff; }
+[data-theme="light"] .nav-tab.t-sim.on     { background:#e6fdf0; border-color:#a8e8b8; }
+[data-theme="light"] .bd-bench  { background:#e8f1ff; border-color:#bdd4ff; }
+[data-theme="light"] .bd-brazier{ background:#fff3e8; border-color:#fcd5a0; }
+[data-theme="light"] .bd-counter{ background:#e6fdf0; border-color:#a8e8b8; }
+[data-theme="light"] .bd-scroll { background:#e8f1ff; border-color:#bdd4ff; }
+[data-theme="light"] .bd-orb    { background:#fff8e8; border-color:#fcd5a0; }
+[data-theme="light"] .bd-sim    { background:#e6fdf0; border-color:#a8e8b8; }
+[data-theme="light"] .bd-res    { background:#f0eaff; border-color:#d4b8ff; }
+[data-theme="light"] .bd-step   { background:var(--s3); }
+[data-theme="light"] .c-n   { background:#f1f5f9; color:#64748b; border-color:#d0d4e4; }
+[data-theme="light"] .c-100 { background:#e6fdf0; color:#16a34a; border-color:#a8e8b8; }
+[data-theme="light"] .c-90  { background:#ecfdf5; color:#0d9488; border-color:#99e6d8; }
+[data-theme="light"] .c-80  { background:#fefce8; color:#ca8a04; border-color:#fde68a; }
+[data-theme="light"] .c-70  { background:#fff7ed; color:#ea580c; border-color:#fed7aa; }
+[data-theme="light"] .c-60  { background:#f0eaff; color:#7c3aed; border-color:#d4b8ff; }
+[data-theme="light"] .c-30  { background:#fff1f1; color:#dc2626; border-color:#fca5a5; }
+[data-theme="light"] .fe-stat   { background:#e6fdf0; color:#16a34a; border-color:#a8e8b8; }
+[data-theme="light"] .fe-recov  { background:#e8f1ff; color:#2563eb; border-color:#bdd4ff; }
+[data-theme="light"] .fe-skill  { background:#f0eaff; color:#7c3aed; border-color:#d4b8ff; }
+[data-theme="light"] .ovc-scroll{ background:#e8f1ff; border-color:#bdd4ff; }
+[data-theme="light"] .ovc-orb   { background:#fff8e8; border-color:#fcd5a0; }
+[data-theme="light"] .ovc-scroll .ov-title { color:#2563eb; }
+[data-theme="light"] .ovc-orb .ov-title    { color:#d97706; }
+[data-theme="light"] .ovc-scroll .ov-badge { background:#bdd4ff; color:#1d4ed8; }
+[data-theme="light"] .ovc-orb .ov-badge    { background:#fcd5a0; color:#92400e; }
+[data-theme="light"] .etab.es { background:#e8f1ff; color:#2563eb; border-color:#bdd4ff; }
+[data-theme="light"] .etab.eo { background:#fff8e8; color:#d97706; border-color:#fcd5a0; }
+[data-theme="light"] .etab-panel.eps { background:#e8f1ff; border-color:#bdd4ff; }
+[data-theme="light"] .etab-panel.epo { background:#fff8e8; border-color:#fcd5a0; }
+[data-theme="light"] .eps .et-title  { color:#2563eb; }
+[data-theme="light"] .epo .et-title  { color:#d97706; }
+[data-theme="light"] .eps .snum { background:#bdd4ff; color:#1d4ed8; }
+[data-theme="light"] .epo .snum { background:#fcd5a0; color:#92400e; }
+[data-theme="light"] .step  { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .rule  { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .warnbox { background:#fff7ed; border-color:#fed7aa; color:#c2410c; }
+[data-theme="light"] .dt-lo { background:#e6fdf0; color:#16a34a; }
+[data-theme="light"] .dt-mid{ background:#fff7ed; color:#d97706; }
+[data-theme="light"] .dt-hi { background:#fff1f1; color:#dc2626; }
+[data-theme="light"] .sys-formula { color:#db2777; }
+[data-theme="light"] .warn-pill { background:#fff7ed; border-color:#fed7aa; color:#c2410c; }
+[data-theme="light"] .dn { background:#94a3b8; box-shadow:none; }
+[data-theme="light"] .da { background:#16a34a; box-shadow:none; }
+[data-theme="light"] .dr { background:#2563eb; box-shadow:none; }
+[data-theme="light"] .dh { background:#7c3aed; box-shadow:none; }
+[data-theme="light"] .stag { background:var(--s3); border-color:var(--b1); }
+[data-theme="light"] .tip-passive { background:#e6fdf0; color:#16a34a; border-color:#a8e8b8; }
+[data-theme="light"] .tip-active  { background:#f0eaff; color:#7c3aed; border-color:#d4b8ff; }
+[data-theme="light"] #skill-tip   { background:#ffffff; border-color:var(--b1); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+[data-theme="light"] .sb-triad { background:#e9d5ff; color:#6d28d9; }
+[data-theme="light"] .sb-fix   { background:#dbeafe; color:#1d4ed8; }
+[data-theme="light"] .sb-r     { background:#e0e7ff; color:#4338ca; }
+[data-theme="light"] .sb-uc    { background:#dcfce7; color:#16a34a; }
+[data-theme="light"] .sb-cc    { background:#f1f5f9; color:#64748b; }
+[data-theme="light"] .pmt-tri { background:#e9d5ff; color:#6d28d9; }
+[data-theme="light"] .pmt-fix { background:#dbeafe; color:#1d4ed8; }
+[data-theme="light"] .pmt-r   { background:#e0e7ff; color:#4338ca; }
+[data-theme="light"] .pmt-uc  { background:#dcfce7; color:#16a34a; }
+[data-theme="light"] .pmt-c   { background:#f1f5f9; color:#64748b; }
+[data-theme="light"] .rt th   { background:var(--s3); }
+[data-theme="light"] .rt tr:hover td { background:var(--s3); }
+[data-theme="light"] .orb-card { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .mini-card { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .boost-card { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .item-card { background:var(--s2); border-color:var(--b1); }
+[data-theme="light"] .food-card { background:var(--s2); }
+[data-theme="light"] .presult-card { background:var(--s3); border-color:var(--b1); }
+[data-theme="light"] .psl-block { background:var(--s3); border-color:var(--b1); }
+[data-theme="light"] .psl-hd { border-color:var(--b1); }
+[data-theme="light"] .fs-card { background:var(--s3); border-color:var(--b1); }
+[data-theme="light"] .fpill { background:var(--s3); }
+[data-theme="light"] input[type=range] { background:var(--b1); }
+
 
 /* ═══════════ PAGE SWITCH ═══════════ */
 .page{display:none;}
@@ -347,7 +445,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     <button class="nav-tab t-enhance"    onclick="go('enhance')">⚙ 강화 가이드</button>
     <button class="nav-tab t-sim"        onclick="go('sim')">🎮 강화 시뮬레이터</button>
   </div>
-  <div class="nav-source">lunawiki.gitbook.io</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">
+      <span class="t-icon" id="theme-icon">☀️</span>
+      <span id="theme-label">라이트 모드</span>
+    </button>
+    <div class="nav-source">lunawiki.gitbook.io</div>
+  </div>
 </nav>
 
 <!-- ══════════════════════════════════════════════════════════
@@ -1148,6 +1252,32 @@ function applyAll(r,uc,c) {
 // 초기 실행
 buildPieceSliders();
 simUpdate();
+
+// ── 테마 토글 ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const isLight = html.getAttribute('data-theme') === 'light';
+  if (isLight) {
+    html.removeAttribute('data-theme');
+    document.getElementById('theme-icon').textContent = '☀️';
+    document.getElementById('theme-label').textContent = '라이트 모드';
+    localStorage.setItem('theme', 'dark');
+  } else {
+    html.setAttribute('data-theme', 'light');
+    document.getElementById('theme-icon').textContent = '🌙';
+    document.getElementById('theme-label').textContent = '다크 모드';
+    localStorage.setItem('theme', 'light');
+  }
+}
+// 저장된 테마 복원
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('theme-icon').textContent = '🌙';
+    document.getElementById('theme-label').textContent = '다크 모드';
+  }
+})();
 </script>
 <!-- ═══ 스킬 툴팁 ═══ -->
 <div id="skill-tip"><div class="tip-name"><span id="tip-name"></span><span id="tip-type" class="tip-type"></span></div><div class="tip-desc" id="tip-desc"></div></div>

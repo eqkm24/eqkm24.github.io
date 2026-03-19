@@ -489,6 +489,106 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   .sim-right{position:static;}
 }
 
+/* ═══════════ MOBILE ═══════════ */
+@media(max-width:640px){
+  /* ── topnav ── */
+  .topnav{height:auto;padding:8px 12px;flex-wrap:wrap;gap:6px;}
+  .nav-logo{order:1;}
+  .nav-logo-mark{width:26px;height:26px;font-size:13px;}
+  .nav-logo-text{font-size:12.5px;}
+  .topnav>div:last-child{order:2;margin-left:auto;}
+  .nav-source{display:none;}
+  .theme-btn{padding:4px 8px;font-size:11px;}
+  .theme-btn #theme-label{display:none;}
+  .nav-tabs{order:3;width:100%;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;}
+  .nav-tabs::-webkit-scrollbar{display:none;}
+  .nav-tab{padding:6px 12px;font-size:11px;white-space:nowrap;flex-shrink:0;}
+
+  /* ── 공통 ── */
+  .wrap{padding:16px 12px 60px;}
+  .ph-title{font-size:18px;}
+  .ph-sub{font-size:11.5px;}
+  #pg-recipe .wrap{height:calc(100vh - 86px);}
+
+  /* ── 시스템 정보 ── */
+  .sys-row{grid-template-columns:1fr;gap:6px;margin-bottom:16px;}
+  .sys-card{padding:10px 12px;}
+  .sys-body{font-size:11px;}
+
+  /* ── 레시피 서브탭 ── */
+  .rtabs{gap:3px;margin-bottom:10px;}
+  .rtab{padding:8px 8px;font-size:11px;}
+
+  /* ── 레시피 테이블 ── */
+  .rt{font-size:11px;}
+  .rt th{padding:5px 6px;font-size:9px;}
+  .rt td{padding:5px 6px;}
+  .ritem-img{width:22px;height:22px;}
+  .nm-flex-inner{gap:5px;font-size:11px;}
+  .itag{font-size:9px;padding:1px 4px;}
+  .sub-lbl+table,.sec-hd+table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+  /* ── 요리 그리드 ── */
+  .food-grid{grid-template-columns:1fr;gap:6px;}
+  .food-card{padding:8px 10px;gap:8px;}
+  .food-img{width:32px;height:32px;}
+  .food-name{font-size:11.5px;}
+  .food-ing{font-size:9.5px;}
+  .food-effect{font-size:9.5px;}
+  .food-meta{gap:2px;}
+  .chip{font-size:9.5px;padding:2px 5px;}
+  .fm-lbl{font-size:7.5px;}
+  .food-price{gap:4px;padding-top:4px;margin-top:2px;}
+  .fp-grade{font-size:8px;padding:0 3px;}
+  .fp-val{font-size:10px;}
+  .fskill-tag{font-size:9.5px;padding:1px 6px;}
+
+  /* ── 강화 가이드 ── */
+  .ov-row{grid-template-columns:1fr;gap:8px;margin-bottom:14px;}
+  .ov-card{padding:14px 16px;}
+  .etabs{gap:3px;}
+  .etab{padding:7px 12px;font-size:11.5px;}
+  .etab-panel{padding:14px;}
+  .item-card{padding:8px 10px;gap:8px;}
+  .item-img{width:40px;height:40px;}
+  .item-name{font-size:12px;}
+  .etag{font-size:9.5px;}
+  .step{font-size:11.5px;padding:6px 10px;}
+  .rule{font-size:11.5px;padding:7px 10px;}
+  .boost-row{gap:5px;}
+  .boost-card{padding:8px;}
+  .boost-lv{font-size:22px;}
+  .orb-grid{grid-template-columns:1fr;gap:6px;}
+  .mini2{grid-template-columns:1fr;gap:6px;}
+  .mini-card[style*="grid-column"]{grid-column:auto!important;}
+
+  /* ── 시뮬레이터 ── */
+  .sim-layout{grid-template-columns:1fr;gap:14px;}
+  .sim-right{position:static;}
+  .a-row{grid-template-columns:1fr 90px;padding:8px 10px;}
+  .a-img{width:28px;height:28px;}
+  .a-name{font-size:12px;}
+  .preset-btns{gap:4px;}
+  .pbtn{font-size:10px;padding:3px 8px;}
+  .psl-body{padding:8px 10px;}
+  .presult-total{font-size:17px;}
+  .fs-grid{grid-template-columns:1fr 1fr 1fr;gap:5px;}
+  .fs-val{font-size:17px;}
+
+  /* ── 요리 시세 ── */
+  .pi-textarea{height:200px;font-size:10.5px;}
+  .price-summary{grid-template-columns:repeat(2,1fr);gap:5px;}
+  .ps-val{font-size:18px;}
+  .price-result-wrap{grid-template-columns:1fr;gap:6px;}
+  .pr-card{padding:9px 10px;}
+  .price-filter-bar{gap:4px;}
+  .pf-btn{padding:3px 9px;font-size:10.5px;}
+  .pf-sep{margin:0 2px;}
+
+  /* ── 툴팁 모바일 비활성 ── */
+  #skill-tip,#triad-tip{display:none!important;}
+}
+
 /* ═══════════ PRICE PAGE ═══════════ */
 .price-input-area{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
 .pi-label{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.5px;display:flex;align-items:center;gap:8px;}
@@ -588,9 +688,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .ps-lbl{font-size:10px;color:var(--muted);margin-top:3px;}
 
 @media(max-width:860px){
-  
   .price-result-wrap{grid-template-columns:repeat(2,1fr);}
   .price-summary{grid-template-columns:repeat(2,1fr);}
+  .food-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>

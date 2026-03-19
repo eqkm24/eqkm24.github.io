@@ -704,42 +704,62 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .sk-tab:hover{border-color:var(--b3);color:var(--text);}
 .sk-tab.sk-on{background:#1a0810;color:#f472b6;border-color:#6a1a40;}
 [data-theme="light"] .sk-tab.sk-on{background:#fdf2f8;color:#db2777;border-color:#fbcfe8;}
-.sk-panel{display:none;animation:fade .18s ease;}
-.sk-panel.sk-show{display:block;}
-.sk-tree{display:flex;flex-direction:column;gap:6px;margin-bottom:20px;}
-.sk-tree-row{display:grid;grid-template-columns:28px 1fr auto auto auto;align-items:center;gap:10px;background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:9px 14px;cursor:pointer;transition:border-color .15s;}
-.sk-tree-row:hover{border-color:var(--b3);}
-.sk-tree-row.sk-expanded{border-color:var(--b3);border-radius:var(--rad-s) var(--rad-s) 0 0;border-bottom-color:transparent;}
-.sk-tier{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--muted);text-align:center;}
-.sk-sname{font-size:13px;font-weight:700;color:var(--text);}
-.sk-type{font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:3px;}
-.sk-passive{background:#0a1e0a;color:#4ade80;border:1px solid #1a4a1a;}
-.sk-active{background:#180828;color:#c084fc;border:1px solid #4a1a6a;}
-[data-theme="light"] .sk-passive{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
-[data-theme="light"] .sk-active{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
-.sk-prereq{font-size:10px;color:var(--muted);}
-.sk-excl{font-size:10px;color:#f87171;}
-.sk-detail{display:none;background:var(--s1);border:1px solid var(--b3);border-top:none;border-radius:0 0 var(--rad-s) var(--rad-s);padding:14px 16px;margin-top:-6px;margin-bottom:6px;animation:fade .18s ease;}
-.sk-detail.sk-dshow{display:block;}
-.sk-desc{font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:10px;padding:8px 10px;background:var(--s2);border-radius:var(--rad-s);border-left:3px solid #f472b6;}
-.sk-activate{font-size:11px;color:var(--muted);margin-bottom:10px;}
-.sk-activate strong{color:var(--text);}
-.sk-lvl-table{width:100%;border-collapse:collapse;font-size:11px;}
-.sk-lvl-table th{text-align:left;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:5px 8px;background:var(--s2);border-bottom:1px solid var(--b2);}
-.sk-lvl-table td{padding:4px 8px;border-bottom:1px solid var(--b1);color:var(--sub);font-family:'JetBrains Mono',monospace;font-size:11px;}
-.sk-lvl-table tr:hover td{background:var(--s2);}
-.sk-lvl-table td:first-child{color:var(--text);font-weight:600;}
-.sk-info{font-size:11px;color:var(--muted);padding:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);margin-bottom:16px;line-height:1.7;}
+.sk-info{font-size:11px;color:var(--muted);padding:10px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);margin-bottom:16px;line-height:1.7;}
 .sk-info strong{color:var(--text);}
+.sk-grid{display:flex;flex-direction:column;gap:8px;}
+/* ── 스킬 카드 ── */
+.sk-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);overflow:hidden;transition:border-color .15s;}
+.sk-card:hover{border-color:var(--b3);}
+.sk-card-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;transition:background .12s;}
+.sk-card-hd:hover{background:var(--s2);}
+.sk-card-img{width:48px;height:48px;object-fit:contain;border-radius:8px;background:var(--s3);border:1px solid var(--b2);padding:3px;flex-shrink:0;image-rendering:pixelated;}
+.sk-card-img-ph{width:48px;height:48px;border-radius:8px;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.sk-card-info{flex:1;min-width:0;}
+.sk-card-top{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.sk-card-name{font-size:14px;font-weight:800;color:var(--text);}
+.sk-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.5px;}
+.sk-badge-p{background:#0a1e0a;color:#4ade80;border:1px solid #1a4a1a;}
+.sk-badge-a{background:#180828;color:#c084fc;border:1px solid #4a1a6a;}
+[data-theme="light"] .sk-badge-p{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
+[data-theme="light"] .sk-badge-a{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
+.sk-card-desc{font-size:11.5px;color:var(--sub);line-height:1.5;}
+.sk-card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;}
+.sk-card-tier{font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--muted);background:var(--s3);padding:2px 6px;border-radius:3px;}
+.sk-card-prereq{font-size:9.5px;color:var(--muted);text-align:right;max-width:120px;}
+.sk-card-excl{font-size:9.5px;color:#f87171;text-align:right;}
+.sk-card-arrow{font-size:12px;color:var(--muted);transition:transform .2s;}
+.sk-card.sk-open .sk-card-arrow{transform:rotate(180deg);}
+/* ── 펼침 상세 ── */
+.sk-body{display:none;border-top:1px solid var(--b1);padding:16px;animation:fade .18s ease;}
+.sk-card.sk-open .sk-body{display:block;}
+.sk-act{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;color:var(--sub);}
+.sk-act-item{background:var(--s2);border:1px solid var(--b1);padding:4px 10px;border-radius:4px;}
+.sk-act-item strong{color:var(--text);}
+.sk-tbl{width:100%;border-collapse:collapse;font-size:11.5px;}
+.sk-tbl th{text-align:left;font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);padding:6px 10px;background:var(--s2);border-bottom:1px solid var(--b2);}
+.sk-tbl th:first-child{border-radius:4px 0 0 0;}.sk-tbl th:last-child{border-radius:0 4px 0 0;}
+.sk-tbl td{padding:5px 10px;border-bottom:1px solid var(--b1);color:var(--sub);font-family:'JetBrains Mono',monospace;}
+.sk-tbl tr:hover td{background:var(--s2);}
+.sk-tbl td:first-child{color:var(--text);font-weight:700;}
+/* ── 스킬 트리 연결선 ── */
+.sk-connector{display:flex;justify-content:center;padding:2px 0;}
+.sk-connector-line{width:2px;height:14px;background:var(--b2);border-radius:1px;}
+.sk-connector-fork{display:flex;align-items:center;gap:6px;padding:2px 0;justify-content:center;}
+.sk-connector-fork::before,.sk-connector-fork::after{content:'';flex:1;max-width:120px;height:1px;background:var(--b2);}
+.sk-connector-fork span{font-size:9px;color:var(--muted);white-space:nowrap;padding:1px 6px;background:var(--s3);border-radius:3px;border:1px solid var(--b2);}
 @media(max-width:640px){
   .sk-tabs{gap:3px;}
   .sk-tab{padding:8px 6px;font-size:10.5px;}
-  .sk-tree-row{grid-template-columns:1fr auto;gap:6px;padding:8px 10px;}
-  .sk-tier,.sk-prereq,.sk-excl{display:none;}
-  .sk-detail{padding:10px 12px;}
-  .sk-lvl-table{font-size:10px;}
-  .sk-lvl-table th{padding:4px 6px;font-size:8px;}
-  .sk-lvl-table td{padding:3px 6px;font-size:10px;}
+  .sk-card-hd{padding:10px 12px;gap:8px;}
+  .sk-card-img,.sk-card-img-ph{width:38px;height:38px;font-size:18px;}
+  .sk-card-name{font-size:12.5px;}
+  .sk-card-desc{font-size:10.5px;}
+  .sk-card-meta{display:none;}
+  .sk-body{padding:10px 12px;}
+  .sk-tbl{font-size:10px;}
+  .sk-tbl th{padding:4px 6px;font-size:8px;}
+  .sk-tbl td{padding:3px 6px;}
+  .sk-act{font-size:10px;gap:6px;}
 }
 </style>
 </head>
@@ -1479,105 +1499,46 @@ function go(tab) {
 }
 
 /* ══════════════════════════════════════════
-   스킬 도감 시스템
+   스킬 도감 시스템 (v2 카드 레이아웃)
 ══════════════════════════════════════════ */
+const SK_IMG = {
+  '개간의서약':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fu2Z0YRdm8nc27Hx79QRK%252FAdobe%2520Express%2520-%2520file%2520%285%29.png%3Falt%3Dmedia%26token%3Da4316fb8-7aa3-4523-8d5b-88c59521bb9e&width=300&dpr=1&quality=100&sign=c6bb9f9d&sv=2',
+  '풍년의 축복':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FfaZO7YqV52UnNN4NnMWX%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-17%2520152543-Photoroom.png%3Falt%3Dmedia%26token%3D92949dee-0d55-42ca-92dc-4be6acfb9cbb&width=300&dpr=1&quality=100&sign=d5d85241&sv=2',
+  '비옥한 토양':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3PfhE1ww4KyoalRwpmeY%252FAdobe%2520Express%2520-%2520file%2520%284%29.png%3Falt%3Dmedia%26token%3Dd49060e6-54c7-41a5-9b01-791e0656bc11&width=300&dpr=1&quality=100&sign=56aa2559&sv=2',
+  '수확의 손길':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3nTn63EfHJodicghKxJa%252FAdobe%2520Express%2520-%2520file%2520%286%29.png%3Falt%3Dmedia%26token%3D13018ade-fadc-4805-b062-e91537bb665e&width=300&dpr=1&quality=100&sign=5bd975f3&sv=2',
+  '되뿌리기':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FaeXkdE6HHtOsx2zLetJL%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-17%2520152620.png%3Falt%3Dmedia%26token%3De2f3d1e3-64a7-450c-a35e-68ffcd19ea3c&width=300&dpr=1&quality=100&sign=fc983d8b&sv=2',
+};
+const SK_EMOJI = {'P':'🛡️','A':'⚡'};
+
 const SKILL_DATA = {
-farming: {
-  icon:'🌾', name:'농사', skills:[
-    {name:'개간의서약',type:'P',tier:10,max:30,prereq:'-',excl:'-',
-     desc:'마을 월드에서 경작지 수와 화분통 설치 수량이 증가합니다.',
-     cols:['Lv','경작지','화분통/경작지','총 화분통'],
-     rows:[[0,1,96,96],[1,1,100,100],[2,1,104,104],[3,1,108,108],[4,1,112,112],[5,1,116,116],[6,1,120,120],[7,1,124,124],[8,1,128,128],[9,1,132,132],[10,2,132,264],[11,2,136,272],[12,2,140,280],[13,2,144,288],[14,2,148,296],[15,2,152,304],[16,2,156,312],[17,3,156,468],[18,3,160,480],[19,3,164,492],[20,3,168,504],[21,3,172,516],[22,3,176,528],[23,3,180,540],[24,4,180,720],[25,4,182,728],[26,4,184,736],[27,4,186,744],[28,4,188,752],[29,4,190,760],[30,4,192,768]]},
-    {name:'풍년의 축복',type:'P',tier:20,max:30,prereq:'-',excl:'-',
-     desc:'작물 재배 시 일반 등급 비율이 감소하여 고급·희귀 등급이 더 자주 드롭됩니다.',
-     cols:['Lv','일반 감소(%)'],
-     rows:[[1,0.9],[2,1.8],[3,2.7],[4,3.6],[5,4.5],[6,5.4],[7,6.3],[8,7.2],[9,8.1],[10,9],[11,10.5],[12,12],[13,13.5],[14,15],[15,16.5],[16,18],[17,19.5],[18,21],[19,22.5],[20,24],[21,27.2],[22,30.4],[23,33.6],[24,36.8],[25,40],[26,43.2],[27,46.4],[28,49.6],[29,54],[30,60]]},
-    {name:'비옥한 토양',type:'P',tier:30,max:30,prereq:'풍년의 축복 Lv.10',excl:'-',
-     desc:'작물이 확률로 한번 더 드롭됩니다.',
-     cols:['Lv','추가 드롭(%)'],
-     rows:[[1,0.6],[2,1.2],[3,1.8],[4,2.4],[5,3],[6,3.6],[7,4.2],[8,4.8],[9,5.4],[10,6],[11,7],[12,8],[13,9],[14,10],[15,11],[16,12],[17,13],[18,14],[19,15],[20,16],[21,18.1],[22,20.2],[23,22.3],[24,24.4],[25,26.5],[26,28.6],[27,30.7],[28,32.8],[29,35.4],[30,40]]},
-    {name:'수확의 손길',type:'A',tier:40,max:30,prereq:'비옥한 토양 Lv.10',excl:'되뿌리기',
-     desc:'지속시간 동안 3×1 범위로 작물을 자동 수확합니다.',act:'괭이 + Shift+우클릭(공중)',req:'농사 Lv.20',
-     cols:['Lv','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]},
-    {name:'되뿌리기',type:'A',tier:40,max:30,prereq:'비옥한 토양 Lv.10',excl:'수확의 손길',
-     desc:'지속시간 동안 수확 후 씨앗이 자동으로 다시 심어집니다.',act:'괭이 + Shift+좌클릭(공중)',req:'농사 Lv.20',
-     cols:['Lv','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]}
-  ]
-},
-fishing: {
-  icon:'🎣', name:'낚시', skills:[
-    {name:'보물 감지',type:'P',tier:10,max:30,prereq:'-',excl:'-',
-     desc:'낚시 시 보물 상자가 나올 확률이 증가합니다.',
-     cols:['Lv','보물 확률(%)'],
-     rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,45],[30,65]]},
-    {name:'소문난 미끼',type:'P',tier:20,max:30,prereq:'-',excl:'-',
-     desc:'낚시 성공 시 동일 물고기를 1마리 더 낚을 확률이 증가합니다.',
-     cols:['Lv','2마리 확률(%)'],
-     rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
-    {name:'낚싯줄 장력',type:'P',tier:30,max:30,prereq:'소문난 미끼 Lv.10',excl:'-',
-     desc:'일반 등급 비율이 감소하여 고급·희귀 등급을 더 자주 낚습니다.',
-     cols:['Lv','일반 감소(%)'],
-     rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
-    {name:'쌍걸이',type:'A',tier:40,max:30,prereq:'낚싯줄 장력 Lv.10',excl:'떼낚시',
-     desc:'지속시간 동안 낚시 성공 시 확률로 2회 진행됩니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',
-     cols:['Lv','2회 확률(%)','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,2,40,600,30],[5,5.2,72,600,32],[10,9.2,112,600,36],[15,15.7,152,600,41],[20,22.2,192,600,47],[25,28.7,232,600,60],[30,40,300,600,70]]},
-    {name:'떼낚시',type:'A',tier:40,max:30,prereq:'낚싯줄 장력 Lv.10',excl:'쌍걸이',
-     desc:'지속시간 동안 물고기 등장/바이트 시간이 감소합니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',
-     cols:['Lv','등장↓(틱)','바이트↓(틱)','지속(초)','쿨(초)','마나'],
-     rows:[[1,22,5,40,600,30],[5,29,8,72,600,32],[10,36,12,120,600,36],[15,47,17,180,600,41],[20,50,20,200,600,47],[25,59,25,248,600,60],[30,72,30,300,600,70]]}
-  ]
-},
-mining: {
-  icon:'⛏️', name:'채광', skills:[
-    {name:'단련된 곡괭이',type:'P',tier:30,max:30,prereq:'-',excl:'-',
-     desc:'커스텀 광물 채광 시 데미지가 증가합니다.',
-     cols:['Lv','데미지 증가(%)'],
-     rows:[[1,2],[5,10],[10,20],[15,32.5],[20,45],[25,72.5],[30,100]]},
-    {name:'광맥 감각',type:'P',tier:30,max:30,prereq:'단련된 곡괭이 Lv.10',excl:'-',
-     desc:'채광 시 광물이 추가 드롭됩니다.',
-     cols:['Lv','커스텀 추가(%)','기본 추가(%)','기본 최대(개)'],
-     rows:[[1,0.6,2,1],[5,3,6,1],[10,6,11,1],[15,11,16,2],[20,16,21,2],[25,28,26,3],[30,40,30,4]]},
-    {name:'광맥 흐름',type:'P',tier:30,max:30,prereq:'광맥 감각 Lv.10',excl:'-',
-     desc:'채광 딜레이가 감소하여 더 빨리 채광합니다.',
-     cols:['Lv','딜레이 감소(%)'],
-     rows:[[1,1],[5,5],[10,10],[15,16],[20,22],[25,36],[30,50]]},
-    {name:'광맥 탐지',type:'A',tier:40,max:30,prereq:'광맥 흐름 Lv.10',excl:'폭발적인 채광',
-     desc:'지속시간 동안 y±6, x±N 범위(타원형)의 광물을 투시합니다.',act:'곡괭이 + Shift+좌클릭(공중)',req:'채광 Lv.20',
-     cols:['Lv','범위 x±','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,2,20,440,30],[5,4,24,380,32],[10,6,30,320,36],[15,9,38,296,41],[20,11,44,274,47],[25,14,52,250,60],[30,16,60,240,70]]},
-    {name:'폭발적인 채광',type:'A',tier:40,max:30,prereq:'광맥 흐름 Lv.10',excl:'광맥 탐지',
-     desc:'지속시간 동안 성급함 N + 야간투시 효과를 획득합니다.',act:'곡괭이 + Shift+우클릭(공중)',req:'채광 Lv.20',
-     cols:['Lv','성급함 Lv','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,2,25,360,30],[5,3,33,328,32],[10,8,40,288,36],[15,8,50,258,41],[20,8,60,228,47],[25,8,70,198,60],[30,8,90,180,70]]}
-  ]
-},
-cooking: {
-  icon:'🍳', name:'요리', skills:[
-    {name:'손질 달인',type:'P',tier:10,max:30,prereq:'-',excl:'-',
-     desc:'요리 시간이 감소합니다.',
-     cols:['Lv','시간 감소(%)'],
-     rows:[[1,1],[5,5],[10,10],[15,18],[20,25],[25,38],[30,50]]},
-    {name:'맛의 균형',type:'P',tier:20,max:30,prereq:'손질 달인 Lv.10',excl:'-',
-     desc:'조리된 음식 섭취 시 기본 유지시간이 증가합니다.',
-     cols:['Lv','유지시간(%)'],
-     rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,50],[30,70]]},
-    {name:'미식가',type:'P',tier:30,max:30,prereq:'맛의 균형 Lv.10',excl:'-',
-     desc:'높은 등급의 음식이 나올 확률이 증가합니다.',
-     cols:['Lv','고등급 확률(%)'],
-     rows:[[1,1],[5,5],[10,10],[15,18],[20,28],[25,43],[30,60]]},
-    {name:'즉시 완성',type:'A',tier:40,max:30,prereq:'미식가 Lv.10',excl:'연회 준비',
-     desc:'지속시간 동안 확률로 요리가 즉시 완성됩니다.',act:'Shift+좌클릭(화로)',req:'요리 Lv.20',
-     cols:['Lv','즉시 확률(%)','지속(초)','쿨타임(초)','마나'],
-     rows:[[1,3,10,240,30],[5,7,14,240,32],[10,12,20,240,36],[15,22,30,240,41],[20,31,40,240,47],[25,36,50,240,60],[30,40,60,240,70]]},
-    {name:'연회 준비',type:'A',tier:40,max:30,prereq:'미식가 Lv.10',excl:'즉시 완성',
-     desc:'지속시간 동안 확률로 한번에 최대 (추가횟수+1)회 요리합니다.',act:'Shift+우클릭(화로)',req:'요리 Lv.20',
-     cols:['Lv','확률(%)','추가횟수','지속(초)','쿨(초)','마나'],
-     rows:[[1,8,1,40,600,30],[5,16,1,72,600,32],[10,26,1,112,600,36],[15,36,2,152,600,41],[20,46,3,192,600,47],[25,56,4,240,600,60],[30,70,5,300,600,70]]}
-  ]
-}
+farming:{icon:'🌾',name:'농사',skills:[
+  {name:'개간의서약',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'마을 월드에서 경작지 수와 화분통 설치 수량이 증가합니다.',cols:['Lv','경작지','화분통/경작지','총 화분통'],rows:[[0,1,96,96],[1,1,100,100],[5,1,116,116],[10,2,132,264],[15,2,152,304],[17,3,156,468],[20,3,168,504],[24,4,180,720],[25,4,182,728],[30,4,192,768]]},
+  {name:'풍년의 축복',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'일반 등급 비율이 감소하여 고급·희귀 등급이 더 자주 드롭됩니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.9],[5,4.5],[10,9],[15,16.5],[20,24],[25,40],[30,60]]},
+  {name:'비옥한 토양',type:'P',tier:'T30',prereq:'풍년의 축복 Lv.10',excl:'-',desc:'작물이 확률로 한번 더 드롭됩니다.',cols:['Lv','추가 드롭(%)'],rows:[[1,0.6],[5,3],[10,6],[15,11],[20,16],[25,26.5],[30,40]]},
+  {name:'수확의 손길',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'되뿌리기',desc:'지속시간 동안 3×1 범위로 작물을 자동 수확합니다.',act:'괭이 + Shift+우클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]},
+  {name:'되뿌리기',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'수확의 손길',desc:'지속시간 동안 수확 후 씨앗이 자동으로 다시 심어집니다.',act:'괭이 + Shift+좌클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]}
+]},
+fishing:{icon:'🎣',name:'낚시',skills:[
+  {name:'보물 감지',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'낚시 시 보물 상자가 나올 확률이 증가합니다.',cols:['Lv','보물 확률(%)'],rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,45],[30,65]]},
+  {name:'소문난 미끼',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'낚시 성공 시 동일 물고기를 1마리 더 낚을 확률이 증가합니다.',cols:['Lv','2마리 확률(%)'],rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
+  {name:'낚싯줄 장력',type:'P',tier:'T30',prereq:'소문난 미끼 Lv.10',excl:'-',desc:'일반 등급 비율 감소, 고급·희귀 등급을 더 자주 낚습니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
+  {name:'쌍걸이',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'떼낚시',desc:'지속시간 동안 낚시 성공 시 확률로 2회 진행됩니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','2회(%)','지속(초)','쿨(초)','마나'],rows:[[1,2,40,600,30],[5,5.2,72,600,32],[10,9.2,112,600,36],[15,15.7,152,600,41],[20,22.2,192,600,47],[25,28.7,232,600,60],[30,40,300,600,70]]},
+  {name:'떼낚시',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'쌍걸이',desc:'지속시간 동안 물고기 등장/바이트 시간이 감소합니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','등장↓(틱)','바이트↓(틱)','지속(초)','쿨(초)','마나'],rows:[[1,22,5,40,600,30],[5,29,8,72,600,32],[10,36,12,120,600,36],[15,47,17,180,600,41],[20,50,20,200,600,47],[25,59,25,248,600,60],[30,72,30,300,600,70]]}
+]},
+mining:{icon:'⛏️',name:'채광',skills:[
+  {name:'단련된 곡괭이',type:'P',tier:'T30',prereq:'-',excl:'-',desc:'커스텀 광물 채광 시 데미지가 증가합니다.',cols:['Lv','데미지 증가(%)'],rows:[[1,2],[5,10],[10,20],[15,32.5],[20,45],[25,72.5],[30,100]]},
+  {name:'광맥 감각',type:'P',tier:'T30',prereq:'단련된 곡괭이 Lv.10',excl:'-',desc:'채광 시 광물이 추가 드롭됩니다.',cols:['Lv','커스텀(%)','기본(%)','최대(개)'],rows:[[1,0.6,2,1],[5,3,6,1],[10,6,11,1],[15,11,16,2],[20,16,21,2],[25,28,26,3],[30,40,30,4]]},
+  {name:'광맥 흐름',type:'P',tier:'T30',prereq:'광맥 감각 Lv.10',excl:'-',desc:'채광 딜레이가 감소하여 더 빨리 채광합니다.',cols:['Lv','딜레이 감소(%)'],rows:[[1,1],[5,5],[10,10],[15,16],[20,22],[25,36],[30,50]]},
+  {name:'광맥 탐지',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'폭발적인 채광',desc:'지속시간 동안 y±6, x±N 범위(타원형)의 광물을 투시합니다.',act:'곡괭이 + Shift+좌클릭(공중)',req:'채광 Lv.20',cols:['Lv','범위 x±','지속(초)','쿨(초)','마나'],rows:[[1,2,20,440,30],[5,4,24,380,32],[10,6,30,320,36],[15,9,38,296,41],[20,11,44,274,47],[25,14,52,250,60],[30,16,60,240,70]]},
+  {name:'폭발적인 채광',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'광맥 탐지',desc:'지속시간 동안 성급함 N + 야간투시 효과를 획득합니다.',act:'곡괭이 + Shift+우클릭(공중)',req:'채광 Lv.20',cols:['Lv','성급함','지속(초)','쿨(초)','마나'],rows:[[1,2,25,360,30],[5,3,33,328,32],[10,8,40,288,36],[15,8,50,258,41],[20,8,60,228,47],[25,8,70,198,60],[30,8,90,180,70]]}
+]},
+cooking:{icon:'🍳',name:'요리',skills:[
+  {name:'손질 달인',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'요리 시간이 감소합니다.',cols:['Lv','시간 감소(%)'],rows:[[1,1],[5,5],[10,10],[15,18],[20,25],[25,38],[30,50]]},
+  {name:'맛의 균형',type:'P',tier:'T20',prereq:'손질 달인 Lv.10',excl:'-',desc:'조리된 음식 섭취 시 기본 유지시간이 증가합니다.',cols:['Lv','유지시간(%)'],rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,50],[30,70]]},
+  {name:'미식가',type:'P',tier:'T30',prereq:'맛의 균형 Lv.10',excl:'-',desc:'높은 등급의 음식이 나올 확률이 증가합니다.',cols:['Lv','고등급(%)'],rows:[[1,1],[5,5],[10,10],[15,18],[20,28],[25,43],[30,60]]},
+  {name:'즉시 완성',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'연회 준비',desc:'지속시간 동안 확률로 요리가 즉시 완성됩니다.',act:'Shift+좌클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','지속(초)','쿨(초)','마나'],rows:[[1,3,10,240,30],[5,7,14,240,32],[10,12,20,240,36],[15,22,30,240,41],[20,31,40,240,47],[25,36,50,240,60],[30,40,60,240,70]]},
+  {name:'연회 준비',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'즉시 완성',desc:'지속시간 동안 확률로 (추가횟수+1)회 요리합니다.',act:'Shift+우클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','추가','지속(초)','쿨(초)','마나'],rows:[[1,8,1,40,600,30],[5,16,1,72,600,32],[10,26,1,112,600,36],[15,36,2,152,600,41],[20,46,3,192,600,47],[25,56,4,240,600,60],[30,70,5,300,600,70]]}
+]}
 };
 
 let curSkillJob = 'farming';
@@ -1592,36 +1553,64 @@ function switchSkill(job) {
 function renderSkillPage(job) {
   const data = SKILL_DATA[job];
   const wrap = document.getElementById('skill-content');
-  let html = '<div class="sk-tree">';
-  data.skills.forEach((sk, idx) => {
-    const typeClass = sk.type==='P' ? 'sk-passive' : 'sk-active';
-    const typeLabel = sk.type==='P' ? 'PASSIVE' : 'ACTIVE';
+  let html = '<div class="sk-grid">';
+  const skills = data.skills;
+
+  skills.forEach((sk, idx) => {
+    const isActive = sk.type === 'A';
+    const badgeClass = isActive ? 'sk-badge-a' : 'sk-badge-p';
+    const badgeText = isActive ? 'ACTIVE' : 'PASSIVE';
+    const imgUrl = SK_IMG[sk.name];
+    const imgHtml = imgUrl
+      ? `<img class="sk-card-img" src="${imgUrl}" alt="${sk.name}">`
+      : `<div class="sk-card-img-ph">${isActive ? '⚡' : '🛡️'}</div>`;
+
+    // Connector before card
+    if (idx > 0) {
+      const prev = skills[idx-1];
+      // Fork for exclusive pair (both T40 active skills)
+      if (sk.excl !== '-' && prev.excl !== '-' && sk.tier === prev.tier) {
+        html += `<div class="sk-connector-fork"><span>택 1</span></div>`;
+      } else {
+        html += `<div class="sk-connector"><div class="sk-connector-line"></div></div>`;
+      }
+    }
+
     html += `
-      <div class="sk-tree-row" onclick="toggleSkillDetail(${idx})">
-        <div class="sk-tier">T${sk.tier}</div>
-        <div class="sk-sname">${sk.name}</div>
-        <span class="sk-type ${typeClass}">${typeLabel}</span>
-        <span class="sk-prereq">${sk.prereq!=='-'?'← '+sk.prereq:''}</span>
-        <span class="sk-excl">${sk.excl!=='-'?'⚔ '+sk.excl:''}</span>
+    <div class="sk-card" id="skc-${idx}">
+      <div class="sk-card-hd" onclick="toggleSkill(${idx})">
+        ${imgHtml}
+        <div class="sk-card-info">
+          <div class="sk-card-top">
+            <span class="sk-card-name">${sk.name}</span>
+            <span class="sk-badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="sk-card-desc">${sk.desc}</div>
+        </div>
+        <div class="sk-card-meta">
+          <span class="sk-card-tier">${sk.tier}</span>
+          ${sk.prereq!=='-'?`<span class="sk-card-prereq">← ${sk.prereq}</span>`:''}
+          ${sk.excl!=='-'?`<span class="sk-card-excl">⚔ ${sk.excl}</span>`:''}
+        </div>
+        <span class="sk-card-arrow">▼</span>
       </div>
-      <div class="sk-detail" id="skd-${idx}">
-        <div class="sk-desc">${sk.desc}</div>
-        ${sk.act?`<div class="sk-activate"><strong>발동:</strong> ${sk.act} &nbsp;|&nbsp; <strong>요구:</strong> ${sk.req}</div>`:''}
-        <table class="sk-lvl-table">
+      <div class="sk-body">
+        ${sk.act?`<div class="sk-act"><span class="sk-act-item"><strong>발동</strong> ${sk.act}</span><span class="sk-act-item"><strong>요구</strong> ${sk.req}</span></div>`:''}
+        <table class="sk-tbl">
           <thead><tr>${sk.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
           <tbody>${sk.rows.map(r=>`<tr>${r.map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody>
         </table>
-      </div>`;
+      </div>
+    </div>`;
   });
+
   html += '</div>';
   wrap.innerHTML = html;
 }
 
-function toggleSkillDetail(idx) {
-  const row = document.querySelectorAll('.sk-tree-row')[idx];
-  const det = document.getElementById('skd-'+idx);
-  row.classList.toggle('sk-expanded');
-  det.classList.toggle('sk-dshow');
+function toggleSkill(idx) {
+  const card = document.getElementById('skc-'+idx);
+  card.classList.toggle('sk-open');
 }
 
 /* ── 레시피 서브탭 전환 ── */

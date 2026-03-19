@@ -206,6 +206,26 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .itag.k{border-color:#4a4a70;color:#c8c8f0;}
 
 /* ═══════════ RECIPE PAGE ═══════════ */
+/* recipe sub tabs */
+.rtabs{display:flex;gap:4px;margin-bottom:16px;}
+.rtab{
+  flex:1;padding:10px 14px;border-radius:var(--rad-s);font-size:12.5px;font-weight:700;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;text-align:center;
+  background:var(--s1);border:1px solid var(--b1);color:var(--sub);transition:all .15s;
+}
+.rtab:hover{border-color:var(--b3);color:var(--text);}
+.rtab-on[data-rsec="bench"]  {background:#061520;color:var(--bench);border-color:#1e3a60;}
+.rtab-on[data-rsec="brazier"]{background:#1a0a00;color:var(--brazier);border-color:#5a2800;}
+.rtab-on[data-rsec="counter"]{background:#041008;color:var(--counter);border-color:#0a3a14;}
+[data-theme="light"] .rtab-on[data-rsec="bench"]  {background:#e8f1ff;color:var(--bench);border-color:#bdd4ff;}
+[data-theme="light"] .rtab-on[data-rsec="brazier"]{background:#fff3e8;color:var(--brazier);border-color:#fcd5a0;}
+[data-theme="light"] .rtab-on[data-rsec="counter"]{background:#e6fdf0;color:var(--counter);border-color:#a8e8b8;}
+.rsec{display:none;animation:fade .18s ease;}
+.rsec-on{display:block;flex:1;overflow-y:auto;padding-bottom:28px;}
+/* recipe fixed-height layout */
+#pg-recipe .wrap{display:flex;flex-direction:column;height:calc(100vh - 54px);padding-bottom:0;overflow:hidden;}
+#pg-recipe .wrap>.ph,#pg-recipe .wrap>.sys-row,#pg-recipe .wrap>.rtabs{flex-shrink:0;}
+.rsec-on::-webkit-scrollbar{width:4px;}.rsec-on::-webkit-scrollbar-track{background:transparent;}.rsec-on::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
 /* sys info cards */
 .sys-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
 .sys-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:14px 16px;}
@@ -357,6 +377,21 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .tip-active{background:#180828;color:#c084fc;border:1px solid #4a1a6a;}
 .tip-desc{font-size:11.5px;color:var(--sub);line-height:1.65;}
 
+/* ── 트라이어드 툴팁 ── */
+#triad-tip{position:fixed;z-index:9999;pointer-events:none;width:280px;padding:12px 14px;background:#16161e;border:1px solid var(--b2);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.55);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;}
+#triad-tip.show{opacity:1;transform:translateY(0);}
+[data-theme="light"] #triad-tip{background:#ffffff;border-color:var(--b1);box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.tt-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.tt-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px;}
+.tt-row+.tt-row{border-top:1px solid var(--b1);}
+.tt-lbl{color:var(--sub);}
+.tt-val{font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);}
+.tt-silver{color:#94a3b8;}.tt-gold{color:#f59e0b;}
+.tt-range{margin-top:6px;padding-top:6px;border-top:1px dashed var(--b2);display:flex;justify-content:space-between;align-items:center;font-size:11px;}
+.tt-range .tt-lbl{font-weight:600;color:var(--tri);}
+.tt-range .tt-val{font-size:13px;color:var(--tri);}
+tr[data-triad]{cursor:default;transition:background .12s;}
+tr[data-triad]:hover td{background:var(--s2);}
 /* mini cards */
 .mini2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .mini-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:12px 14px;}
@@ -614,7 +649,15 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     </div>
   </div>
 
+  <!-- 레시피 서브탭 -->
+  <div class="rtabs">
+    <button class="rtab rtab-on" data-rsec="bench" onclick="switchRecipe('bench')">🧰 편백나무 제작대</button>
+    <button class="rtab" data-rsec="brazier" onclick="switchRecipe('brazier')">🔥 허름한 화로</button>
+    <button class="rtab" data-rsec="counter" onclick="switchRecipe('counter')">🥣 허름한 조리대</button>
+  </div>
+
   <!-- ── 편백나무 제작대 ── -->
+  <div class="rsec rsec-on" id="rsec-bench">
   <div class="sec-hd"><span class="badge bd-bench">🧰 편백나무 제작대</span><div class="sec-line"></div><span class="sec-limit">최대 3개</span></div>
   <div class="two-col">
     <div>
@@ -636,10 +679,10 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <table class="rt">
         <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
         <tbody>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2" alt="">트라이어드 투구</div></td><td><span class="itag k">네더라이트 투구 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2" alt="">트라이어드 흉갑</div></td><td><span class="itag k">네더라이트 흉갑 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2" alt="">트라이어드 레깅스</div></td><td><span class="itag k">네더라이트 레깅스 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2" alt="">트라이어드 부츠</div></td><td><span class="itag k">네더라이트 부츠 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-triad="helmet"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fn4yoKa5hA5LEgS0uA864%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133159.png%3Falt%3Dmedia%26token%3D28f8cb50-87d0-4ef4-80c9-c90b2bfc0ed0&width=300&dpr=1&quality=100&sign=2cbf4275&sv=2" alt="">트라이어드 투구</div></td><td><span class="itag k">네더라이트 투구 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-triad="chest"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFvMtrYznO9VQJEoofAqs%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133204-Photoroom.png%3Falt%3Dmedia%26token%3D5aa57304-269d-4a4a-8705-b78919f30543&width=300&dpr=1&quality=100&sign=13b74ad5&sv=2" alt="">트라이어드 흉갑</div></td><td><span class="itag k">네더라이트 흉갑 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-triad="legs"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3eOBzmyRL921DmMQXYO2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133213-Photoroom.png%3Falt%3Dmedia%26token%3D8469a401-7e2b-4045-87ab-878263709673&width=300&dpr=1&quality=100&sign=1c1d2116&sv=2" alt="">트라이어드 레깅스</div></td><td><span class="itag k">네더라이트 레깅스 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-triad="boots"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiEWLjJdMPH3MXmXiHahm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-06%2520133209-Photoroom.png%3Falt%3Dmedia%26token%3D33dad252-5497-4f02-a6f8-569f04a22794&width=300&dpr=1&quality=100&sign=c9aba5c2&sv=2" alt="">트라이어드 부츠</div></td><td><span class="itag k">네더라이트 부츠 ×1</span><span class="itag">미스릴 ×2</span><span class="itag">아르젠타이트 ×2</span><span class="itag">벨리움 ×2</span></td><td><span class="chip c-n">300초</span></td><td><span class="chip c-100">100%</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -681,10 +724,12 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
           <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F7orXlz90GmAGyhLndfcS%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-03%2520160023-Picsart-BackgroundRemover.png%3Falt%3Dmedia%26token%3Dfd2c1f50-40ee-4fb5-9ada-5300f72dfa09&width=300&dpr=1&quality=100&sign=1c146bb5&sv=2" alt=""><span class="dot dr"></span>희귀 무지개 떡밥</div></td><td><span class="itag k">루어 미끼 ×1</span><span class="itag">희귀↑ 말린 농작물 ×2</span><span class="itag">희귀↑ 말린 물고기 ×1</span></td><td><span class="chip c-n">5초</span></td><td><span class="chip c-100">100%</span></td></tr>
         </tbody>
       </table>
-    </div>
   </div>
+  </div><!-- /two-col -->
+  </div><!-- /rsec-bench -->
 
   <!-- ── 허름한 화로 ── -->
+  <div class="rsec" id="rsec-brazier">
   <div class="sec-hd"><span class="badge bd-brazier">🔥 허름한 화로</span><div class="sec-line"></div><span class="sec-limit">최대 3개</span></div>
   <table class="rt">
     <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
@@ -696,8 +741,10 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FXwxsKcld7Pc1hQrV2JlM%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520160805-Photoroom.png%3Falt%3Dmedia%26token%3D9e56f877-431e-4cca-a56f-040af76c5967&width=300&dpr=1&quality=100&sign=e2d223dd&sv=2" alt="">벨리움 주괴</div></td><td><span class="itag k">일반 벨리움 원석 ×3</span><span class="itag">마그마 블록 ×4</span></td><td><span class="chip c-n">15초</span></td><td><span class="chip c-100">100%</span></td></tr>
     </tbody>
   </table>
+  </div><!-- /rsec-brazier -->
 
   <!-- ── 허름한 조리대 ── -->
+  <div class="rsec" id="rsec-counter">
   <div class="sec-hd"><span class="badge bd-counter">🥣 허름한 조리대</span><div class="sec-line"></div><span class="sec-limit">최대 6개 · 30~40초 · 80~90%</span></div>
   <div class="food-grid">
     <div class="food-card">
@@ -925,6 +972,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       </div>
     </div>
   </div>
+  </div><!-- /rsec-counter -->
 
 </div></div>
 
@@ -1270,6 +1318,14 @@ function go(tab) {
   document.getElementById('pg-' + tab).classList.add('on');
   document.querySelector('.nav-tab.t-' + tab).classList.add('on');
   if (tab === 'sim') { buildPieceSliders(); simUpdate(); }
+}
+
+/* ── 레시피 서브탭 전환 ── */
+function switchRecipe(sec) {
+  document.querySelectorAll('.rsec').forEach(s => s.classList.remove('rsec-on'));
+  document.querySelectorAll('.rtab').forEach(b => b.classList.remove('rtab-on'));
+  document.getElementById('rsec-' + sec).classList.add('rsec-on');
+  document.querySelector('.rtab[data-rsec="' + sec + '"]').classList.add('rtab-on');
 }
 
 /* ══════════════════════════════════════════
@@ -1719,6 +1775,57 @@ function toggleTheme() {
 <!-- ═══ 스킬 툴팁 ═══ -->
 <div id="skill-tip"><div class="tip-name"><span id="tip-name"></span><span id="tip-type" class="tip-type"></span></div><div class="tip-desc" id="tip-desc"></div></div>
 
+<!-- ═══ 트라이어드 툴팁 ═══ -->
+<div id="triad-tip"></div>
+
+<script>
+const TRIAD_DB = {
+  helmet: { name:'트라이어드 투구',   base:[1,3], silver:0.2, gold:0.4 },
+  chest:  { name:'트라이어드 흉갑',   base:[1,5], silver:0.2, gold:0.5 },
+  legs:   { name:'트라이어드 레깅스', base:[1,4], silver:0.2, gold:0.5 },
+  boots:  { name:'트라이어드 부츠',   base:[1,3], silver:0.2, gold:0.5 },
+};
+
+const ttip = document.getElementById('triad-tip');
+let ttHideTimer;
+
+function buildTriadTip(key) {
+  const d = TRIAD_DB[key];
+  if (!d) return '';
+  const maxSilver = d.base[1] + d.silver * 3;
+  const maxGold   = d.base[1] + d.gold * 3;
+  return `
+    <div class="tt-name">${d.name}</div>
+    <div class="tt-row"><span class="tt-lbl">기본값</span><span class="tt-val">${d.base[0]} ~ ${d.base[1]}</span></div>
+    <div class="tt-row"><span class="tt-lbl"><span class="tt-silver">은별</span> 주괴 1종류당</span><span class="tt-val tt-silver">+${d.silver}</span></div>
+    <div class="tt-row"><span class="tt-lbl"><span class="tt-gold">금별</span> 주괴 1종류당</span><span class="tt-val tt-gold">+${d.gold}</span></div>
+    <div class="tt-range"><span class="tt-lbl">최대 수치 (금별 3종)</span><span class="tt-val">+${maxGold.toFixed(1)}</span></div>`;
+}
+
+document.addEventListener('mouseover', e => {
+  const row = e.target.closest('[data-triad]');
+  if (!row) return;
+  clearTimeout(ttHideTimer);
+  ttip.innerHTML = buildTriadTip(row.dataset.triad);
+  ttip.classList.add('show');
+  posTriadTip(e);
+});
+document.addEventListener('mousemove', e => {
+  if (ttip.classList.contains('show')) posTriadTip(e);
+});
+document.addEventListener('mouseout', e => {
+  if (!e.target.closest('[data-triad]')) return;
+  ttHideTimer = setTimeout(() => ttip.classList.remove('show'), 80);
+});
+function posTriadTip(e) {
+  const pad=14, tw=ttip.offsetWidth||280, th=ttip.offsetHeight||120;
+  let x=e.clientX+pad, y=e.clientY+pad;
+  if(x+tw>window.innerWidth-8) x=e.clientX-tw-pad;
+  if(y+th>window.innerHeight-8) y=e.clientY-th-pad;
+  ttip.style.left=x+'px'; ttip.style.top=y+'px';
+}
+</script>
+
 <script>
 const SKILL_DB = {
   /* ── 농사 (별의 보주) ── */
@@ -1794,7 +1901,7 @@ function positionTip(e) {
   <div style="font-size:11px;color:var(--muted);line-height:1.8;">
     <span style="color:var(--sub);font-weight:600;">제작자</span> <span style="color:var(--text);">02qB</span> <span style="font-size:10px;color:var(--muted);">(달)</span>
     <span style="margin:0 8px;color:var(--b2);">|</span>
-    <span style="color:var(--sub);font-weight:600;">v1.0.1</span> <span style="color:var(--muted);">release</span>
+    <span style="color:var(--sub);font-weight:600;">v1.0.2</span> <span style="color:var(--muted);">release</span>
   </div>
 </footer>
 </body>

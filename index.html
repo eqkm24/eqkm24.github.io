@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스텔라 마을 가이드</title>
+<title>스텔라 마을 위키</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* ═══════════ RESET & TOKENS ═══════════ */
@@ -392,6 +392,8 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .tt-range .tt-val{font-size:13px;color:var(--tri);}
 tr[data-triad]{cursor:default;transition:background .12s;}
 tr[data-triad]:hover td{background:var(--s2);}
+tr[data-farm]{cursor:default;transition:background .12s;}
+tr[data-farm]:hover td{background:var(--s2);}
 /* mini cards */
 .mini2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .mini-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:12px 14px;}
@@ -597,7 +599,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <nav class="topnav">
   <div class="nav-logo">
     <div class="nav-logo-mark">✨</div>
-    <div class="nav-logo-text">스텔라 마을 <em>가이드</em></div>
+    <div class="nav-logo-text">스텔라 마을 <em>위키</em></div>
   </div>
   <div class="nav-tabs">
     <button class="nav-tab t-recipe on"  onclick="go('recipe')">🛠 제작 레시피</button>
@@ -703,13 +705,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
       <table class="rt">
         <thead><tr><th>결과물</th><th>재료</th><th>시간</th><th>확률</th></tr></thead>
         <tbody>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FbN2QNf55Td9yCFhUWPBt%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164049-Photoroom.png%3Falt%3Dmedia%26token%3Dfedf51e3-965c-4803-9eb3-cfdf8ee85f54&width=300&dpr=1&quality=100&sign=89d56adc&sv=2" alt=""><span class="dot dn"></span>일반 구리 물뿌리개</div></td><td><span class="itag">물 양동이 ×1</span><span class="itag">구리 블록 ×5</span><span class="itag">철 블록 ×3</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FCBkPythcHgOlyebC3Kbq%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164052-Photoroom.png%3Falt%3Dmedia%26token%3D5f677ff9-8cd3-43e9-bbc6-9933c44355e2&width=300&dpr=1&quality=100&sign=a24784f6&sv=2" alt=""><span class="dot da"></span>고급 철 물뿌리개</div></td><td><span class="itag k">구리 물뿌리개 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-90">90%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Faxx3VCr0qNlaIkA861Oh%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164055-Photoroom.png%3Falt%3Dmedia%26token%3D07c60c4a-7204-4057-9eb1-9e8755d5a5b7&width=300&dpr=1&quality=100&sign=f4d2cec3&sv=2" alt=""><span class="dot dr"></span>희귀 금 물뿌리개</div></td><td><span class="itag k">철 물뿌리개 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-70">70%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FGdKdCDDKxKlAV4kcP2Nm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164058-Photoroom.png%3Falt%3Dmedia%26token%3D6f4fff9e-8087-48cb-877e-10e0bb35eda0&width=300&dpr=1&quality=100&sign=c83d2cf5&sv=2" alt=""><span class="dot dh"></span>영웅 트라이어드 물뿌리개</div></td><td><span class="itag k">금 물뿌리개 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-30">30%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FvCf4UdvwWKByjdpybTW1%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164039-Photoroom.png%3Falt%3Dmedia%26token%3D4d672db1-a747-45d5-b097-9bbcd62fab0f&width=300&dpr=1&quality=100&sign=77892441&sv=2" alt=""><span class="dot da"></span>고급 철제 스프링클러</div></td><td><span class="itag">물 양동이 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FKLTJcCEKHOSAZsq3uyQb%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164042-Photoroom.png%3Falt%3Dmedia%26token%3Ddd9aae61-b30e-4334-8893-27f20a415526&width=300&dpr=1&quality=100&sign=7ee4cae&sv=2" alt=""><span class="dot dr"></span>희귀 금 스프링클러</div></td><td><span class="itag k">철제 스프링클러 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-80">80%</span></td></tr>
-          <tr><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F6h6h0pLEEUXXHqpPr4yH%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164046-Photoroom.png%3Falt%3Dmedia%26token%3Ddc49b444-0128-4933-bcab-c5e2bb8514fb&width=300&dpr=1&quality=100&sign=c9eced8e&sv=2" alt=""><span class="dot dh"></span>영웅 트라이어드 스프링클러</div></td><td><span class="itag k">금 스프링클러 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-60">60%</span></td></tr>
+          <tr data-farm="water_copper"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FbN2QNf55Td9yCFhUWPBt%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164049-Photoroom.png%3Falt%3Dmedia%26token%3Dfedf51e3-965c-4803-9eb3-cfdf8ee85f54&width=300&dpr=1&quality=100&sign=89d56adc&sv=2" alt=""><span class="dot dn"></span>일반 구리 물뿌리개</div></td><td><span class="itag">물 양동이 ×1</span><span class="itag">구리 블록 ×5</span><span class="itag">철 블록 ×3</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-farm="water_iron"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FCBkPythcHgOlyebC3Kbq%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164052-Photoroom.png%3Falt%3Dmedia%26token%3D5f677ff9-8cd3-43e9-bbc6-9933c44355e2&width=300&dpr=1&quality=100&sign=a24784f6&sv=2" alt=""><span class="dot da"></span>고급 철 물뿌리개</div></td><td><span class="itag k">구리 물뿌리개 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-90">90%</span></td></tr>
+          <tr data-farm="water_gold"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Faxx3VCr0qNlaIkA861Oh%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164055-Photoroom.png%3Falt%3Dmedia%26token%3D07c60c4a-7204-4057-9eb1-9e8755d5a5b7&width=300&dpr=1&quality=100&sign=f4d2cec3&sv=2" alt=""><span class="dot dr"></span>희귀 금 물뿌리개</div></td><td><span class="itag k">철 물뿌리개 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-70">70%</span></td></tr>
+          <tr data-farm="water_triad"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FGdKdCDDKxKlAV4kcP2Nm%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164058-Photoroom.png%3Falt%3Dmedia%26token%3D6f4fff9e-8087-48cb-877e-10e0bb35eda0&width=300&dpr=1&quality=100&sign=c83d2cf5&sv=2" alt=""><span class="dot dh"></span>영웅 트라이어드 물뿌리개</div></td><td><span class="itag k">금 물뿌리개 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-30">30%</span></td></tr>
+          <tr data-farm="spring_iron"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FvCf4UdvwWKByjdpybTW1%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164039-Photoroom.png%3Falt%3Dmedia%26token%3D4d672db1-a747-45d5-b097-9bbcd62fab0f&width=300&dpr=1&quality=100&sign=77892441&sv=2" alt=""><span class="dot da"></span>고급 철제 스프링클러</div></td><td><span class="itag">물 양동이 ×1</span><span class="itag">미스릴 주괴 ×3</span><span class="itag">철 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-100">100%</span></td></tr>
+          <tr data-farm="spring_gold"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FKLTJcCEKHOSAZsq3uyQb%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164042-Photoroom.png%3Falt%3Dmedia%26token%3Ddd9aae61-b30e-4334-8893-27f20a415526&width=300&dpr=1&quality=100&sign=7ee4cae&sv=2" alt=""><span class="dot dr"></span>희귀 금 스프링클러</div></td><td><span class="itag k">철제 스프링클러 ×1</span><span class="itag">아르젠타이트 ×3</span><span class="itag">금 블록 ×5</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-80">80%</span></td></tr>
+          <tr data-farm="spring_triad"><td class="nm-flex"><div class="nm-flex-inner"><img class="ritem-img" src="https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F6h6h0pLEEUXXHqpPr4yH%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164046-Photoroom.png%3Falt%3Dmedia%26token%3Ddc49b444-0128-4933-bcab-c5e2bb8514fb&width=300&dpr=1&quality=100&sign=c9eced8e&sv=2" alt=""><span class="dot dh"></span>영웅 트라이어드 스프링클러</div></td><td><span class="itag k">금 스프링클러 ×1</span><span class="itag k">벨리움 주괴 ×4</span></td><td><span class="chip c-n">180초</span></td><td><span class="chip c-60">60%</span></td></tr>
         </tbody>
       </table>
       <div class="sub-lbl bench" style="margin-top:14px;">낚시 — 미끼 / 떡밥</div>
@@ -1786,6 +1788,16 @@ const TRIAD_DB = {
   boots:  { name:'트라이어드 부츠',   base:[1,3], silver:0.2, gold:0.5 },
 };
 
+const FARM_DB = {
+  water_copper: { name:'구리 물뿌리개',          type:'물뿌리개', storage:5,  spray:1, range:'1×4' },
+  water_iron:   { name:'철 물뿌리개',            type:'물뿌리개', storage:8,  spray:1, range:'2×4' },
+  water_gold:   { name:'금 물뿌리개',            type:'물뿌리개', storage:8,  spray:2, range:'3×5' },
+  water_triad:  { name:'트라이어드 물뿌리개',    type:'물뿌리개', storage:10, spray:4, range:'3×6' },
+  spring_iron:  { name:'철제 스프링클러',        type:'스프링클러', storage:4,  spray:1, range:'기준 1칸', auto:'5틱마다 자동' },
+  spring_gold:  { name:'금 스프링클러',          type:'스프링클러', storage:8,  spray:3, range:'기준 2칸', auto:'5틱마다 자동' },
+  spring_triad: { name:'트라이어드 스프링클러',  type:'스프링클러', storage:15, spray:3, range:'기준 3칸', auto:'5틱마다 자동' },
+};
+
 const ttip = document.getElementById('triad-tip');
 let ttHideTimer;
 
@@ -1802,11 +1814,25 @@ function buildTriadTip(key) {
     <div class="tt-range"><span class="tt-lbl">최대 수치 (금별 3종)</span><span class="tt-val">+${maxGold.toFixed(1)}</span></div>`;
 }
 
+function buildFarmTip(key) {
+  const d = FARM_DB[key];
+  if (!d) return '';
+  const typeIcon = d.type === '물뿌리개' ? '💧' : '🌀';
+  return `
+    <div class="tt-name">${typeIcon} ${d.name}</div>
+    <div class="tt-row"><span class="tt-lbl">물 저장</span><span class="tt-val">${d.storage}칸</span></div>
+    <div class="tt-row"><span class="tt-lbl">1회 분수량</span><span class="tt-val">${d.spray}</span></div>
+    <div class="tt-row"><span class="tt-lbl">범위</span><span class="tt-val">${d.range}</span></div>
+    ${d.auto ? `<div class="tt-row"><span class="tt-lbl">작동</span><span class="tt-val" style="color:var(--sl-uc);">${d.auto}</span></div>` : ''}`;
+}
+
 document.addEventListener('mouseover', e => {
-  const row = e.target.closest('[data-triad]');
+  const triad = e.target.closest('[data-triad]');
+  const farm  = e.target.closest('[data-farm]');
+  const row   = triad || farm;
   if (!row) return;
   clearTimeout(ttHideTimer);
-  ttip.innerHTML = buildTriadTip(row.dataset.triad);
+  ttip.innerHTML = triad ? buildTriadTip(row.dataset.triad) : buildFarmTip(row.dataset.farm);
   ttip.classList.add('show');
   posTriadTip(e);
 });
@@ -1814,7 +1840,7 @@ document.addEventListener('mousemove', e => {
   if (ttip.classList.contains('show')) posTriadTip(e);
 });
 document.addEventListener('mouseout', e => {
-  if (!e.target.closest('[data-triad]')) return;
+  if (!e.target.closest('[data-triad]') && !e.target.closest('[data-farm]')) return;
   ttHideTimer = setTimeout(() => ttip.classList.remove('show'), 80);
 });
 function posTriadTip(e) {

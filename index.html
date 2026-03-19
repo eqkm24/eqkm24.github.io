@@ -225,7 +225,7 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .rsec-on{display:block;flex:1;overflow-y:auto;padding-bottom:28px;}
 /* recipe fixed-height layout */
 #pg-recipe .wrap{display:flex;flex-direction:column;height:calc(100vh - 54px);padding-bottom:0;overflow:hidden;}
-#pg-recipe .wrap>.ph,#pg-recipe .wrap>.sys-row,#pg-recipe .wrap>.rtabs{flex-shrink:0;}
+#pg-recipe .wrap>.ph,#pg-recipe .wrap>.rtabs{flex-shrink:0;}
 .rsec-on::-webkit-scrollbar{width:4px;}.rsec-on::-webkit-scrollbar-track{background:transparent;}.rsec-on::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px;}
 /* sys info cards */
 .sys-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px;}
@@ -585,8 +585,12 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   .pf-btn{padding:3px 9px;font-size:10.5px;}
   .pf-sep{margin:0 2px;}
 
-  /* ── 툴팁 모바일 비활성 ── */
+  /* ── 툴팁 모바일 → 인라인 표시 ── */
   #skill-tip,#triad-tip{display:none!important;}
+  .mobile-info{display:block;padding:8px 10px;margin-top:4px;background:var(--s2);border:1px solid var(--b2);border-radius:6px;font-size:10.5px;color:var(--sub);line-height:1.7;animation:fade .18s ease;}
+  .mobile-info .tt-name{font-size:11px;margin-bottom:4px;}
+  .mobile-info .tt-row{padding:2px 0;font-size:10.5px;}
+  .mobile-info .tt-range{margin-top:4px;padding-top:4px;}
 }
 
 /* ═══════════ PRICE PAGE ═══════════ */
@@ -726,30 +730,6 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   <div class="ph">
     <div class="ph-title">🛠 제작 <span class="hl-b">레시피</span></div>
     <div class="ph-sub">루나월드 커스텀 제작 시스템 · 편백나무 제작대 / 허름한 화로 / 허름한 조리대</div>
-  </div>
-
-  <!-- 시스템 정보 -->
-  <div class="sys-row">
-    <div class="sys-card">
-      <div class="sys-lbl">제작 가능 장소</div>
-      <div class="sys-body"><strong>자신의 마을 월드</strong> 또는<br><strong>본인 점유지(클레임)</strong> 내부</div>
-    </div>
-    <div class="sys-card">
-      <div class="sys-lbl">설치 수량 제한</div>
-      <div class="sys-body">허름한 조리대 <strong>최대 6개</strong><br>편백나무 제작대 <strong>최대 3개</strong><br>허름한 화로 <strong>최대 3개</strong></div>
-    </div>
-    <div class="sys-card">
-      <div class="sys-lbl">내구도 감소 (1회)</div>
-      <div class="sys-body">
-        조리대 <span class="sys-formula">0.7 - (0.003 × 노련함)</span><br>
-        제작대 <span class="sys-formula">0.9 - (0.004 × 노련함)</span><br>
-        화로 <span class="sys-formula">1.0 - (0.004 × 노련함)</span>
-      </div>
-    </div>
-    <div class="sys-card">
-      <div class="sys-lbl">편의 / 주의</div>
-      <div class="sys-body">레시피 아이콘 <strong>좌클릭</strong> → 재료 자동 배치<br>대체 재료 가능 (석탄 → 목탄)<br><span class="warn-pill">⚠ Shift+우클릭 취소 시 재료 소멸</span></div>
-    </div>
   </div>
 
   <!-- 레시피 서브탭 -->
@@ -1951,6 +1931,33 @@ function posTriadTip(e) {
   if(y+th>window.innerHeight-8) y=e.clientY-th-pad;
   ttip.style.left=x+'px'; ttip.style.top=y+'px';
 }
+
+// 모바일: 탭하면 행 아래에 인라인 정보 표시
+document.addEventListener('click', e => {
+  if (window.innerWidth > 640) return;
+  const triad = e.target.closest('[data-triad]');
+  const farm  = e.target.closest('[data-farm]');
+  const row   = triad || farm;
+  if (!row) return;
+
+  // 이미 열린 정보가 있으면 닫기
+  const existing = row.querySelector('.mobile-info');
+  if (existing) { existing.remove(); return; }
+
+  // 다른 열린 정보 모두 닫기
+  document.querySelectorAll('.mobile-info').forEach(el => el.remove());
+
+  // 정보 생성
+  const html = triad ? buildTriadTip(row.dataset.triad) : buildFarmTip(row.dataset.farm);
+  const lastTd = row.querySelector('td:last-child');
+  if (!lastTd) return;
+
+  // 행 맨 아래 td에 colspan으로 새 행 삽입
+  const infoRow = document.createElement('tr');
+  infoRow.innerHTML = `<td colspan="4" style="padding:0 6px 6px;border-bottom:1px solid var(--b2);"><div class="mobile-info">${html}</div></td>`;
+  row.after(infoRow);
+  infoRow.querySelector('.mobile-info').classList.add('mobile-info');
+});
 </script>
 
 <script>

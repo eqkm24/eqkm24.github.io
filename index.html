@@ -2717,7 +2717,7 @@ function _renderPriceResult(cat){
   const upCnt=priceData.filter(i=>i.diff>0).length;
   const downCnt=priceData.filter(i=>i.diff<0).length;
   const maxUp=priceData.reduce((m,i)=>i.diff>m?i.diff:m,0);
-  const maxDown=priceData.reduce((m,i=>i.diff<m?i.diff:m,0));
+  const maxDown=priceData.reduce((m,i)=>i.diff<m?i.diff:m,0));
   const grades=[...new Set(priceData.map(i=>i.grade))];
   const gradeOrder=['커먼','언커먼','레어','일반','고급','희귀'];
   grades.sort((a,b)=>gradeOrder.indexOf(a)-gradeOrder.indexOf(b));

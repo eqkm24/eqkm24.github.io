@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스텔라 마을 위키</title>
+<title>스텔라 마을 가이드</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23c084fc'/%3E%3Cstop offset='100%25' stop-color='%23818cf8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M32 4c1.2 0 2.3.7 2.8 1.8l7 14.2 15.7 2.3c1.2.2 2.1 1 2.5 2.1.3 1.1 0 2.3-.9 3.1L47.7 38.6l2.7 15.6c.2 1.2-.3 2.3-1.3 3-.5.3-1 .5-1.6.5-.4 0-.9-.1-1.3-.3L32 49.8l-14.2 7.5c-1 .5-2.3.4-3.2-.3s-1.3-1.8-1.1-3l2.7-15.6L4.9 27.5c-.8-.8-1.2-2-.9-3.1.4-1.1 1.3-1.9 2.5-2.1l15.7-2.3 7-14.2C29.7 4.7 30.8 4 32 4z' fill='url(%23g)' stroke='%23a78bfa' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='22' r='2.5' fill='white' opacity='.45'/%3E%3Ccircle cx='20' cy='28' r='1.2' fill='white' opacity='.3'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -834,11 +834,27 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 [data-theme="light"] .job-sel-btn.job-sel-on{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
 
 /* ═══════════ ZONE PAGE ═══════════ */
-.zn-map{display:grid;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:var(--rad-s);overflow:hidden;margin-bottom:14px;}
-.zn-cell{aspect-ratio:1;background:var(--s2);cursor:pointer;transition:all .12s;position:relative;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:transparent;}
-.zn-cell:hover{z-index:1;transform:scale(1.15);box-shadow:0 0 8px rgba(0,0,0,.4);color:var(--text);font-size:8px;}
-.zn-cell.owned{color:transparent;}
-.zn-cell.owned:hover{color:#fff;}
+.zn-map{display:grid;background:transparent;border-radius:var(--rad-s);overflow:hidden;margin-bottom:14px;}
+.zn-cell{
+  aspect-ratio:1;background:var(--s2);cursor:pointer;transition:all .15s;
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;border:none;outline:none;overflow:hidden;
+}
+/* 빈 셀 — 미묘한 구분선만 */
+.zn-cell{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);}
+/* 점유 셀 — 색깔 배경 + 글로우 */
+.zn-cell.owned{box-shadow:inset 0 0 0 2px rgba(255,255,255,.18), 0 0 6px var(--zn-glow,transparent);}
+.zn-cell.owned:hover{transform:scale(1.08);z-index:2;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35), 0 0 14px var(--zn-glow,transparent);}
+/* 이름 텍스트 — 항상 표시 */
+.zn-cell-name{font-size:clamp(6px,1.1vw,10px);font-weight:700;color:rgba(255,255,255,.9);text-shadow:0 1px 3px rgba(0,0,0,.7);text-align:center;line-height:1.1;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;pointer-events:none;}
+/* 스킨 머리 */
+.zn-cell-skin{width:clamp(12px,2vw,22px);height:clamp(12px,2vw,22px);image-rendering:pixelated;border-radius:2px;pointer-events:none;flex-shrink:0;}
+.zn-cell-skin-ph{width:clamp(12px,2vw,22px);height:clamp(12px,2vw,22px);border-radius:2px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:clamp(8px,1.4vw,14px);flex-shrink:0;}
+/* 빈 셀 호버 */
+.zn-cell:not(.owned):hover{background:var(--s3);box-shadow:inset 0 0 0 1px var(--b3);}
+[data-theme="light"] .zn-cell{box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);}
+[data-theme="light"] .zn-cell.owned{box-shadow:inset 0 0 0 2px rgba(0,0,0,.18),0 0 6px var(--zn-glow,transparent);}
+[data-theme="light"] .zn-cell-name{color:rgba(0,0,0,.85);text-shadow:0 1px 2px rgba(255,255,255,.6);}
 .zn-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
 .zn-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
 .zn-leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub);}
@@ -987,7 +1003,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <nav class="topnav">
   <div class="nav-logo" onclick="go('main')" style="cursor:pointer;">
     <div class="nav-logo-mark">✨</div>
-    <div class="nav-logo-text">스텔라 마을 <em>위키</em></div>
+    <div class="nav-logo-text">스텔라 마을 <em>가이드</em></div>
   </div>
   <div class="nav-tabs">
     <div class="nav-dd">
@@ -1056,7 +1072,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 54px);text-align:center;padding-top:0;">
   <div style="font-size:52px;margin-bottom:8px;">✨</div>
   <h1 style="font-size:32px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을</h1>
-  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">Stella · Since.26-02-07</p>
+  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">루나월드 · 스텔라 마을 종합 정보 허브</p>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;width:100%;margin-bottom:24px;">
     <div class="main-card" onclick="go('member')"><div class="main-icon">👥</div><div class="main-val" id="dash-members">0</div><div class="main-label">마을원</div></div>
     <div class="main-card" onclick="go('zone')"><div class="main-icon">🗺️</div><div class="main-val" id="dash-chunks">0</div><div class="main-label">점유 청크</div></div>
@@ -1714,7 +1730,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 
   <div class="ph">
     <div class="ph-title">📊 변동 <span style="color:#f59e0b;">시세</span></div>
-    <div class="ph-sub">실시간 공유 시세 · 누구나 수정 가능 · 마지막 수정 시각 표시</div>
+    <div class="ph-sub">디스코드 메시지 붙여넣기 → 분석 → 전체 공유 · 누가 올려도 모두가 최신 시세 확인 가능</div>
   </div>
 
   <!-- 시세 서브탭 -->
@@ -1740,13 +1756,10 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     <div id="exp-status" style="font-size:11px;color:var(--muted);margin-top:8px;"></div>
   </div>
 
-  <!-- 시세 탭 패널들 -->
-  <div id="psec-crop" class="psec"></div>
-  <div id="psec-fish" class="psec" style="display:none;"></div>
-  <div id="psec-food" class="psec" style="display:none;"></div>
-
-  <!-- 입력/추가 모달 루트 -->
-  <div id="price-modal-root"></div>
+  <!-- 탭별 패널 — JS로 렌더 -->
+  <div id="psec-crop" class="psec-panel"></div>
+  <div id="psec-fish" class="psec-panel" style="display:none;"></div>
+  <div id="psec-food" class="psec-panel" style="display:none;"></div>
 
 </div></div>
 
@@ -2125,15 +2138,21 @@ function renderMembers(){
   const mq=(document.getElementById('mb-search')||{}).value||"".trim().toLowerCase();
   const filtered=mq?members.filter(m=>m.name.toLowerCase().includes(mq)||m.mc.toLowerCase().includes(mq)):members;
   if(!filtered.length){g.innerHTML='<div class="mm-empty">'+(mq?'검색 결과가 없어요.':'마을원을 추가해주세요.')+'</div>';return;}
-  g.innerHTML=filtered.map((m,i)=>{
+  g.innerHTML=filtered.map((m)=>{
     const idx=members.indexOf(m);
     const jobLabel=(m.jobs&&m.jobs.length)?m.jobs.join(' · '):(m.job||'');
     const avatarColor=m.color||'#38bdf8';
+    const mcNick=encodeURIComponent(m.mc||m.name);
+    const fallbackChar=m.name[0];
     return `<div class="mb-card" onclick="openMemberModal(${idx})" style="cursor:pointer;">
-    <div class="mb-avatar" style="background:${avatarColor}22;border:2px solid ${avatarColor};color:${avatarColor};">${m.name[0]}</div>
+    <div class="mb-avatar" style="background:${avatarColor}22;border:2px solid ${avatarColor};overflow:hidden;padding:0;">
+      <img src="https://mc-heads.net/avatar/${mcNick}/40" alt=""
+        style="width:100%;height:100%;object-fit:cover;image-rendering:pixelated;display:block;"
+        onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('beforeend','<span style=&quot;color:${avatarColor};font-size:18px;font-weight:700;&quot;>${fallbackChar}</span>')">
+    </div>
     <div class="mb-info">
       <div class="mb-name">${m.name}</div>
-      <div class="mb-mc">${m.mc}</div>
+      <div class="mb-mc">${m.mc||''}</div>
       <div class="mb-tags">
         <span class="mb-tag ${m.type==='본계'?'mb-tag-main':'mb-tag-sub'}">${m.type}</span>
         <span class="mb-tag mb-tag-job">${jobLabel}</span>
@@ -2152,7 +2171,13 @@ function openMemberModal(editIdx){
   document.getElementById('mb-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closeMemberModal()">
     <div class="mb-modal"><h3>${isEdit?'마을원 수정':'마을원 추가'}</h3>
       <label>이름</label><input id="mm-name" placeholder="닉네임" value="${isEdit?m.name:''}">
-      <label>마크닉</label><input id="mm-mc" placeholder="마인크래프트 닉네임" value="${isEdit?(m.mc||''):''}">
+      <label>마크닉</label>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <input id="mm-mc" placeholder="마인크래프트 닉네임" value="${isEdit?(m.mc||''):''}" style="flex:1;" oninput="updateSkinPreview(this.value)">
+        <div id="mm-skin-preview" style="width:36px;height:36px;border-radius:4px;overflow:hidden;background:var(--s3);border:1px solid var(--b2);flex-shrink:0;">
+          ${isEdit&&m.mc?`<img src="https://mc-heads.net/avatar/${encodeURIComponent(m.mc)}/36" style="width:100%;height:100%;image-rendering:pixelated;display:block;" onerror="this.style.display='none'">`:'<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:18px;">👤</span>'}
+        </div>
+      </div>
       <label>구분</label><select id="mm-type"><option${(!isEdit||m.type==='본계')?' selected':''}>본계</option><option${(isEdit&&m.type==='부계')?' selected':''}>부계</option></select>
       <label>직업 <span style="font-size:10px;color:var(--muted);">(최대 2개 선택)</span></label>
       <div class="job-sel-wrap" id="job-sel-wrap">${jobBtns}</div>
@@ -2163,6 +2188,12 @@ function openMemberModal(editIdx){
       </div>
       <div class="mb-modal-btns"><button class="mb-btn" onclick="closeMemberModal()">취소</button><button class="mb-btn mb-btn-add" onclick="${isEdit?`saveMemberEdit(${editIdx})`:'addMember()'}">${isEdit?'저장':'추가'}</button></div>
     </div></div>`;
+}
+function updateSkinPreview(nick){
+  const box=document.getElementById('mm-skin-preview');
+  if(!box)return;
+  if(!nick.trim()){box.innerHTML='<span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:18px;">👤</span>';return;}
+  box.innerHTML=`<img src="https://mc-heads.net/avatar/${encodeURIComponent(nick.trim())}/36" style="width:100%;height:100%;image-rendering:pixelated;display:block;" onerror="this.style.display='none'">`;
 }
 function toggleJobSel(btn, job){
   const wrap = document.getElementById('job-sel-wrap');
@@ -2226,19 +2257,35 @@ function rebuildZone(){
   const map=document.getElementById('zn-map');
   map.style.gridTemplateColumns=`repeat(${cols},1fr)`;
   let html='';
-  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
     const k=r+','+c;
     const owner=zoneData[k]||'';
-    html+=`<div class="zn-cell${owner?' owned':''}" data-k="${k}" onclick="setZoneOwner('${k}')" style="${owner?'background:'+getOwnerColor(owner)+';':''}" title="${owner||'빈 청크'}">${owner}</div>`;
+    if(owner){
+      const color=getOwnerColor(owner);
+      const mc=getMcNick(owner);
+      const skinHtml=mc
+        ? `<img class="zn-cell-skin" src="https://mc-heads.net/avatar/${encodeURIComponent(mc)}/32" alt="" onerror="this.style.display='none'">`
+        : `<div class="zn-cell-skin-ph">👤</div>`;
+      html+=`<div class="zn-cell owned" data-k="${k}" onclick="setZoneOwner('${k}')" style="background:${color}cc;--zn-glow:${color};" title="${owner}">
+        ${skinHtml}
+        <span class="zn-cell-name">${owner}</span>
+      </div>`;
+    } else {
+      html+=`<div class="zn-cell" data-k="${k}" onclick="setZoneOwner('${k}')" title="빈 청크"></div>`;
+    }
   }
   map.innerHTML=html;
   renderZoneLegend();
   renderZoneStat();
 }
+/* owner 이름으로 마크닉 조회 */
+function getMcNick(name){
+  const m=members.find(m=>m.name===name||m.mc===name);
+  return m ? (m.mc||m.name) : name;
+}
 function getOwnerColor(name){
-  // 멤버 color 필드 우선 사용
-  const member = members.find(m=>m.name===name||m.mc===name);
-  if(member&&member.color) return member.color;
+  const member=members.find(m=>m.name===name||m.mc===name);
+  if(member&&member.color)return member.color;
   let h=0;for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h);
   return ZN_COLORS[Math.abs(h)%ZN_COLORS.length];
 }
@@ -2530,152 +2577,232 @@ function calcExpiry(){
 }
 
 /* ══════════════════════════════════════════
-   실시간 공유 시세 시스템
+   시세 시스템 — 탭별 디스코드 파서 + Firebase 저장
+   흐름: 디스코드 메시지 붙여넣기 → 분석 → Firebase 저장
+         → 다른 접속자가 열면 마지막 저장 결과 자동 표시
 ══════════════════════════════════════════ */
 const PRICE_CATS = {
-  crop: { label:'🌾 농작물', fbKey:'stella_price_crop', grades:['일반','고급','희귀'] },
-  fish: { label:'🐟 물고기', fbKey:'stella_price_fish', grades:['일반','고급','희귀'] },
-  food: { label:'🍳 요리',   fbKey:'stella_price_food', grades:['커먼','언커먼','레어'] }
+  crop: { label:'🌾 농작물', fbKey:'stella_price_crop' },
+  fish: { label:'🐟 물고기', fbKey:'stella_price_fish' },
+  food: { label:'🍳 요리',   fbKey:'stella_price_food' }
 };
-let priceDB = { crop:{}, fish:{}, food:{} };
+
+// 탭별 상태 (파싱 결과 + 필터)
+const PT = {
+  crop: { data:[], filterGrade:'all', filterDir:'all', savedAt:'', savedCount:0 },
+  fish: { data:[], filterGrade:'all', filterDir:'all', savedAt:'', savedCount:0 },
+  food: { data:[], filterGrade:'all', filterDir:'all', savedAt:'', savedCount:0 }
+};
 let curPriceTab = 'crop';
 
+/* Firebase 실시간 구독 — 저장된 파싱 결과 수신 */
 function _initPriceSync(){
   if(!window._fbOn){setTimeout(_initPriceSync,100);return;}
   Object.entries(PRICE_CATS).forEach(([cat,cfg])=>{
     window._fbOn(cfg.fbKey, val=>{
-      priceDB[cat] = val && typeof val==='object' && !Array.isArray(val) ? val : {};
-      if(curPriceTab===cat) renderPriceTab(cat);
+      if(val && Array.isArray(val.items)){
+        PT[cat].data      = val.items;
+        PT[cat].savedAt   = val.savedAt||'';
+        PT[cat].savedCount= val.items.length;
+      } else {
+        PT[cat].data=[];PT[cat].savedAt='';PT[cat].savedCount=0;
+      }
+      if(curPriceTab===cat) _renderPriceResult(cat);
     });
   });
 }
 _initPriceSync();
 
+/* 탭 전환 */
 function switchPriceTab(cat){
   curPriceTab=cat;
-  document.querySelectorAll('#price-subtabs .rtab').forEach(b=>{
-    b.classList.toggle('rtab-on', b.dataset.psec===cat);
-  });
-  document.querySelectorAll('.psec').forEach(p=>p.style.display='none');
+  document.querySelectorAll('#price-subtabs .rtab').forEach(b=>
+    b.classList.toggle('rtab-on', b.dataset.psec===cat));
+  document.querySelectorAll('.psec-panel').forEach(p=>p.style.display='none');
   document.getElementById('psec-'+cat).style.display='';
-  renderPriceTab(cat);
+  _buildPricePanel(cat);
 }
 
-function renderPriceTab(cat){
-  const cfg=PRICE_CATS[cat];
-  const data=priceDB[cat];
+/* 탭 패널 HTML 생성 (입력창 + 결과 영역) */
+function _buildPricePanel(cat){
   const el=document.getElementById('psec-'+cat);
   if(!el)return;
-
-  // 등급별 그룹핑
-  const byGrade={};
-  cfg.grades.forEach(g=>byGrade[g]=[]);
-  Object.entries(data).forEach(([id,item])=>{
-    const g=item.grade||'일반';
-    if(!byGrade[g])byGrade[g]=[];
-    byGrade[g].push({id,...item});
-  });
-
-  let html='';
-  cfg.grades.forEach(grade=>{
-    const items=byGrade[grade]||[];
-    html+=`<div class="pi-section-hd">
-      <span class="pi-section-title">${_gradeLabel(grade,cat)}</span>
-      <div style="display:flex;gap:6px;align-items:center;">
-        ${items.length?`<span class="pi-sync-badge">최근 수정: ${_latestTime(items)}</span>`:''}
-        <button class="pi-add-btn" onclick="openPriceModal('${cat}','${grade}')">+ 추가</button>
+  const savedInfo = PT[cat].savedAt
+    ? `<span style="font-size:10px;color:var(--muted);">마지막 업데이트: <strong style="color:var(--sub);">${PT[cat].savedAt}</strong> · ${PT[cat].savedCount}개</span>`
+    : `<span style="font-size:10px;color:var(--muted);">아직 저장된 시세가 없어요</span>`;
+  el.innerHTML=`
+    <div class="price-input-area">
+      <div class="pi-label">📋 디스코드 메시지
+        <span class="pi-hint">— 변동 가격 메시지를 그대로 붙여넣고 분석하기를 누르면 전체 공유됩니다.</span>
       </div>
+      <textarea class="pi-textarea" id="msg-${cat}"
+        placeholder="# 상점의 변동 가격이 갱신되었습니다.
+📈 상승 아이템
+- [레어] 아이템 이름
+  - \`원가\`: 90
+  - \`이전 변동가\`: 92
+  - \`현재 변동가\`: 95
+  - \`원가 대비 변동폭\`: +5
+📉 하락 아이템
+- [커먼] 아이템 이름
+  ..."></textarea>
+    </div>
+    <div class="price-btn-row">
+      <button class="parse-btn" onclick="parseAndSave('${cat}')">📊 분석 &amp; 공유</button>
+      <button class="clear-btn" onclick="clearPrice('${cat}')">초기화</button>
+      <span class="parse-info" id="parse-info-${cat}"></span>
+      <span style="margin-left:auto;">${savedInfo}</span>
+    </div>
+    <div id="price-result-area-${cat}">
+      ${PT[cat].data.length ? '' : `<div class="price-empty"><div class="price-empty-icon">📋</div><div class="price-empty-text">디스코드 메시지를 붙여넣고 분석하기를 눌러주세요.<br>분석 결과는 마을원 전체에게 실시간 공유됩니다.</div></div>`}
     </div>`;
-    if(!items.length){
-      html+=`<div class="pi-list"><div class="pi-empty">아직 등록된 시세가 없어요.</div></div>`;
-    } else {
-      html+=`<div class="pi-list">`;
-      items.sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach(item=>{
-        html+=`<div class="pi-card">
-          <span class="pi-card-grade ${_gradeClass(item.grade,cat)}">${item.grade}</span>
-          <span class="pi-card-name">${item.name}</span>
-          <span class="pi-card-price">${item.price.toLocaleString()} 셀</span>
-          <span class="pi-card-time">${item.updatedAt||''}</span>
-          <span class="pi-card-edit" onclick="openPriceModal('${cat}','${item.grade}','${item.id}')" title="수정">✏️</span>
-          <span class="pi-card-del" onclick="delPriceItem('${cat}','${item.id}')" title="삭제">✕</span>
-        </div>`;
-      });
-      html+=`</div>`;
-    }
+  if(PT[cat].data.length) _renderPriceResult(cat);
+}
+
+/* 분석 + Firebase 저장 */
+function parseAndSave(cat){
+  const text=document.getElementById('msg-'+cat).value;
+  const items=parseDiscordMsg(text);
+  const info=document.getElementById('parse-info-'+cat);
+  if(!items.length){
+    info.textContent='⚠ 파싱된 아이템이 없어요. 형식을 확인해 주세요.';
+    info.style.color='#f87171';return;
+  }
+  info.textContent=`✓ ${items.length}개 분석 완료 — 저장 중...`;
+  info.style.color='#fbbf24';
+  const savedAt=new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+  PT[cat].data=items; PT[cat].savedAt=savedAt; PT[cat].savedCount=items.length;
+  window._fbSet(PRICE_CATS[cat].fbKey,{items,savedAt});
+  info.textContent=`✓ ${items.length}개 파싱 완료 · 전체 공유됨`;
+  info.style.color='#4ade80';
+  PT[cat].filterGrade='all'; PT[cat].filterDir='all';
+  _renderPriceResult(cat);
+}
+
+/* 초기화 */
+function clearPrice(cat){
+  const ta=document.getElementById('msg-'+cat);
+  if(ta)ta.value='';
+  const info=document.getElementById('parse-info-'+cat);
+  if(info)info.textContent='';
+  PT[cat].filterGrade='all'; PT[cat].filterDir='all';
+  _renderPriceResult(cat);
+}
+
+/* 필터 */
+function setPriceFilter(cat,type,val){
+  PT[cat]['filter'+type.charAt(0).toUpperCase()+type.slice(1)]=val;
+  _renderPriceResult(cat);
+}
+
+/* 결과 렌더 (기존 renderResult 로직을 탭별로) */
+function _renderPriceResult(cat){
+  const area=document.getElementById('price-result-area-'+cat);
+  if(!area)return;
+  const state=PT[cat];
+  const priceData=state.data;
+  if(!priceData.length){
+    area.innerHTML=`<div class="price-empty"><div class="price-empty-icon">📋</div><div class="price-empty-text">디스코드 메시지를 붙여넣고 분석하기를 눌러주세요.<br>분석 결과는 마을원 전체에게 실시간 공유됩니다.</div></div>`;
+    return;
+  }
+  const {filterGrade,filterDir}=state;
+  let filtered=priceData.filter(i=>{
+    if(filterGrade!=='all'&&i.grade!==filterGrade)return false;
+    if(filterDir==='up'&&i.diff<=0)return false;
+    if(filterDir==='down'&&i.diff>=0)return false;
+    if(filterDir==='flat'&&i.diff!==0)return false;
+    return true;
   });
-  el.innerHTML=html;
+  filtered.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+  const upCnt=priceData.filter(i=>i.diff>0).length;
+  const downCnt=priceData.filter(i=>i.diff<0).length;
+  const maxUp=priceData.reduce((m,i)=>i.diff>m?i.diff:m,0);
+  const maxDown=priceData.reduce((m,i=>i.diff<m?i.diff:m,0));
+  const grades=[...new Set(priceData.map(i=>i.grade))];
+  const gradeOrder=['커먼','언커먼','레어','일반','고급','희귀'];
+  grades.sort((a,b)=>gradeOrder.indexOf(a)-gradeOrder.indexOf(b));
+  const gBtns=grades.map(g=>`<button class="pf-btn ${filterGrade===g?'on':''}" onclick="setPriceFilter('${cat}','grade','${g}')">${g}</button>`).join('');
+  area.innerHTML=`
+    <div class="price-summary">
+      <div class="ps-card"><div class="ps-val" style="color:#4ade80;">${upCnt}</div><div class="ps-lbl">📈 상승</div></div>
+      <div class="ps-card"><div class="ps-val" style="color:#f87171;">${downCnt}</div><div class="ps-lbl">📉 하락</div></div>
+      <div class="ps-card"><div class="ps-val" style="color:#4ade80;">+${maxUp}</div><div class="ps-lbl">최고 상승폭</div></div>
+      <div class="ps-card"><div class="ps-val" style="color:#f87171;">${maxDown}</div><div class="ps-lbl">최고 하락폭</div></div>
+    </div>
+    <div class="price-filter-bar">
+      <span class="pf-label">방향</span>
+      <button class="pf-btn ${filterDir==='all'?'on':''}" onclick="setPriceFilter('${cat}','dir','all')">전체</button>
+      <button class="pf-btn ${filterDir==='up'?'on':''}" onclick="setPriceFilter('${cat}','dir','up')">📈 상승</button>
+      <button class="pf-btn ${filterDir==='down'?'on':''}" onclick="setPriceFilter('${cat}','dir','down')">📉 하락</button>
+      <button class="pf-btn ${filterDir==='flat'?'on':''}" onclick="setPriceFilter('${cat}','dir','flat')">➖ 보합</button>
+      <div class="pf-sep"></div>
+      <span class="pf-label">등급</span>
+      <button class="pf-btn ${filterGrade==='all'?'on':''}" onclick="setPriceFilter('${cat}','grade','all')">전체</button>
+      ${gBtns}
+    </div>
+    <div class="price-result-wrap">
+      ${filtered.length===0
+        ?`<div style="grid-column:span 3;text-align:center;padding:40px;color:var(--muted);">필터 조건에 맞는 아이템이 없어요.</div>`
+        :filtered.map(item=>renderCard(item)).join('')}
+    </div>`;
 }
 
-function _gradeLabel(g,cat){
-  const map={'일반':'⬜ 일반','고급':'🟩 고급','희귀':'🟦 희귀','커먼':'⬜ 커먼','언커먼':'🟩 언커먼','레어':'🟦 레어'};
-  return map[g]||g;
-}
-function _gradeClass(g,cat){
-  const m={'일반':'c-n','고급':'c-100','희귀':'c-80','커먼':'c-n','언커먼':'c-100','레어':'c-80'};
-  return 'chip '+(m[g]||'c-n');
-}
-function _latestTime(items){
-  const times=items.map(i=>i.updatedAt).filter(Boolean).sort();
-  return times.length?times[times.length-1]:'';
-}
-function _nowStr(){
-  return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+/* 디스코드 메시지 파서 (기존 로직 그대로) */
+function parseDiscordMsg(text){
+  const items=[];const lines=text.split('\n');let cur=null;
+  for(let raw of lines){
+    const line=raw.replace(/`/g,'').trim();
+    if(!line)continue;
+    const hm=line.match(/^-\s*\[(.+?)\]\s*(.+)$/);
+    if(hm){if(cur)items.push(cur);cur={grade:hm[1].trim(),name:hm[2].trim(),base:null,prev:null,current:null,diff:null,partial:false};continue;}
+    if(!cur)continue;
+    const c=line.replace(/^-\s*/,'');
+    const m1=c.match(/원가\s*[:：]\s*([+-]?\d+)/);if(m1){cur.base=parseInt(m1[1]);continue;}
+    const m2=c.match(/이전\s*변동가\s*[:：]\s*([+-]?\d+)/);if(m2){cur.prev=parseInt(m2[1]);continue;}
+    const m3=c.match(/현재\s*변동가\s*[:：]\s*([+-]?\d+)/);if(m3){cur.current=parseInt(m3[1]);continue;}
+    const m4=c.match(/원가\s*대비\s*변동폭\s*[:：]\s*([+-]?\d+)/);if(m4){cur.diff=parseInt(m4[1]);continue;}
+  }
+  if(cur)items.push(cur);
+  return items.filter(i=>i.name&&i.grade).map(i=>{
+    if(i.diff===null&&i.base!==null&&i.current!==null)i.diff=i.current-i.base;
+    i.partial=i.current===null||i.base===null;
+    return i;
+  });
 }
 
-function openPriceModal(cat, grade, editId){
-  const cfg=PRICE_CATS[cat];
-  const item = editId ? priceDB[cat][editId] : null;
-  const gradeOpts=cfg.grades.map(g=>`<option value="${g}"${(item?item.grade:grade)===g?' selected':''}>${g}</option>`).join('');
-  document.getElementById('price-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closePriceModal()">
-    <div class="mb-modal"><h3>${cfg.label} 시세 ${item?'수정':'추가'}</h3>
-      <label>아이템 이름</label><input id="pm-name" placeholder="아이템 이름" value="${item?item.name:''}">
-      <label>등급</label><select id="pm-grade">${gradeOpts}</select>
-      <label>가격 (셀)</label><input id="pm-price" type="number" placeholder="셀" min="0" value="${item?item.price:''}">
-      <div class="mb-modal-btns">
-        <button class="mb-btn" onclick="closePriceModal()">취소</button>
-        <button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="savePriceItem('${cat}','${editId||''}')">저장</button>
+/* 카드 렌더 (기존 renderCard 그대로) */
+function renderCard(item){
+  const dir=item.diff!==null?(item.diff>0?'up':item.diff<0?'down':'flat'):'flat';
+  const diffSign=item.diff>0?'+':'';
+  const diffIcon=item.diff>0?'▲':item.diff<0?'▼':'─';
+  const pctRaw=(item.base&&item.diff!==null)?((item.diff/item.base)*100):null;
+  const pct=pctRaw!==null?(pctRaw>=0?'+':'')+pctRaw.toFixed(1)+'%':'';
+  const prevDiff=(item.prev!==null&&item.current!==null)?item.current-item.prev:null;
+  const prevDiffStr=prevDiff!==null?`<span style="font-size:10px;color:${prevDiff>0?'#4ade80':prevDiff<0?'#f87171':'var(--muted)'};">&nbsp;${prevDiff>0?'▲':prevDiff<0?'▼':'─'}${prevDiff>0?'+':''}${prevDiff}</span>`:'';
+  const partialBadge=item.partial?`<span style="font-size:9px;color:var(--muted);background:var(--s3);border:1px solid var(--b2);padding:1px 5px;border-radius:3px;margin-left:auto;">부분</span>`:'';
+  const diffHtml=item.diff!==null?`<span class="pr-diff ${dir}">${diffIcon} ${diffSign}${item.diff} 셀</span><span style="font-size:11px;font-weight:700;color:${dir==='up'?'#4ade80':dir==='down'?'#f87171':'var(--muted)'};">${pct}</span>`:`<span style="font-size:11px;color:var(--muted);">데이터 부족</span>`;
+  const imgUrl=getFoodImg(item.name);
+  const imgHtml=imgUrl?`<img class="pr-img" src="${imgUrl}" alt="${item.name}">`:`<div class="pr-img-empty">🍽</div>`;
+  return `<div class="pr-card ${dir}">
+    <div class="pr-head">${imgHtml}
+      <div class="pr-head-info">
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span class="pr-grade g-${item.grade}">${item.grade}</span>
+          <span class="pr-name" title="${item.name}">${item.name}</span>${partialBadge}
+        </div>
       </div>
-    </div></div>`;
-}
-function closePriceModal(){document.getElementById('price-modal-root').innerHTML='';}
-function savePriceItem(cat, editId){
-  const name=document.getElementById('pm-name').value.trim();
-  const grade=document.getElementById('pm-grade').value;
-  const price=parseInt(document.getElementById('pm-price').value);
-  if(!name){alert('이름을 입력하세요.');return;}
-  if(isNaN(price)||price<0){alert('가격을 입력하세요.');return;}
-  const id = editId || 'pi_'+Date.now();
-  const updatedAt = _nowStr();
-  const cfg=PRICE_CATS[cat];
-  window._fbSet(cfg.fbKey+'/'+id,{name,grade,price,updatedAt});
-  closePriceModal();
-}
-function delPriceItem(cat,id){
-  if(!confirm('시세 항목을 삭제할까요?'))return;
-  const cfg=PRICE_CATS[cat];
-  window._fbRemove(cfg.fbKey+'/'+id);
-}
-function highlightZone(){
-  const q=(document.getElementById('zn-search').value||'').trim().toLowerCase();
-  document.querySelectorAll('.zn-cell').forEach(cell=>{
-    const owner=(cell.title||'').toLowerCase();
-    if(q&&owner.includes(q)){cell.style.outline='3px solid #fbbf24';cell.style.zIndex='2';cell.style.transform='scale(1.1)';}
-    else{cell.style.outline='';cell.style.zIndex='';cell.style.transform='';}
-  });
+    </div>
+    <div class="pr-body">
+      <div class="pr-row"><span class="pr-lbl">원가</span><span class="pr-val">${item.base??'─'}</span></div>
+      <div class="pr-row"><span class="pr-lbl">이전가</span><span class="pr-val">${item.prev??'─'}${prevDiffStr}</span></div>
+      <div class="pr-row" style="grid-column:span 2;justify-content:space-between;"><span class="pr-lbl">현재 변동가</span><span class="pr-val current">${item.current!==null?item.current+' 셀':'─'}</span></div>
+    </div>
+    <div class="pr-footer"><span class="pr-base">원가 대비</span><div style="display:flex;align-items:center;gap:6px;">${diffHtml}</div></div>
+  </div>`;
 }
 
-/* ── 레시피 서브탭 전환 ── */
-function switchRecipe(sec) {
-  document.querySelectorAll('.rsec').forEach(s => s.classList.remove('rsec-on'));
-  document.querySelectorAll('.rtab').forEach(b => b.classList.remove('rtab-on'));
-  document.getElementById('rsec-' + sec).classList.add('rsec-on');
-  document.querySelector('.rtab[data-rsec="' + sec + '"]').classList.add('rtab-on');
-}
-
-/* ══════════════════════════════════════════
-   요리 이미지 DB
-══════════════════════════════════════════ */
-const FOOD_IMG = {
+/* 음식 이미지 DB */
+const FOOD_IMG={
   '가스파초':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FErXuYWvp7DaUw5ixp4gb%252F2026-01-28_142514-Photoroom.png%3Falt%3Dmedia%26token%3D244a0fd7-ca47-45b0-b9f6-32d2daec5648&width=300&dpr=1&quality=100&sign=25df63fd&sv=2',
   '데리야끼':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FWazrHJQ3aETvW4E7JWWV%252F2026-01-28_142601-Photoroom.png%3Falt%3Dmedia%26token%3D861802af-6d5c-45a9-903f-2fa3215f364b&width=300&dpr=1&quality=100&sign=e8caa11a&sv=2',
   '무 착즙 주스':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FL66D6NymOq9Vs6TNVMuT%252F2026-01-28_142522-Photoroom.png%3Falt%3Dmedia%26token%3Ddbf07792-38a8-4227-9df0-976a1d2eb779&width=300&dpr=1&quality=100&sign=fcf6c216&sv=2',
@@ -2693,239 +2820,28 @@ const FOOD_IMG = {
   '페페스':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FG5P4Cbz4uurZatCCCFXp%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520143355-Photoroom.png%3Falt%3Dmedia%26token%3D40ae4cad-96dc-499e-adab-8657b39d94d6&width=300&dpr=1&quality=100&sign=671c10dd&sv=2',
   '해산물 그릴 플래터':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FcTWfoYqUbLjjadGhDyr8%252F2026-01-28_142556-Photoroom.png%3Falt%3Dmedia%26token%3D2e68abea-32fb-4cf3-ad94-daa9b1dd5b20&width=300&dpr=1&quality=100&sign=8321cb4f&sv=2',
 };
-function getFoodImg(name) {
-  if (FOOD_IMG[name]) return FOOD_IMG[name];
-  for (const key of Object.keys(FOOD_IMG)) {
-    if (name.includes(key)) return FOOD_IMG[key];
-  }
+function getFoodImg(name){
+  if(FOOD_IMG[name])return FOOD_IMG[name];
+  for(const k of Object.keys(FOOD_IMG)){if(name.includes(k))return FOOD_IMG[k];}
   return null;
 }
 
-/* ══════════════════════════════════════════
-   요리 시세 파서
-══════════════════════════════════════════ */
-let priceData = [];   // 파싱된 전체 아이템
-let filterGrade = 'all';  // 현재 등급 필터
-let filterDir   = 'all';  // 상승/하락/전체
-
-function parseAll() {
-  const texts = document.getElementById('msg-all').value;
-
-  priceData = parseDiscordMsg(texts);
-
-  const info = document.getElementById('parse-info');
-  if (priceData.length === 0) {
-    info.textContent = '⚠ 파싱된 아이템이 없어요. 형식을 확인해 주세요.';
-    info.style.color = '#f87171';
-    return;
-  }
-  info.textContent = `✓ 총 ${priceData.length}개 아이템 파싱 완료`;
-  info.style.color = '#4ade80';
-
-  filterGrade = 'all';
-  filterDir   = 'all';
-  renderResult();
-}
-
-function parseDiscordMsg(text) {
-  const items = [];
-  const lines = text.split('\n');
-  let cur = null;
-
-  for (let raw of lines) {
-    // 백틱 제거, 앞뒤 공백 제거
-    const line = raw.replace(/`/g, '').trim();
-    if (!line) continue;
-
-    // 새 아이템 헤더: "- [등급] 이름"
-    const headerMatch = line.match(/^-\s*\[(.+?)\]\s*(.+)$/);
-    if (headerMatch) {
-      if (cur) items.push(cur);
-      cur = {
-        grade:   headerMatch[1].trim(),
-        name:    headerMatch[2].trim(),
-        base:    null,
-        prev:    null,
-        current: null,
-        diff:    null,
-        partial: false   // 불완전 여부 표시
-      };
-      continue;
-    }
-
-    if (!cur) continue;
-
-    // 각 필드 — 줄 앞에 "- "가 붙어도, 안 붙어도 허용
-    const clean = line.replace(/^-\s*/, '');
-
-    const m1 = clean.match(/원가\s*[:：]\s*([+-]?\d+)/);
-    if (m1) { cur.base = parseInt(m1[1]); continue; }
-
-    const m2 = clean.match(/이전\s*변동가\s*[:：]\s*([+-]?\d+)/);
-    if (m2) { cur.prev = parseInt(m2[1]); continue; }
-
-    const m3 = clean.match(/현재\s*변동가\s*[:：]\s*([+-]?\d+)/);
-    if (m3) { cur.current = parseInt(m3[1]); continue; }
-
-    const m4 = clean.match(/원가\s*대비\s*변동폭\s*[:：]\s*([+-]?\d+)/);
-    if (m4) { cur.diff = parseInt(m4[1]); continue; }
-  }
-  if (cur) items.push(cur);
-
-  // 최소 이름+등급만 있어도 살림, diff는 계산 가능하면 계산
-  return items
-    .filter(i => i.name && i.grade)
-    .map(i => {
-      // diff 계산: 명시값 우선, 없으면 현재-원가로 계산
-      if (i.diff === null && i.base !== null && i.current !== null)
-        i.diff = i.current - i.base;
-      // 불완전 여부 (현재가 없으면 partial)
-      i.partial = i.current === null || i.base === null;
-      return i;
-    });
-}
-
-function setFilter(type, val) {
-  if (type === 'grade') filterGrade = val;
-  if (type === 'dir')   filterDir   = val;
-  renderResult();
-}
-
-function renderResult() {
-  const area = document.getElementById('price-result-area');
-
-  // 필터 적용
-  let filtered = priceData.filter(i => {
-    if (filterGrade !== 'all' && i.grade !== filterGrade) return false;
-    if (filterDir === 'up'   && i.diff <= 0) return false;
-    if (filterDir === 'down' && i.diff >= 0) return false;
-    if (filterDir === 'flat' && i.diff !== 0) return false;
-    return true;
+/* ── 마을 탭 검색 ── */
+function highlightZone(){
+  const q=(document.getElementById('zn-search').value||'').trim().toLowerCase();
+  document.querySelectorAll('.zn-cell').forEach(cell=>{
+    const owner=(cell.title||'').toLowerCase();
+    if(q&&owner.includes(q)){cell.style.outline='3px solid #fbbf24';cell.style.zIndex='2';cell.style.transform='scale(1.1)';}
+    else{cell.style.outline='';cell.style.zIndex='';cell.style.transform='';}
   });
-
-  // 정렬: 가나다순 (한국어 사전순)
-  filtered.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
-
-  // 요약 통계
-  const upCnt   = priceData.filter(i => i.diff > 0).length;
-  const downCnt = priceData.filter(i => i.diff < 0).length;
-  const flatCnt = priceData.filter(i => i.diff === 0).length;
-  const maxUp   = priceData.reduce((m, i) => i.diff > m ? i.diff : m, 0);
-  const maxDown = priceData.reduce((m, i) => i.diff < m ? i.diff : m, 0);
-
-  // 등급 목록
-  const grades = [...new Set(priceData.map(i => i.grade))].sort();
-  const gradeOrder = ['커먼','언커먼','레어'];
-  grades.sort((a,b) => gradeOrder.indexOf(a) - gradeOrder.indexOf(b));
-
-  const gBtns = grades.map(g =>
-    `<button class="pf-btn ${filterGrade===g?'on':''}" onclick="setFilter('grade','${g}')">${g}</button>`
-  ).join('');
-
-  area.innerHTML = `
-    <!-- 요약 -->
-    <div class="price-summary">
-      <div class="ps-card"><div class="ps-val" style="color:#4ade80;">${upCnt}</div><div class="ps-lbl">📈 상승 아이템</div></div>
-      <div class="ps-card"><div class="ps-val" style="color:#f87171;">${downCnt}</div><div class="ps-lbl">📉 하락 아이템</div></div>
-      <div class="ps-card"><div class="ps-val" style="color:#4ade80;">+${maxUp}</div><div class="ps-lbl">최고 상승폭</div></div>
-      <div class="ps-card"><div class="ps-val" style="color:#f87171;">${maxDown}</div><div class="ps-lbl">최고 하락폭</div></div>
-    </div>
-
-    <!-- 필터 -->
-    <div class="price-filter-bar">
-      <span class="pf-label">방향</span>
-      <button class="pf-btn ${filterDir==='all' ?'on':''}" onclick="setFilter('dir','all')">전체</button>
-      <button class="pf-btn ${filterDir==='up'  ?'on':''}" onclick="setFilter('dir','up')">📈 상승</button>
-      <button class="pf-btn ${filterDir==='down'?'on':''}" onclick="setFilter('dir','down')">📉 하락</button>
-      <button class="pf-btn ${filterDir==='flat'?'on':''}" onclick="setFilter('dir','flat')">➖ 보합</button>
-      <div class="pf-sep"></div>
-      <span class="pf-label">등급</span>
-      <button class="pf-btn ${filterGrade==='all'?'on':''}" onclick="setFilter('grade','all')">전체</button>
-      ${gBtns}
-    </div>
-
-    <!-- 카드 그리드 -->
-    <div class="price-result-wrap">
-      ${filtered.length === 0
-        ? `<div style="grid-column:span 3;text-align:center;padding:40px;color:var(--muted);">필터 조건에 맞는 아이템이 없어요.</div>`
-        : filtered.map(item => renderCard(item)).join('')
-      }
-    </div>
-  `;
 }
 
-function renderCard(item) {
-  const dir     = item.diff !== null ? (item.diff > 0 ? 'up' : item.diff < 0 ? 'down' : 'flat') : 'flat';
-  const diffSign= item.diff > 0 ? '+' : '';
-  const diffIcon= item.diff > 0 ? '▲' : item.diff < 0 ? '▼' : '─';
-  const pctRaw  = (item.base && item.diff !== null) ? ((item.diff / item.base) * 100) : null;
-  const pct     = pctRaw !== null ? (pctRaw >= 0 ? '+' : '') + pctRaw.toFixed(1) + '%' : '';
-
-  // 이전가 대비 변화
-  const prevDiff = (item.prev !== null && item.current !== null) ? item.current - item.prev : null;
-  const prevDiffStr = prevDiff !== null
-    ? `<span style="font-size:10px;color:${prevDiff>0?'#4ade80':prevDiff<0?'#f87171':'var(--muted)'};">&nbsp;${prevDiff>0?'▲':prevDiff<0?'▼':'─'}${prevDiff>0?'+':''}${prevDiff}</span>`
-    : '';
-
-  // 불완전 아이템 배지
-  const partialBadge = item.partial
-    ? `<span style="font-size:9px;color:var(--muted);background:var(--s3);border:1px solid var(--b2);padding:1px 5px;border-radius:3px;margin-left:auto;">부분</span>`
-    : '';
-
-  const diffHtml = item.diff !== null
-    ? `<span class="pr-diff ${dir}">${diffIcon} ${diffSign}${item.diff} 셀</span>
-       <span style="font-size:11px;font-weight:700;color:${dir==='up'?'#4ade80':dir==='down'?'#f87171':'var(--muted)'};">${pct}</span>`
-    : `<span style="font-size:11px;color:var(--muted);">데이터 부족</span>`;
-
-  const imgUrl = getFoodImg(item.name);
-  const imgHtml = imgUrl
-    ? `<img class="pr-img" src="${imgUrl}" alt="${item.name}">`
-    : `<div class="pr-img-empty">🍽</div>`;
-
-  return `
-    <div class="pr-card ${dir}">
-      <div class="pr-head">
-        ${imgHtml}
-        <div class="pr-head-info">
-          <div style="display:flex;align-items:center;gap:5px;">
-            <span class="pr-grade g-${item.grade}">${item.grade}</span>
-            <span class="pr-name" title="${item.name}">${item.name}</span>
-            ${partialBadge}
-          </div>
-        </div>
-      </div>
-      <div class="pr-body">
-        <div class="pr-row">
-          <span class="pr-lbl">원가</span>
-          <span class="pr-val">${item.base ?? '─'}</span>
-        </div>
-        <div class="pr-row">
-          <span class="pr-lbl">이전가</span>
-          <span class="pr-val">${item.prev ?? '─'}${prevDiffStr}</span>
-        </div>
-        <div class="pr-row" style="grid-column:span 2;justify-content:space-between;">
-          <span class="pr-lbl">현재 변동가</span>
-          <span class="pr-val current">${item.current !== null ? item.current + ' 셀' : '─'}</span>
-        </div>
-      </div>
-      <div class="pr-footer">
-        <span class="pr-base">원가 대비</span>
-        <div style="display:flex;align-items:center;gap:6px;">${diffHtml}</div>
-      </div>
-    </div>`;
-}
-
-function clearAll() {
-  document.getElementById('msg-all').value = '';
-  priceData = [];
-  filterGrade = 'all';
-  filterDir   = 'all';
-  document.getElementById('parse-info').textContent = '';
-  document.getElementById('price-result-area').innerHTML = `
-    <div class="price-empty">
-      <div class="price-empty-icon">📋</div>
-      <div class="price-empty-text">위의 입력창에 디스코드 메시지를 붙여넣고<br>분석하기 버튼을 눌러주세요.</div>
-    </div>`;
+/* ── 레시피 서브탭 전환 ── */
+function switchRecipe(sec){
+  document.querySelectorAll('.rsec').forEach(s=>s.classList.remove('rsec-on'));
+  document.querySelectorAll('.rtab').forEach(b=>b.classList.remove('rtab-on'));
+  document.getElementById('rsec-'+sec).classList.add('rsec-on');
+  document.querySelector('.rtab[data-rsec="'+sec+'"]').classList.add('rtab-on');
 }
 
 /* ── 강화 가이드 탭 ── */

@@ -65,8 +65,18 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
 .nav-tab.t-sim.on   {background:#0a1a08;color:var(--sl-uc);border-color:#1a4a1a;}
 .nav-tab.t-price.on {background:#1a1200;color:#f59e0b;border-color:#4a3600;}
 .nav-tab.t-skill.on {background:#1a0810;color:#f472b6;border-color:#6a1a40;}
+.nav-tab.t-member.on{background:#0a1018;color:#38bdf8;border-color:#1a4a6a;}
+.nav-tab.t-zone.on  {background:#0a180a;color:#4ade80;border-color:#1a4a1a;}
+.nav-tab.t-tribute.on{background:#1a1200;color:#fbbf24;border-color:#4a3600;}
+.nav-tab.t-timer.on {background:#18080a;color:#fb923c;border-color:#5a2800;}
+.nav-tab.t-memo.on  {background:#0a0818;color:#a78bfa;border-color:#3a1a6a;}
 [data-theme="light"] .nav-tab.t-price.on{background:#fffbeb;color:#d97706;border-color:#fcd34d;}
 [data-theme="light"] .nav-tab.t-skill.on{background:#fdf2f8;color:#db2777;border-color:#fbcfe8;}
+[data-theme="light"] .nav-tab.t-member.on{background:#e8f4ff;color:#0284c7;border-color:#bae6fd;}
+[data-theme="light"] .nav-tab.t-zone.on{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
+[data-theme="light"] .nav-tab.t-tribute.on{background:#fffbeb;color:#d97706;border-color:#fcd34d;}
+[data-theme="light"] .nav-tab.t-timer.on{background:#fff7ed;color:#ea580c;border-color:#fed7aa;}
+[data-theme="light"] .nav-tab.t-memo.on{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
 .nav-source{font-size:10px;color:var(--muted);border:1px solid var(--b2);padding:3px 10px;border-radius:20px;letter-spacing:.5px;}
 /* ── 테마 토글 ── */
 .theme-btn{
@@ -761,36 +771,283 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   .sk-tbl td{padding:3px 6px;}
   .sk-act{font-size:10px;gap:6px;}
 }
+
+/* ═══════════ MEMBER PAGE ═══════════ */
+.mb-toolbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.mb-btn{padding:7px 16px;border-radius:var(--rad-s);font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--sub);transition:all .15s;}
+.mb-btn:hover{border-color:var(--b3);color:var(--text);}
+.mb-btn-add{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;border:none;}
+.mb-btn-add:hover{opacity:.88;}
+.mb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;}
+.mb-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:12px 14px;display:flex;align-items:center;gap:10px;transition:border-color .15s;}
+.mb-card:hover{border-color:var(--b3);}
+.mb-avatar{width:40px;height:40px;border-radius:50%;background:var(--s3);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--sub);flex-shrink:0;}
+.mb-info{flex:1;min-width:0;}
+.mb-name{font-size:13px;font-weight:700;color:var(--text);}
+.mb-mc{font-size:11px;color:var(--sub);font-family:'JetBrains Mono',monospace;}
+.mb-tags{display:flex;gap:4px;margin-top:3px;}
+.mb-tag{font-size:9.5px;padding:1px 6px;border-radius:3px;font-weight:600;}
+.mb-tag-main{background:#0a1018;color:#38bdf8;border:1px solid #1a4a6a;}
+.mb-tag-sub{background:var(--s3);color:var(--muted);border:1px solid var(--b2);}
+.mb-tag-job{background:#0a180a;color:#4ade80;border:1px solid #1a4a1a;}
+[data-theme="light"] .mb-tag-main{background:#e8f4ff;color:#0284c7;border-color:#bae6fd;}
+[data-theme="light"] .mb-tag-sub{background:#f1f5f9;color:#64748b;border-color:#d0d4e4;}
+[data-theme="light"] .mb-tag-job{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
+.mb-del{font-size:10px;color:var(--muted);cursor:pointer;padding:4px;border-radius:3px;transition:color .12s;}
+.mb-del:hover{color:#f87171;}
+.mb-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;}
+.mb-modal{background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad);padding:20px;width:340px;max-width:90vw;}
+.mb-modal h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;}
+.mb-modal label{display:block;font-size:11px;color:var(--sub);margin-bottom:4px;margin-top:10px;}
+.mb-modal input,.mb-modal select{width:100%;padding:8px 10px;border:1px solid var(--b2);border-radius:var(--rad-s);background:var(--s2);color:var(--text);font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;}
+.mb-modal input:focus,.mb-modal select:focus{border-color:var(--b3);}
+.mb-modal-btns{display:flex;gap:8px;margin-top:16px;}
+.mb-modal-btns button{flex:1;}
+
+/* ═══════════ ZONE PAGE ═══════════ */
+.zn-map{display:grid;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:var(--rad-s);overflow:hidden;margin-bottom:14px;}
+.zn-cell{aspect-ratio:1;background:var(--s2);cursor:pointer;transition:all .12s;position:relative;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:transparent;}
+.zn-cell:hover{z-index:1;transform:scale(1.15);box-shadow:0 0 8px rgba(0,0,0,.4);color:var(--text);font-size:8px;}
+.zn-cell.owned{color:transparent;}
+.zn-cell.owned:hover{color:#fff;}
+.zn-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
+.zn-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.zn-leg{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--sub);}
+.zn-leg-color{width:14px;height:14px;border-radius:3px;border:1px solid var(--b2);}
+.zn-stat{display:flex;gap:10px;margin-bottom:14px;}
+.zn-stat-card{flex:1;background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px;text-align:center;}
+.zn-stat-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.zn-stat-lbl{font-size:10px;color:var(--muted);margin-top:2px;}
+
+/* ═══════════ TRIBUTE PAGE ═══════════ */
+.tb-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.tb-scard{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:12px;text-align:center;}
+.tb-sval{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+.tb-slbl{font-size:10px;color:var(--muted);margin-top:2px;}
+.tb-list{display:flex;flex-direction:column;gap:6px;}
+.tb-row{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px 14px;display:flex;align-items:center;gap:10px;}
+.tb-row-name{font-size:13px;font-weight:600;color:var(--text);width:80px;}
+.tb-row-bar{flex:1;height:20px;background:var(--s3);border-radius:3px;overflow:hidden;position:relative;}
+.tb-row-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#fbbf24,#f59e0b);transition:width .3s;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:700;color:#1a0e00;}
+.tb-row-pts{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);width:70px;text-align:right;}
+.tb-row-del{font-size:10px;color:var(--muted);cursor:pointer;padding:4px;}
+.tb-row-del:hover{color:#f87171;}
+.tb-xp-ref{margin-top:16px;}
+.tb-xp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+.tb-xp-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px;font-size:11px;color:var(--sub);line-height:1.7;}
+.tb-xp-card strong{color:var(--text);}
+
+/* ═══════════ TIMER PAGE ═══════════ */
+.tm-layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.tm-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);overflow:hidden;}
+.tm-card-hd{padding:12px 16px;border-bottom:1px solid var(--b1);font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px;}
+.tm-card-body{padding:20px;text-align:center;}
+.tm-display{font-size:48px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text);margin-bottom:16px;letter-spacing:2px;}
+.tm-display.running{color:#4ade80;}
+.tm-display.paused{color:#fbbf24;}
+.tm-display.break{color:#60a5fa;}
+.tm-btns{display:flex;gap:8px;justify-content:center;}
+.tm-btn{padding:8px 20px;border-radius:var(--rad-s);font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;border:1px solid var(--b2);background:var(--s2);color:var(--sub);transition:all .15s;}
+.tm-btn:hover{border-color:var(--b3);color:var(--text);}
+.tm-btn-start{background:#16a34a;color:#fff;border:none;}
+.tm-btn-stop{background:#dc2626;color:#fff;border:none;}
+.tm-btn-start:hover,.tm-btn-stop:hover{opacity:.88;}
+.tm-label{font-size:11px;color:var(--muted);margin-top:10px;}
+.tm-settings{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.tm-set-input{width:60px;padding:4px 6px;border:1px solid var(--b2);border-radius:3px;background:var(--s2);color:var(--text);font-size:12px;text-align:center;font-family:'JetBrains Mono',monospace;}
+
+/* ═══════════ MEMO PAGE ═══════════ */
+.mm-toolbar{display:flex;gap:8px;margin-bottom:14px;}
+.mm-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px;}
+.mm-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:12px;display:flex;flex-direction:column;gap:6px;transition:border-color .15s;}
+.mm-card:hover{border-color:var(--b3);}
+.mm-card-title{font-size:13px;font-weight:700;color:var(--text);}
+.mm-card-body{font-size:11.5px;color:var(--sub);line-height:1.6;white-space:pre-wrap;max-height:120px;overflow:hidden;}
+.mm-card-footer{display:flex;justify-content:space-between;align-items:center;font-size:10px;color:var(--muted);padding-top:6px;border-top:1px solid var(--b1);}
+.mm-card-del{cursor:pointer;padding:2px 6px;border-radius:3px;transition:color .12s;}
+.mm-card-del:hover{color:#f87171;}
+.mm-empty{text-align:center;padding:40px;color:var(--muted);border:1px dashed var(--b2);border-radius:var(--rad);}
+
+@media(max-width:640px){
+  .mb-grid{grid-template-columns:1fr;}
+  .zn-tools{flex-direction:column;align-items:stretch;}
+  .zn-stat{flex-direction:column;}
+  .tb-summary{grid-template-columns:1fr;}
+  .tb-xp-grid{grid-template-columns:1fr 1fr;}
+  .tm-layout{grid-template-columns:1fr;}
+  .tm-display{font-size:36px;}
+  .mm-list{grid-template-columns:1fr;}
+}
+
+/* ═══════════ MAIN PAGE ═══════════ */
+.main-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:16px 10px;cursor:pointer;transition:all .15s;text-align:center;}
+.main-card:hover{border-color:var(--b3);transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15);}
+.main-icon{font-size:22px;margin-bottom:4px;}
+.main-val{font-size:20px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;}
+.main-label{font-size:10px;color:var(--muted);margin-top:2px;}
+.main-qbtn{padding:10px 8px;border-radius:var(--rad-s);font-size:11.5px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:var(--s2);border:1px solid var(--b1);color:var(--sub);transition:all .15s;white-space:nowrap;}
+.main-qbtn:hover{border-color:var(--b3);color:var(--text);}
+
+/* ═══════════ NAV GROUPS ═══════════ */
+.nav-dd{position:relative;}
+.nav-dd-btn{padding:8px 16px;border-radius:20px;font-size:12.5px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:transparent;border:1px solid transparent;color:var(--sub);transition:all .15s;white-space:nowrap;}
+.nav-dd-btn:hover,.nav-dd-btn.dd-active{color:var(--text);background:var(--s2);border-color:var(--b1);}
+.nav-dd-menu{display:none;position:absolute;top:100%;left:0;margin-top:4px;background:var(--s1);border:1px solid var(--b2);border-radius:var(--rad-s);padding:4px;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:350;}
+.nav-dd-menu.dd-open{display:flex;flex-direction:column;animation:fade .12s ease;}
+.nav-dd-menu .nav-tab{display:block;width:100%;text-align:left;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:transparent;border:none;color:var(--sub);transition:all .1s;}
+.nav-dd-menu .nav-tab:hover{background:var(--s2);color:var(--text);}
+.nav-dd-menu .nav-tab.on{background:var(--s3);color:var(--text);}
+.nav-admin-btn.logged-in{border-color:#4ade80;background:#0a1e0a;}
+[data-theme="light"] .nav-admin-btn.logged-in{border-color:#16a34a;background:#e6fdf0;}
+[data-theme="light"] .nav-dd-menu{background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.1);}
+.nav-utils{display:flex;align-items:center;gap:4px;}
+.nav-icon-btn{width:34px;height:34px;border-radius:50%;border:1px solid var(--b2);background:var(--s2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;color:var(--text);}
+.nav-icon-btn:hover{border-color:var(--b3);background:var(--s3);}
+
+/* ═══════════ SIDE PANELS ═══════════ */
+.side-panel{position:fixed;top:54px;width:320px;height:calc(100vh - 54px);background:var(--s1);border-left:1px solid var(--b1);z-index:400;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;}
+.side-panel.open{transform:translateX(0);}
+.side-memo{right:0;}
+.side-timer{right:0;}
+.side-hd{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--b1);font-size:13px;font-weight:700;color:var(--text);}
+.side-close{cursor:pointer;font-size:14px;color:var(--muted);padding:4px;transition:color .12s;}
+.side-close:hover{color:var(--text);}
+.side-body{padding:12px 16px;}
+[data-theme="light"] .side-panel{background:#ffffff;}
+
+/* ═══════════ SEARCH BAR ═══════════ */
+.search-bar{margin-bottom:14px;}
+.search-input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--b2);border-radius:20px;background:var(--s2);color:var(--text);font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;}
+.search-input:focus{border-color:var(--b3);}
+.search-input::placeholder{color:var(--muted);}
+
+/* ═══════════ EXPIRY CALCULATOR ═══════════ */
+.exp-calc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:16px;margin-bottom:20px;}
+.exp-calc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.exp-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-bottom:10px;}
+.exp-field label{display:block;font-size:10px;color:var(--muted);margin-bottom:3px;}
+.exp-field input{padding:7px 10px;border:1px solid var(--b2);border-radius:var(--rad-s);background:var(--s2);color:var(--text);font-size:13px;font-family:'JetBrains Mono',monospace;outline:none;width:120px;}
+.exp-field input:focus{border-color:var(--b3);}
+.exp-result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.exp-card{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px;text-align:center;}
+.exp-card-time{font-size:10px;color:var(--muted);margin-bottom:4px;}
+.exp-card-rate{font-size:11px;font-weight:700;margin-bottom:2px;}
+.exp-card-val{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+@media(max-width:640px){
+  .nav-dd-btn{padding:6px 10px;font-size:11px;}
+  .nav-dd-menu{min-width:140px;}
+  .nav-utils{gap:2px;}
+  .nav-icon-btn{width:30px;height:30px;}
+  .side-panel{width:100%;left:0;}
+  .main-card{padding:14px 8px;}
+  .main-icon{font-size:22px;}
+  .main-label{font-size:10.5px;}
+  [id="pg-main"] .wrap>div:last-of-type{grid-template-columns:repeat(2,1fr)!important;}
+  .exp-result{grid-template-columns:1fr;}
+  .exp-row{flex-direction:column;align-items:stretch;}
+  .exp-field input{width:100%;}
+}
 </style>
 </head>
 <body>
 
 <!-- ═══ TOPNAV ═══ -->
 <nav class="topnav">
-  <div class="nav-logo">
+  <div class="nav-logo" onclick="go('main')" style="cursor:pointer;">
     <div class="nav-logo-mark">✨</div>
     <div class="nav-logo-text">스텔라 마을 <em>가이드</em></div>
   </div>
   <div class="nav-tabs">
-    <button class="nav-tab t-recipe on"  onclick="go('recipe')">🛠 제작 레시피</button>
-    <button class="nav-tab t-enhance"    onclick="go('enhance')">⚙ 강화 가이드</button>
-    <button class="nav-tab t-sim"        onclick="go('sim')">🎮 강화 시뮬레이터</button>
-    <button class="nav-tab t-price"      onclick="go('price')">📊 요리 시세</button>
-    <button class="nav-tab t-skill"      onclick="go('skill')">💀 스킬 도감</button>
+    <div class="nav-dd">
+      <button class="nav-dd-btn" onclick="toggleDD('dd-village')">🏠 마을</button>
+      <div class="nav-dd-menu" id="dd-village">
+        <button class="nav-tab t-member" onclick="go('member');closeDD()">👥 마을원 명단</button>
+        <button class="nav-tab t-zone" onclick="go('zone');closeDD()">🗺️ 마을 구역</button>
+        <button class="nav-tab t-tribute" onclick="go('tribute');closeDD()">⭐ 조공 포인트</button>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <button class="nav-dd-btn" onclick="toggleDD('dd-life')">🌿 생활</button>
+      <div class="nav-dd-menu" id="dd-life">
+        <button class="nav-tab t-recipe" onclick="go('recipe');closeDD()">🛠 제작</button>
+        <button class="nav-tab t-enhance" onclick="go('enhance');closeDD()">⚙ 강화</button>
+        <button class="nav-tab t-sim" onclick="go('sim');closeDD()">🎮 시뮬레이터</button>
+        <button class="nav-tab t-skill" onclick="go('skill');closeDD()">💀 생활스킬</button>
+      </div>
+    </div>
+    <div class="nav-dd">
+      <button class="nav-dd-btn" onclick="toggleDD('dd-market')">📊 시세</button>
+      <div class="nav-dd-menu" id="dd-market">
+        <button class="nav-tab t-price" onclick="go('price');closeDD()">📊 변동 시세</button>
+      </div>
+    </div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;">
-    <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">
-      <span class="t-icon" id="theme-icon">☀️</span>
-      <span id="theme-label">라이트 모드</span>
-    </button>
-    <div class="nav-source">lunawiki.gitbook.io</div>
+  <div class="nav-utils">
+    <button class="nav-icon-btn" onclick="toggleSideMemo()" title="메모장"><span style="font-size:14px;">📋</span></button>
+    <button class="nav-icon-btn" onclick="toggleSideTimer()" title="타이머"><span style="font-size:14px;">⏱️</span></button>
+    <button class="nav-icon-btn" onclick="toggleTheme()" id="theme-btn" title="테마 전환"><span id="theme-icon" style="font-size:14px;">☀️</span></button>
+    <button class="nav-icon-btn nav-admin-btn" onclick="openAdminLogin()" title="관리자"><span style="font-size:14px;">🔒</span></button>
   </div>
 </nav>
+<!-- 사이드 메모 -->
+<div class="side-panel side-memo" id="side-memo">
+  <div class="side-hd"><span>📋 메모장</span><span class="side-close" onclick="toggleSideMemo()">✕</span></div>
+  <div class="side-body">
+    <button class="mb-btn mb-btn-add" style="width:100%;margin-bottom:8px;background:linear-gradient(135deg,#a78bfa,#7c3aed);" onclick="addMemo()">+ 메모 추가</button>
+    <div id="side-mm-list"></div>
+  </div>
+</div>
+<!-- 사이드 타이머 -->
+<div class="side-panel side-timer" id="side-timer">
+  <div class="side-hd"><span>⏱ 타이머</span><span class="side-close" onclick="toggleSideTimer()">✕</span></div>
+  <div class="side-body">
+    <div style="text-align:center;margin-bottom:12px;">
+      <div class="tm-display" id="side-pomo-display" style="font-size:36px;">25:00</div>
+      <div class="tm-label" id="side-pomo-label" style="margin-bottom:8px;">포모도로 · 집중</div>
+      <div class="tm-btns"><button class="tm-btn tm-btn-start" id="side-pomo-btn" onclick="togglePomo()">시작</button><button class="tm-btn" onclick="resetPomo()">리셋</button></div>
+      <div class="tm-settings" style="margin-top:8px;"><label style="font-size:10px;color:var(--muted);">집중<input class="tm-set-input" id="pomo-work" type="number" value="25" min="1" max="120" onchange="resetPomo()">분</label><label style="font-size:10px;color:var(--muted);">휴식<input class="tm-set-input" id="pomo-break" type="number" value="5" min="1" max="30" onchange="resetPomo()">분</label></div>
+    </div>
+    <div style="border-top:1px solid var(--b1);padding-top:12px;text-align:center;">
+      <div style="font-size:11px;color:var(--sub);margin-bottom:6px;font-weight:600;">⏳ 카운트다운</div>
+      <div class="tm-display" id="side-cd-display" style="font-size:28px;">00:00</div>
+      <div class="tm-settings" style="margin-bottom:8px;"><label style="font-size:10px;color:var(--muted);">분<input class="tm-set-input" id="cd-min" type="number" value="5" min="0" max="999"></label><label style="font-size:10px;color:var(--muted);">초<input class="tm-set-input" id="cd-sec" type="number" value="0" min="0" max="59"></label></div>
+      <div class="tm-btns"><button class="tm-btn tm-btn-start" id="side-cd-btn" onclick="toggleCD()">시작</button><button class="tm-btn" onclick="resetCD()">리셋</button></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 0 : 메인
+══════════════════════════════════════════════════════════ -->
+<div class="page on" id="pg-main">
+<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 54px);text-align:center;padding-top:0;">
+  <div style="font-size:52px;margin-bottom:8px;">✨</div>
+  <h1 style="font-size:32px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을</h1>
+  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">스텔라 마을 · Since. 2026-02-07</p>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;width:100%;margin-bottom:24px;">
+    <div class="main-card" onclick="go('member')"><div class="main-icon">👥</div><div class="main-val" id="dash-members">0</div><div class="main-label">마을원</div></div>
+    <div class="main-card" onclick="go('zone')"><div class="main-icon">🗺️</div><div class="main-val" id="dash-chunks">0</div><div class="main-label">점유 청크</div></div>
+    <div class="main-card" onclick="go('tribute')"><div class="main-icon">⭐</div><div class="main-val" id="dash-tribute">0</div><div class="main-label">총 조공P</div></div>
+    <div class="main-card" onclick="go('price')"><div class="main-icon">📊</div><div class="main-val">시세</div><div class="main-label">변동 시세</div></div>
+  </div>
+  <div style="max-width:560px;width:100%;margin-bottom:20px;">
+    <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">바로가기</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+      <button class="main-qbtn" onclick="go('recipe')">🛠 제작</button>
+      <button class="main-qbtn" onclick="go('enhance')">⚙ 강화</button>
+      <button class="main-qbtn" onclick="go('sim')">🎮 시뮬</button>
+      <button class="main-qbtn" onclick="go('skill')">💀 스킬</button>
+    </div>
+  </div>
+  <div style="font-size:10px;color:var(--muted);">v2.0.0 · 제작자 02qB (벌목꾼) · lunawiki.gitbook.io 기반</div>
+</div></div>
 
 <!-- ══════════════════════════════════════════════════════════
      PAGE 1 : 제작 레시피
 ══════════════════════════════════════════════════════════ -->
-<div class="page on" id="pg-recipe">
+<div class="page" id="pg-recipe">
 <div class="wrap">
 
   <div class="ph">
@@ -1425,8 +1682,24 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <div class="wrap">
 
   <div class="ph">
-    <div class="ph-title">📊 요리 <span style="color:#f59e0b;">시세</span> 트래커</div>
-    <div class="ph-sub">디스코드 변동 가격 메시지를 붙여넣으면 원가 대비 등락을 자동으로 분석합니다.</div>
+    <div class="ph-title">📊 변동 <span style="color:#f59e0b;">시세</span> 트래커</div>
+    <div class="ph-sub">디스코드 변동 가격 메시지 파싱 · 농작물/물고기 기본가 조회 · 유통기한 감가 계산</div>
+  </div>
+
+  <!-- 유통기한 감가 계산기 -->
+  <div class="exp-calc">
+    <div class="exp-calc-title">📅 유통기한 감가 계산기</div>
+    <div class="exp-row">
+      <div class="exp-field"><label>판매 원가 (셀)</label><input id="exp-price" type="number" value="10" min="1" oninput="calcExpiry()"></div>
+      <div class="exp-field"><label>유통기한 만료일</label><input id="exp-date" type="datetime-local" onchange="calcExpiry()"></div>
+      <div class="exp-field"><label>판매 시점</label><input id="exp-sell" type="datetime-local" onchange="calcExpiry()"></div>
+    </div>
+    <div class="exp-result" id="exp-result">
+      <div class="exp-card"><div class="exp-card-time">만료 후 6시간 이내</div><div class="exp-card-rate" style="color:#d97706;">-20%</div><div class="exp-card-val" id="exp-v1">8 셀</div></div>
+      <div class="exp-card"><div class="exp-card-time">만료 후 12시간 이내</div><div class="exp-card-rate" style="color:#ea580c;">-40%</div><div class="exp-card-val" id="exp-v2">6 셀</div></div>
+      <div class="exp-card"><div class="exp-card-time">만료 후 1일 이상</div><div class="exp-card-rate" style="color:#dc2626;">-60%</div><div class="exp-card-val" id="exp-v3">4 셀</div></div>
+    </div>
+    <div id="exp-status" style="font-size:11px;color:var(--muted);margin-top:8px;"></div>
   </div>
 
   <!-- 입력 영역 -->
@@ -1467,7 +1740,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <div class="wrap">
 
   <div class="ph">
-    <div class="ph-title">💀 스킬 <span style="color:#f472b6;">도감</span></div>
+    <div class="ph-title">💀 생활 <span style="color:#f472b6;">스킬</span></div>
     <div class="ph-sub">직업별 패시브 · 액티브 스킬 상세 정보 — 기본 Lv.20, 강화 포함 Lv.30</div>
   </div>
 
@@ -1487,15 +1760,169 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 
 </div></div>
 
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 6 : 마을원 명단
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-member">
+<div class="wrap">
+  <div class="ph">
+    <div class="ph-title">👥 마을원 <span style="color:#38bdf8;">명단</span></div>
+    <div class="ph-sub">스텔라 마을 구성원 정보</div>
+  </div>
+  <div class="search-bar"><input class="search-input" id="mb-search" placeholder="마을원 검색..." oninput="renderMembers()"></div>
+  <div class="mb-toolbar">
+    <button class="mb-btn mb-btn-add" onclick="openMemberModal()">+ 마을원 추가</button>
+    <button class="mb-btn" onclick="exportMembers()">내보내기</button>
+    <button class="mb-btn" onclick="importMembers()">불러오기</button>
+    <span style="flex:1;"></span>
+    <span style="font-size:11px;color:var(--muted);" id="mb-count">0명</span>
+  </div>
+  <div class="mb-grid" id="mb-grid"></div>
+  <div id="mb-modal-root"></div>
+</div></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 7 : 마을 구역
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-zone">
+<div class="wrap">
+  <div class="ph">
+    <div class="ph-title">🗺️ 마을 <span style="color:#4ade80;">구역</span></div>
+    <div class="ph-sub">청크 기반 마을 땅 점유 현황 — 셀 클릭으로 소유자 설정</div>
+  </div>
+  <div class="search-bar"><input class="search-input" id="zn-search" placeholder="소유자 검색..." oninput="highlightZone()"></div>
+  <div class="zn-tools">
+    <span style="font-size:11px;color:var(--sub);">그리드 크기:</span>
+    <input class="tm-set-input" id="zn-cols" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
+    <span style="font-size:11px;color:var(--muted);">×</span>
+    <input class="tm-set-input" id="zn-rows" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
+    <button class="mb-btn" onclick="resetZone()">초기화</button>
+    <button class="mb-btn" onclick="exportZone()">내보내기</button>
+    <button class="mb-btn" onclick="importZone()">불러오기</button>
+  </div>
+  <div class="zn-stat" id="zn-stat"></div>
+  <div class="zn-legend" id="zn-legend"></div>
+  <div class="zn-map" id="zn-map"></div>
+</div></div>
+
+<!-- ══════════════════════════════════════════════════════════
+     PAGE 8 : 조공 포인트
+══════════════════════════════════════════════════════════ -->
+<div class="page" id="pg-tribute">
+<div class="wrap">
+  <div class="ph">
+    <div class="ph-title">⭐ 조공 <span style="color:#fbbf24;">포인트</span></div>
+    <div class="ph-sub">인당 6,000P 목표 · 추가 버튼으로 이름+포인트 기록</div>
+  </div>
+  <div class="search-bar"><input class="search-input" id="tb-search" placeholder="마을원 검색..." oninput="renderTribute()"></div>
+  <div class="tb-summary" id="tb-summary"></div>
+  <div class="mb-toolbar">
+    <button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#fbbf24,#d97706);" onclick="openTributeModal()">+ 조공 추가</button>
+    <button class="mb-btn" onclick="resetTribute()">초기화</button>
+    <button class="mb-btn" onclick="exportTribute()">내보내기</button>
+    <button class="mb-btn" onclick="importTribute()">불러오기</button>
+  </div>
+  <div class="tb-list" id="tb-list"></div>
+  <div class="tb-xp-ref">
+    <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">📖 조공 XP 참고표</div>
+    <div class="tb-xp-grid">
+      <div class="tb-xp-card"><strong>🍒 농작물</strong><br>커먼 1xp<br>언커먼 2xp<br>레어 7xp</div>
+      <div class="tb-xp-card"><strong>🐟 물고기</strong><br>커먼 4xp<br>언커먼 9xp<br>레어 20xp</div>
+      <div class="tb-xp-card"><strong>⛏️ 광물</strong><br>석탄 0.001<br>철 0.005<br>금 1xp<br>다이아 4xp</div>
+      <div class="tb-xp-card"><strong>💎 후원</strong><br>레드 200xp<br>다크블루 500xp<br>퍼플 1000xp</div>
+    </div>
+  </div>
+  <div id="tb-modal-root"></div>
+</div></div>
+
+</div></div>
+
+
+
 <script>
 /* ── 페이지 전환 ── */
+/* ══════════════════════════════════════════
+   드롭다운 메뉴
+══════════════════════════════════════════ */
+function toggleDD(id){
+  const menu=document.getElementById(id);
+  const wasOpen=menu.classList.contains('dd-open');
+  closeDD();
+  if(!wasOpen){menu.classList.add('dd-open');menu.parentElement.querySelector('.nav-dd-btn').classList.add('dd-active');}
+}
+function closeDD(){
+  document.querySelectorAll('.nav-dd-menu').forEach(m=>m.classList.remove('dd-open'));
+  document.querySelectorAll('.nav-dd-btn').forEach(b=>b.classList.remove('dd-active'));
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.nav-dd'))closeDD();});
+
+/* ══════════════════════════════════════════
+   관리자 시스템 (SHA-256 해시 비교)
+══════════════════════════════════════════ */
+const ADMIN_HASH='fb98f230a69824c79b567b2eb4299c6ce45c4d3f4ca5d703a2f2a9366838035f';
+let isAdmin=sessionStorage.getItem('stella_admin')==='1';
+
+async function hashPW(pw){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function openAdminLogin(){
+  if(isAdmin){if(confirm('관리자 로그아웃?')){isAdmin=false;sessionStorage.removeItem('stella_admin');updateAdminUI();return;}}
+  const root=document.getElementById('mb-modal-root')||document.getElementById('tb-modal-root');
+  if(!root)return;
+  root.innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)this.remove()">
+    <div class="mb-modal"><h3>🔒 관리자 로그인</h3>
+      <label>아이디</label><input id="adm-id" placeholder="Admin">
+      <label>비밀번호</label><input id="adm-pw" type="password" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doAdminLogin()">
+      <div class="mb-modal-btns"><button class="mb-btn" onclick="this.closest('.mb-modal-bg').remove()">취소</button><button class="mb-btn mb-btn-add" onclick="doAdminLogin()">로그인</button></div>
+    </div></div>`;
+}
+async function doAdminLogin(){
+  const id=document.getElementById('adm-id').value.trim();
+  const pw=document.getElementById('adm-pw').value;
+  if(id!=='Admin'){alert('아이디가 올바르지 않습니다.');return;}
+  const h=await hashPW(pw);
+  if(h===ADMIN_HASH){isAdmin=true;sessionStorage.setItem('stella_admin','1');document.querySelector('.mb-modal-bg').remove();updateAdminUI();alert('관리자 모드 활성화!');}
+  else{alert('비밀번호가 올바르지 않습니다.');}
+}
+function updateAdminUI(){
+  const btn=document.querySelector('.nav-admin-btn');
+  if(!btn)return;
+  if(isAdmin){btn.classList.add('logged-in');btn.innerHTML='<span style="font-size:14px;">🔓</span>';btn.title='관리자 (로그아웃)';}
+  else{btn.classList.remove('logged-in');btn.innerHTML='<span style="font-size:14px;">🔒</span>';btn.title='관리자 로그인';}
+}
+function requireAdmin(){
+  if(!isAdmin){alert('관리자 로그인이 필요합니다.');return false;}
+  return true;
+}
+setTimeout(updateAdminUI,100);
+
+/* ══════════════════════════════════════════
+   메인 대시보드
+══════════════════════════════════════════ */
+function updateDashboard(){
+  const me=document.getElementById('dash-members');
+  const ze=document.getElementById('dash-chunks');
+  const te=document.getElementById('dash-tribute');
+  if(me)me.textContent=members.length;
+  if(ze)ze.textContent=Object.keys(zoneData).length;
+  if(te){const t=Object.values(tribute).reduce((s,v)=>s+v,0);te.textContent=t.toLocaleString();}
+}
+
+
 function go(tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('on'));
-  document.getElementById('pg-' + tab).classList.add('on');
+  const pgEl = document.getElementById('pg-' + tab); if(pgEl) pgEl.classList.add('on');
   document.querySelector('.nav-tab.t-' + tab).classList.add('on');
   if (tab === 'sim') { buildPieceSliders(); simUpdate(); }
   if (tab === 'skill' && !window._skillInit) { window._skillInit=true; renderSkillPage('farming'); }
+  if (tab === 'member') renderMembers();
+  if (tab === 'main') updateDashboard();
+  if (tab === 'zone' && !window._zoneInit) { window._zoneInit=true; rebuildZone(); }
+  if (tab === 'tribute') renderTribute();
+  if (tab === 'price' && !window._expInit) { window._expInit=true; setTimeout(initExpiry,100); }
+  if (tab === 'memo') renderMemos();
 }
 
 /* ══════════════════════════════════════════
@@ -1507,37 +1934,51 @@ const SK_IMG = {
   '비옥한 토양':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3PfhE1ww4KyoalRwpmeY%252FAdobe%2520Express%2520-%2520file%2520%284%29.png%3Falt%3Dmedia%26token%3Dd49060e6-54c7-41a5-9b01-791e0656bc11&width=300&dpr=1&quality=100&sign=56aa2559&sv=2',
   '수확의 손길':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3nTn63EfHJodicghKxJa%252FAdobe%2520Express%2520-%2520file%2520%286%29.png%3Falt%3Dmedia%26token%3D13018ade-fadc-4805-b062-e91537bb665e&width=300&dpr=1&quality=100&sign=5bd975f3&sv=2',
   '되뿌리기':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FaeXkdE6HHtOsx2zLetJL%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-17%2520152620.png%3Falt%3Dmedia%26token%3De2f3d1e3-64a7-450c-a35e-68ffcd19ea3c&width=300&dpr=1&quality=100&sign=fc983d8b&sv=2',
+  '보물 감지':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FiQxc9RTDsJ7WGCDcLIL1%252FAdobe%2520Express%2520-%2520file%2520%288%29.png%3Falt%3Dmedia%26token%3D05ee4bdc-2d9f-4172-aca9-9d779b96da6c&width=300&dpr=1&quality=100&sign=72f10104&sv=2',
+  '소문난 미끼':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F0W0sEsgvvFCAtDsc5coC%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-17%2520174156-Photoroom.png%3Falt%3Dmedia%26token%3D85f1de8e-4e14-48e4-b18a-86f89d837679&width=300&dpr=1&quality=100&sign=5ad3243&sv=2',
+  '낚싯줄 장력':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FUyVoDR87Btcsgp0FdjSl%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-17%2520174207-Photoroom.png%3Falt%3Dmedia%26token%3Db7aa2670-2202-4d68-a3f7-0c79fbc73a5a&width=300&dpr=1&quality=100&sign=b22d83a1&sv=2',
+  '떼낚시':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252Fq5DtDWOh4vLcEifBIVfo%252FAdobe%2520Express%2520-%2520file%2520%289%29.png%3Falt%3Dmedia%26token%3Dfba777f5-911d-416c-9fd0-a832afc18687&width=300&dpr=1&quality=100&sign=79d146c5&sv=2',
+  '쌍걸이':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FVWvLdj9uAi0ZvcT99b53%252FAdobe%2520Express%2520-%2520file%2520%2810%29.png%3Falt%3Dmedia%26token%3D5f50479f-3da8-438b-8e63-c325dc6580e5&width=300&dpr=1&quality=100&sign=6a9a6213&sv=2',
+  '단련된 곡괭이':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FkMys0kOGVObJ3T3VcA81%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520180015.png%3Falt%3Dmedia%26token%3Db0a59963-6088-4c60-a693-3e6f73463e22&width=300&dpr=1&quality=100&sign=83a4d34c&sv=2',
+  '광맥 감각':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FrrIFD1ShAXe7HRClSmnv%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520180024-Photoroom.png%3Falt%3Dmedia%26token%3D63245ae1-6d0d-40b5-a48c-4d4fda645b70&width=300&dpr=1&quality=100&sign=6734cf5c&sv=2',
+  '광맥 흐름':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FHF0uciaorvU4oVXfvkvC%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520180029-Photoroom.png%3Falt%3Dmedia%26token%3Da71e70bd-7d68-41dd-93fd-396dc1afd2f9&width=300&dpr=1&quality=100&sign=139f2901&sv=2',
+  '폭발적인 채광':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FWMHOKsgd6hjvodh9cvjK%252FAdobe%2520Express%2520-%2520file%2520%2822%29.png%3Falt%3Dmedia%26token%3D9c119f5b-0112-4dff-b3d0-ea4cca5f4a4f&width=300&dpr=1&quality=100&sign=e82217dc&sv=2',
+  '광맥 탐지':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FEaq6bZIbCyaqLgnzyybZ%252FAdobe%2520Express%2520-%2520file%2520%2821%29.png%3Falt%3Dmedia%26token%3Dd874b70b-0c7a-4d7f-ad0c-9ed5f294cf76&width=300&dpr=1&quality=100&sign=c55602ba&sv=2',
+  '손질 달인':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3U77ucNGQd28E13P98m9%252FAdobe%2520Express%2520-%2520file%2520%2811%29.png%3Falt%3Dmedia%26token%3Dc3272051-0bbb-4b18-848f-90338a85c1d5&width=300&dpr=1&quality=100&sign=f7f9eb2&sv=2',
+  '맛의 균형':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FBja4kUnugDFSfnmKJ1fC%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520144349-Photoroom.png%3Falt%3Dmedia%26token%3D59eec690-25d8-4891-bb26-d56a1712cd00&width=300&dpr=1&quality=100&sign=740a79bd&sv=2',
+  '미식가':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F9FqWZrS8nxEwpKYIPSLg%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520144355-Photoroom.png%3Falt%3Dmedia%26token%3Dd849082d-aaba-472b-a304-4b154bd41133&width=300&dpr=1&quality=100&sign=f442a05&sv=2',
+  '연회 준비':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FQ2kfgKjJ3kCxjoL2Nidw%252FAdobe%2520Express%2520-%2520file%2520%2812%29.png%3Falt%3Dmedia%26token%3D82c413d7-c69f-4cb4-9764-906761acd4b5&width=300&dpr=1&quality=100&sign=60680c14&sv=2',
+  '즉시 완성':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FUsEKRATbTKRjrIT2QYCK%252FAdobe%2520Express%2520-%2520file%2520%2813%29.png%3Falt%3Dmedia%26token%3D09681ab9-5243-49f8-a087-618952291908&width=300&dpr=1&quality=100&sign=a7ac8372&sv=2',
 };
-const SK_EMOJI = {'P':'🛡️','A':'⚡'};
 
 const SKILL_DATA = {
 farming:{icon:'🌾',name:'농사',skills:[
-  {name:'개간의서약',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'마을 월드에서 경작지 수와 화분통 설치 수량이 증가합니다.',cols:['Lv','경작지','화분통/경작지','총 화분통'],rows:[[0,1,96,96],[1,1,100,100],[5,1,116,116],[10,2,132,264],[15,2,152,304],[17,3,156,468],[20,3,168,504],[24,4,180,720],[25,4,182,728],[30,4,192,768]]},
-  {name:'풍년의 축복',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'일반 등급 비율이 감소하여 고급·희귀 등급이 더 자주 드롭됩니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.9],[5,4.5],[10,9],[15,16.5],[20,24],[25,40],[30,60]]},
-  {name:'비옥한 토양',type:'P',tier:'T30',prereq:'풍년의 축복 Lv.10',excl:'-',desc:'작물이 확률로 한번 더 드롭됩니다.',cols:['Lv','추가 드롭(%)'],rows:[[1,0.6],[5,3],[10,6],[15,11],[20,16],[25,26.5],[30,40]]},
-  {name:'수확의 손길',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'되뿌리기',desc:'지속시간 동안 3×1 범위로 작물을 자동 수확합니다.',act:'괭이 + Shift+우클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]},
-  {name:'되뿌리기',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'수확의 손길',desc:'지속시간 동안 수확 후 씨앗이 자동으로 다시 심어집니다.',act:'괭이 + Shift+좌클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[5,12.7,158,32],[10,16,136,36],[15,21,116,41],[20,26,100,47],[25,32,85,60],[30,38,70,70]]}
+  {name:'개간의서약',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'마을 월드에서 경작지 수와 화분통 설치 수량이 증가합니다.',cols:['Lv','경작지','화분통/경작지','총 화분통'],rows:[[0,1,96,96],[1,1,100,100],[2,1,104,104],[3,1,108,108],[4,1,112,112],[5,1,116,116],[6,1,120,120],[7,1,124,124],[8,1,128,128],[9,1,132,132],[10,2,132,264],[11,2,136,272],[12,2,140,280],[13,2,144,288],[14,2,148,296],[15,2,152,304],[16,2,156,312],[17,3,156,468],[18,3,160,480],[19,3,164,492],[20,3,168,504],[21,3,172,516],[22,3,176,528],[23,3,180,540],[24,4,180,720],[25,4,182,728],[26,4,184,736],[27,4,186,744],[28,4,188,752],[29,4,190,760],[30,4,192,768]]},
+  {name:'풍년의 축복',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'일반 등급 비율이 감소하여 고급·희귀 등급이 더 자주 드롭됩니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.9],[2,1.8],[3,2.7],[4,3.6],[5,4.5],[6,5.4],[7,6.3],[8,7.2],[9,8.1],[10,9],[11,10.5],[12,12],[13,13.5],[14,15],[15,16.5],[16,18],[17,19.5],[18,21],[19,22.5],[20,24],[21,27.2],[22,30.4],[23,33.6],[24,36.8],[25,40],[26,43.2],[27,46.4],[28,49.6],[29,54],[30,60]]},
+  {name:'비옥한 토양',type:'P',tier:'T30',prereq:'풍년의 축복 Lv.10',excl:'-',desc:'작물이 확률로 한번 더 드롭됩니다.',cols:['Lv','추가 드롭(%)'],rows:[[1,0.6],[2,1.2],[3,1.8],[4,2.4],[5,3],[6,3.6],[7,4.2],[8,4.8],[9,5.4],[10,6],[11,7],[12,8],[13,9],[14,10],[15,11],[16,12],[17,13],[18,14],[19,15],[20,16],[21,18.1],[22,20.2],[23,22.3],[24,24.4],[25,26.5],[26,28.6],[27,30.7],[28,32.8],[29,35.4],[30,40]]},
+  {name:'수확의 손길',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'되뿌리기',desc:'지속시간 동안 3×1 범위로 작물을 자동 수확합니다.',act:'괭이 + Shift+우클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[2,10.7,174,30],[3,11.3,168,31],[4,12,163,31],[5,12.7,158,32],[6,13.3,153,32],[7,14,148,33],[8,14.7,144,34],[9,15.3,140,35],[10,16,136,36],[11,17,132,37],[12,18,128,38],[13,19,124,39],[14,20,120,40],[15,21,116,41],[16,22,112,42],[17,23,108,43],[18,24,104,44],[19,25,102,45],[20,26,100,47],[21,27.2,97,50],[22,28.4,94,53],[23,29.6,91,56],[24,30.8,88,58],[25,32,85,60],[26,33.2,82,62],[27,34.4,79,64],[28,35.6,76,66],[29,36.8,73,68],[30,38,70,70]]},
+  {name:'되뿌리기',type:'A',tier:'T40',prereq:'비옥한 토양 Lv.10',excl:'수확의 손길',desc:'지속시간 동안 수확 후 씨앗이 자동으로 다시 심어집니다.',act:'괭이 + Shift+좌클릭(공중)',req:'농사 Lv.20',cols:['Lv','지속(초)','쿨(초)','마나'],rows:[[1,10,180,30],[2,10.7,174,30],[3,11.3,168,31],[4,12,163,31],[5,12.7,158,32],[6,13.3,153,32],[7,14,148,33],[8,14.7,144,34],[9,15.3,140,35],[10,16,136,36],[11,17,132,37],[12,18,128,38],[13,19,124,39],[14,20,120,40],[15,21,116,41],[16,22,112,42],[17,23,108,43],[18,24,104,44],[19,25,102,45],[20,26,100,47],[21,27.2,97,50],[22,28.4,94,53],[23,29.6,91,56],[24,30.8,88,58],[25,32,85,60],[26,33.2,82,62],[27,34.4,79,64],[28,35.6,76,66],[29,36.8,73,68],[30,38,70,70]]}
 ]},
 fishing:{icon:'🎣',name:'낚시',skills:[
-  {name:'보물 감지',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'낚시 시 보물 상자가 나올 확률이 증가합니다.',cols:['Lv','보물 확률(%)'],rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,45],[30,65]]},
-  {name:'소문난 미끼',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'낚시 성공 시 동일 물고기를 1마리 더 낚을 확률이 증가합니다.',cols:['Lv','2마리 확률(%)'],rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
-  {name:'낚싯줄 장력',type:'P',tier:'T30',prereq:'소문난 미끼 Lv.10',excl:'-',desc:'일반 등급 비율 감소, 고급·희귀 등급을 더 자주 낚습니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.7],[5,3.5],[10,7],[15,12.5],[20,18],[25,31.5],[30,45]]},
-  {name:'쌍걸이',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'떼낚시',desc:'지속시간 동안 낚시 성공 시 확률로 2회 진행됩니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','2회(%)','지속(초)','쿨(초)','마나'],rows:[[1,2,40,600,30],[5,5.2,72,600,32],[10,9.2,112,600,36],[15,15.7,152,600,41],[20,22.2,192,600,47],[25,28.7,232,600,60],[30,40,300,600,70]]},
-  {name:'떼낚시',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'쌍걸이',desc:'지속시간 동안 물고기 등장/바이트 시간이 감소합니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','등장↓(틱)','바이트↓(틱)','지속(초)','쿨(초)','마나'],rows:[[1,22,5,40,600,30],[5,29,8,72,600,32],[10,36,12,120,600,36],[15,47,17,180,600,41],[20,50,20,200,600,47],[25,59,25,248,600,60],[30,72,30,300,600,70]]}
+  {name:'보물 감지',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'낚시 시 보물 상자가 나올 확률이 증가합니다.',cols:['Lv','보물 확률(%)'],rows:[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,12],[12,14],[13,16],[14,18],[15,20],[16,22],[17,24],[18,26],[19,28],[20,30],[21,33],[22,36],[23,39],[24,42],[25,45],[26,48],[27,51],[28,54],[29,57],[30,65]]},
+  {name:'소문난 미끼',type:'P',tier:'T20',prereq:'-',excl:'-',desc:'낚시 성공 시 동일 물고기를 1마리 더 낚을 확률이 증가합니다.',cols:['Lv','2마리 확률(%)'],rows:[[1,0.7],[2,1.4],[3,2.1],[4,2.8],[5,3.5],[6,4.2],[7,4.9],[8,5.6],[9,6.3],[10,7],[11,8.1],[12,9.2],[13,10.3],[14,11.4],[15,12.5],[16,13.6],[17,14.7],[18,15.8],[19,16.9],[20,18],[21,20.7],[22,23.4],[23,26.1],[24,28.8],[25,31.5],[26,34.2],[27,36.9],[28,39.6],[29,42.3],[30,45]]},
+  {name:'낚싯줄 장력',type:'P',tier:'T30',prereq:'소문난 미끼 Lv.10',excl:'-',desc:'일반 등급 비율 감소, 고급·희귀 등급을 더 자주 낚습니다.',cols:['Lv','일반 감소(%)'],rows:[[1,0.7],[2,1.4],[3,2.1],[4,2.8],[5,3.5],[6,4.2],[7,4.9],[8,5.6],[9,6.3],[10,7],[11,8.1],[12,9.2],[13,10.3],[14,11.4],[15,12.5],[16,13.6],[17,14.7],[18,15.8],[19,16.9],[20,18],[21,20.7],[22,23.4],[23,26.1],[24,28.8],[25,31.5],[26,34.2],[27,36.9],[28,39.6],[29,42.3],[30,45]]},
+  {name:'쌍걸이',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'떼낚시',desc:'지속시간 동안 낚시 성공 시 확률로 2회 진행됩니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','2회(%)','지속(초)','쿨(초)','마나'],rows:[[1,2,40,600,30],[2,2.8,48,600,30],[3,3.6,56,600,31],[4,4.4,64,600,31],[5,5.2,72,600,32],[6,6,80,600,32],[7,6.8,88,600,33],[8,7.6,96,600,34],[9,8.4,104,600,35],[10,9.2,112,600,36],[11,10.5,120,600,37],[12,11.8,128,600,38],[13,13.1,136,600,39],[14,14.4,144,600,40],[15,15.7,152,600,41],[16,17,160,600,42],[17,18.3,168,600,43],[18,19.6,176,600,44],[19,20.9,184,600,45],[20,22.2,192,600,47],[21,23.5,200,600,50],[22,24.8,208,600,53],[23,26.1,216,600,56],[24,27.4,224,600,58],[25,28.7,232,600,60],[26,30,240,600,62],[27,31,245,600,64],[28,33,250,600,66],[29,34,255,600,68],[30,40,300,600,70]]},
+  {name:'떼낚시',type:'A',tier:'T40',prereq:'낚싯줄 장력 Lv.10',excl:'쌍걸이',desc:'지속시간 동안 물고기 등장/바이트 시간이 감소합니다.',act:'낚싯대 + Shift+우클릭(공중)',req:'낚시 Lv.20',cols:['Lv','등장↓(틱)','바이트↓(틱)','지속(초)','쿨(초)','마나'],rows:[[1,22,5,40,600,30],[2,23,6,48,600,30],[3,25,7,56,600,31],[4,27,7,64,600,31],[5,29,8,72,600,32],[6,31,8,80,600,32],[7,32,9,88,600,33],[8,34,10,96,600,34],[9,35,11,108,600,35],[10,36,12,120,600,36],[11,38,13,132,600,37],[12,41,14,144,600,38],[13,43,16,156,600,39],[14,45,16,168,600,40],[15,47,17,180,600,41],[16,48,18,188,600,42],[17,49,19,192,600,43],[18,49,20,196,600,44],[19,50,20,198,600,45],[20,50,20,200,600,47],[21,53,22,210,600,50],[22,55,22,220,600,53],[23,56,23,230,600,56],[24,58,24,240,600,58],[25,59,25,248,600,60],[26,61,26,252,600,62],[27,61,26,255,600,64],[28,62,26,258,600,66],[29,62,26,260,600,68],[30,72,30,300,600,70]]}
 ]},
 mining:{icon:'⛏️',name:'채광',skills:[
-  {name:'단련된 곡괭이',type:'P',tier:'T30',prereq:'-',excl:'-',desc:'커스텀 광물 채광 시 데미지가 증가합니다.',cols:['Lv','데미지 증가(%)'],rows:[[1,2],[5,10],[10,20],[15,32.5],[20,45],[25,72.5],[30,100]]},
-  {name:'광맥 감각',type:'P',tier:'T30',prereq:'단련된 곡괭이 Lv.10',excl:'-',desc:'채광 시 광물이 추가 드롭됩니다.',cols:['Lv','커스텀(%)','기본(%)','최대(개)'],rows:[[1,0.6,2,1],[5,3,6,1],[10,6,11,1],[15,11,16,2],[20,16,21,2],[25,28,26,3],[30,40,30,4]]},
-  {name:'광맥 흐름',type:'P',tier:'T30',prereq:'광맥 감각 Lv.10',excl:'-',desc:'채광 딜레이가 감소하여 더 빨리 채광합니다.',cols:['Lv','딜레이 감소(%)'],rows:[[1,1],[5,5],[10,10],[15,16],[20,22],[25,36],[30,50]]},
-  {name:'광맥 탐지',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'폭발적인 채광',desc:'지속시간 동안 y±6, x±N 범위(타원형)의 광물을 투시합니다.',act:'곡괭이 + Shift+좌클릭(공중)',req:'채광 Lv.20',cols:['Lv','범위 x±','지속(초)','쿨(초)','마나'],rows:[[1,2,20,440,30],[5,4,24,380,32],[10,6,30,320,36],[15,9,38,296,41],[20,11,44,274,47],[25,14,52,250,60],[30,16,60,240,70]]},
-  {name:'폭발적인 채광',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'광맥 탐지',desc:'지속시간 동안 성급함 N + 야간투시 효과를 획득합니다.',act:'곡괭이 + Shift+우클릭(공중)',req:'채광 Lv.20',cols:['Lv','성급함','지속(초)','쿨(초)','마나'],rows:[[1,2,25,360,30],[5,3,33,328,32],[10,8,40,288,36],[15,8,50,258,41],[20,8,60,228,47],[25,8,70,198,60],[30,8,90,180,70]]}
+  {name:'단련된 곡괭이',type:'P',tier:'T30',prereq:'-',excl:'-',desc:'커스텀 광물 채광 시 데미지가 증가합니다.',cols:['Lv','데미지 증가(%)'],rows:[[1,2],[2,4],[3,6],[4,8],[5,10],[6,12],[7,14],[8,16],[9,18],[10,20],[11,22.5],[12,25],[13,27.5],[14,30],[15,32.5],[16,35],[17,37.5],[18,40],[19,42.5],[20,45],[21,50.5],[22,56],[23,61.5],[24,67],[25,72.5],[26,78],[27,83.5],[28,89],[29,94.5],[30,100]]},
+  {name:'광맥 감각',type:'P',tier:'T30',prereq:'단련된 곡괭이 Lv.10',excl:'-',desc:'채광 시 광물이 추가 드롭됩니다.',cols:['Lv','커스텀(%)','기본(%)','최대(개)'],rows:[[1,0.6,2,1],[2,1.2,3,1],[3,1.8,4,1],[4,2.4,5,1],[5,3,6,1],[6,3.6,7,1],[7,4.2,8,1],[8,4.8,9,1],[9,5.4,10,1],[10,6,11,1],[11,7,12,2],[12,8,13,2],[13,9,14,2],[14,10,15,2],[15,11,16,2],[16,12,17,2],[17,13,18,2],[18,14,19,2],[19,15,20,2],[20,16,21,2],[21,18.4,22,3],[22,20.8,23,3],[23,23.2,24,3],[24,25.6,25,3],[25,28,26,3],[26,30.4,27,3],[27,32.8,28,3],[28,35.2,29,3],[29,37.6,30,3],[30,40,30,4]]},
+  {name:'광맥 흐름',type:'P',tier:'T30',prereq:'광맥 감각 Lv.10',excl:'-',desc:'채광 딜레이가 감소하여 더 빨리 채광합니다.',cols:['Lv','딜레이 감소(%)'],rows:[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,11.2],[12,12.4],[13,13.6],[14,14.8],[15,16],[16,17.2],[17,18.4],[18,19.6],[19,20.8],[20,22],[21,24.8],[22,27.6],[23,30.4],[24,33.2],[25,36],[26,38.8],[27,41.6],[28,44.4],[29,47.2],[30,50]]},
+  {name:'광맥 탐지',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'폭발적인 채광',desc:'지속시간 동안 y±6, x±N 범위(타원형)의 광물을 투시합니다.',act:'곡괭이 + Shift+좌클릭(공중)',req:'채광 Lv.20',cols:['Lv','범위 x±','지속(초)','쿨(초)','마나'],rows:[[1,2,20,440,30],[2,2,21,425,30],[3,3,22,410,31],[4,3,23,395,31],[5,4,24,380,32],[6,4,25,365,32],[7,5,26,350,33],[8,5,27,340,34],[9,6,28,330,35],[10,6,30,320,36],[11,7,32,312,37],[12,7,33,308,38],[13,8,34,304,39],[14,8,36,300,40],[15,9,38,296,41],[16,9,40,292,42],[17,10,41,288,43],[18,10,42,284,44],[19,11,43,280,45],[20,11,44,274,47],[21,12,46,266,50],[22,12,47,262,53],[23,13,48,258,56],[24,13,50,254,58],[25,14,52,250,60],[26,14,54,246,62],[27,15,56,242,64],[28,15,57,240,66],[29,15,58,240,68],[30,16,60,240,70]]},
+  {name:'폭발적인 채광',type:'A',tier:'T40',prereq:'광맥 흐름 Lv.10',excl:'광맥 탐지',desc:'지속시간 동안 성급함 N + 야간투시 효과를 획득합니다.',act:'곡괭이 + Shift+우클릭(공중)',req:'채광 Lv.20',cols:['Lv','성급함','지속(초)','쿨(초)','마나'],rows:[[1,2,25,360,30],[2,2,27,352,30],[3,2,29,344,31],[4,3,31,336,31],[5,3,33,328,32],[6,3,35,320,32],[7,5,36,312,33],[8,5,37,304,34],[9,5,38,296,35],[10,8,40,288,36],[11,8,42,282,37],[12,8,44,276,38],[13,8,46,270,39],[14,8,48,264,40],[15,8,50,258,41],[16,8,52,252,42],[17,8,54,246,43],[18,8,56,240,44],[19,8,58,234,45],[20,8,60,228,47],[21,8,62,222,50],[22,8,64,216,53],[23,8,66,210,56],[24,8,68,204,58],[25,8,70,198,60],[26,8,72,192,62],[27,8,74,188,64],[28,8,76,184,66],[29,8,80,182,68],[30,8,90,180,70]]}
 ]},
 cooking:{icon:'🍳',name:'요리',skills:[
-  {name:'손질 달인',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'요리 시간이 감소합니다.',cols:['Lv','시간 감소(%)'],rows:[[1,1],[5,5],[10,10],[15,18],[20,25],[25,38],[30,50]]},
-  {name:'맛의 균형',type:'P',tier:'T20',prereq:'손질 달인 Lv.10',excl:'-',desc:'조리된 음식 섭취 시 기본 유지시간이 증가합니다.',cols:['Lv','유지시간(%)'],rows:[[1,1],[5,5],[10,10],[15,20],[20,30],[25,50],[30,70]]},
-  {name:'미식가',type:'P',tier:'T30',prereq:'맛의 균형 Lv.10',excl:'-',desc:'높은 등급의 음식이 나올 확률이 증가합니다.',cols:['Lv','고등급(%)'],rows:[[1,1],[5,5],[10,10],[15,18],[20,28],[25,43],[30,60]]},
-  {name:'즉시 완성',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'연회 준비',desc:'지속시간 동안 확률로 요리가 즉시 완성됩니다.',act:'Shift+좌클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','지속(초)','쿨(초)','마나'],rows:[[1,3,10,240,30],[5,7,14,240,32],[10,12,20,240,36],[15,22,30,240,41],[20,31,40,240,47],[25,36,50,240,60],[30,40,60,240,70]]},
-  {name:'연회 준비',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'즉시 완성',desc:'지속시간 동안 확률로 (추가횟수+1)회 요리합니다.',act:'Shift+우클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','추가','지속(초)','쿨(초)','마나'],rows:[[1,8,1,40,600,30],[5,16,1,72,600,32],[10,26,1,112,600,36],[15,36,2,152,600,41],[20,46,3,192,600,47],[25,56,4,240,600,60],[30,70,5,300,600,70]]}
+  {name:'손질 달인',type:'P',tier:'T10',prereq:'-',excl:'-',desc:'요리 시간이 감소합니다.',cols:['Lv','시간 감소(%)'],rows:[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,12],[12,13],[13,15],[14,16],[15,18],[16,19],[17,21],[18,22],[19,24],[20,25],[21,28],[22,30],[23,33],[24,35],[25,38],[26,40],[27,43],[28,45],[29,48],[30,50]]},
+  {name:'맛의 균형',type:'P',tier:'T20',prereq:'손질 달인 Lv.10',excl:'-',desc:'조리된 음식 섭취 시 기본 유지시간이 증가합니다.',cols:['Lv','유지시간(%)'],rows:[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,12],[12,14],[13,16],[14,18],[15,20],[16,22],[17,24],[18,26],[19,28],[20,30],[21,34],[22,38],[23,42],[24,46],[25,50],[26,54],[27,58],[28,62],[29,66],[30,70]]},
+  {name:'미식가',type:'P',tier:'T30',prereq:'맛의 균형 Lv.10',excl:'-',desc:'높은 등급의 음식이 나올 확률이 증가합니다.',cols:['Lv','고등급(%)'],rows:[[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[7,7],[8,8],[9,9],[10,10],[11,11],[12,12],[13,14],[14,16],[15,18],[16,20],[17,22],[18,24],[19,26],[20,28],[21,31],[22,34],[23,37],[24,40],[25,43],[26,46],[27,49],[28,52],[29,56],[30,60]]},
+  {name:'즉시 완성',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'연회 준비',desc:'지속시간 동안 확률로 요리가 즉시 완성됩니다.',act:'Shift+좌클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','지속(초)','쿨(초)','마나'],rows:[[1,3,10,240,30],[2,4,11,240,30],[3,5,12,240,31],[4,6,13,240,31],[5,7,14,240,32],[6,8,15,240,32],[7,9,16,240,33],[8,10,17,240,34],[9,11,18,240,35],[10,12,20,240,36],[11,14,22,240,37],[12,16,24,240,38],[13,18,26,240,39],[14,20,28,240,40],[15,22,30,240,41],[16,24,32,240,42],[17,26,34,240,43],[18,28,36,240,44],[19,30,38,240,45],[20,31,40,240,47],[21,32,42,240,50],[22,33,44,240,53],[23,34,46,240,56],[24,35,48,240,58],[25,36,50,240,60],[26,37,52,240,62],[27,38,54,240,64],[28,39,56,240,66],[29,39,58,240,68],[30,40,60,240,70]]},
+  {name:'연회 준비',type:'A',tier:'T40',prereq:'미식가 Lv.10',excl:'즉시 완성',desc:'지속시간 동안 확률로 (추가횟수+1)회 요리합니다.',act:'Shift+우클릭(화로)',req:'요리 Lv.20',cols:['Lv','확률(%)','추가','지속(초)','쿨(초)','마나'],rows:[[1,8,1,40,600,30],[2,10,1,48,600,30],[3,12,1,56,600,31],[4,14,1,64,600,31],[5,16,1,72,600,32],[6,18,1,80,600,32],[7,20,1,88,600,33],[8,22,1,96,600,34],[9,24,1,104,600,35],[10,26,1,112,600,36],[11,28,2,120,600,37],[12,30,2,128,600,38],[13,32,2,136,600,39],[14,34,2,144,600,40],[15,36,2,152,600,41],[16,38,2,160,600,42],[17,40,2,168,600,43],[18,42,3,176,600,44],[19,44,3,184,600,45],[20,46,3,192,600,47],[21,48,3,200,600,50],[22,50,3,210,600,53],[23,52,3,220,600,56],[24,54,4,230,600,58],[25,56,4,240,600,60],[26,58,4,250,600,62],[27,60,4,260,600,64],[28,62,5,270,600,66],[29,64,5,275,600,68],[30,70,5,300,600,70]]}
 ]}
 };
 
@@ -1611,6 +2052,367 @@ function renderSkillPage(job) {
 function toggleSkill(idx) {
   const card = document.getElementById('skc-'+idx);
   card.classList.toggle('sk-open');
+}
+
+
+
+/* ══════════════════════════════════════════
+   마을원 명단
+══════════════════════════════════════════ */
+let members = JSON.parse(localStorage.getItem('stella_members')||'[]');
+function saveMembers(){ localStorage.setItem('stella_members',JSON.stringify(members)); }
+function renderMembers(){
+  const g=document.getElementById('mb-grid');
+  if(!g)return;
+  document.getElementById('mb-count').textContent=members.length+'명';
+  const mq=(document.getElementById('mb-search')||{}).value||"".trim().toLowerCase();
+  const filtered=mq?members.filter(m=>m.name.toLowerCase().includes(mq)||m.mc.toLowerCase().includes(mq)):members;
+  if(!filtered.length){g.innerHTML='<div class="mm-empty">'+(mq?'검색 결과가 없어요.':'마을원을 추가해주세요.')+'</div>';return;}
+  g.innerHTML=filtered.map((m,i)=>{const idx=members.indexOf(m);return `<div class="mb-card" onclick="showMemberDetail(idx)" style="cursor:pointer;">
+    <div class="mb-avatar">${m.name[0]}</div>
+    <div class="mb-info">
+      <div class="mb-name">${m.name}</div>
+      <div class="mb-mc">${m.mc}</div>
+      <div class="mb-tags">
+        <span class="mb-tag ${m.type==='본계'?'mb-tag-main':'mb-tag-sub'}">${m.type}</span>
+        <span class="mb-tag mb-tag-job">${m.job}</span>
+      </div>
+    </div>
+    <span class="mb-del" onclick="delMember(${idx})">✕</span>
+  </div>`;}).join('');
+}
+function openMemberModal(){
+  if(!requireAdmin())return;
+  document.getElementById('mb-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closeMemberModal()">
+    <div class="mb-modal"><h3>마을원 추가</h3>
+      <label>이름</label><input id="mm-name" placeholder="닉네임">
+      <label>마크닉</label><input id="mm-mc" placeholder="마인크래프트 닉네임">
+      <label>구분</label><select id="mm-type"><option>본계</option><option>부계</option></select>
+      <label>메인 직업</label><select id="mm-job"><option>농사</option><option>낚시</option><option>채광</option><option>요리</option><option>기타</option></select>
+      <div class="mb-modal-btns"><button class="mb-btn" onclick="closeMemberModal()">취소</button><button class="mb-btn mb-btn-add" onclick="addMember()">추가</button></div>
+    </div></div>`;
+}
+function closeMemberModal(){document.getElementById('mb-modal-root').innerHTML='';}
+function addMember(){
+  const n=document.getElementById('mm-name').value.trim();
+  const mc=document.getElementById('mm-mc').value.trim();
+  if(!n){alert('이름을 입력하세요.');return;}
+  members.push({name:n,mc:mc||n,type:document.getElementById('mm-type').value,job:document.getElementById('mm-job').value});
+  saveMembers();renderMembers();closeMemberModal();
+}
+function delMember(i){if(!requireAdmin())return;if(confirm(members[i].name+' 삭제?')){members.splice(i,1);saveMembers();renderMembers();}}
+function exportMembers(){const d=JSON.stringify(members,null,2);navigator.clipboard.writeText(d).then(()=>alert('복사됨!'));}
+function importMembers(){const d=prompt('JSON 데이터 붙여넣기:');if(!d)return;try{members=JSON.parse(d);saveMembers();renderMembers();}catch(e){alert('형식 오류');}}
+
+/* ══════════════════════════════════════════
+   마을 구역
+══════════════════════════════════════════ */
+const ZN_COLORS=['#3b82f6','#ef4444','#22c55e','#f59e0b','#a855f7','#ec4899','#06b6d4','#f97316','#6366f1','#14b8a6','#e11d48','#84cc16','#8b5cf6','#f43f5e','#0ea5e9','#d946ef','#10b981','#f472b6','#60a5fa','#fbbf24','#c084fc','#34d399','#fb7185','#38bdf8','#a3e635','#e879f9','#2dd4bf','#fca5a5','#93c5fd','#fcd34d'];
+let zoneData=JSON.parse(localStorage.getItem('stella_zone')||'{}');
+function saveZone(){localStorage.setItem('stella_zone',JSON.stringify(zoneData));}
+function rebuildZone(){
+  const cols=parseInt(document.getElementById('zn-cols').value)||16;
+  const rows=parseInt(document.getElementById('zn-rows').value)||16;
+  const map=document.getElementById('zn-map');
+  map.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  let html='';
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const k=r+','+c;
+    const owner=zoneData[k]||'';
+    html+=`<div class="zn-cell${owner?' owned':''}" data-k="${k}" onclick="setZoneOwner('${k}')" style="${owner?'background:'+getOwnerColor(owner)+';':''}" title="${owner||'빈 청크'}">${owner}</div>`;
+  }
+  map.innerHTML=html;
+  renderZoneLegend();
+  renderZoneStat();
+}
+function getOwnerColor(name){
+  let h=0;for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h);
+  return ZN_COLORS[Math.abs(h)%ZN_COLORS.length];
+}
+function setZoneOwner(k){
+  if(!requireAdmin())return;
+  const cur=zoneData[k]||'';
+  const name=prompt('소유자 이름 (빈칸=해제):',cur);
+  if(name===null)return;
+  if(name.trim())zoneData[k]=name.trim();else delete zoneData[k];
+  saveZone();rebuildZone();
+}
+function renderZoneLegend(){
+  const owners=[...new Set(Object.values(zoneData))];
+  document.getElementById('zn-legend').innerHTML=owners.map(o=>`<div class="zn-leg"><div class="zn-leg-color" style="background:${getOwnerColor(o)}"></div>${o}</div>`).join('');
+}
+function renderZoneStat(){
+  const total=parseInt(document.getElementById('zn-cols').value)*parseInt(document.getElementById('zn-rows').value);
+  const used=Object.keys(zoneData).length;
+  const owners=[...new Set(Object.values(zoneData))].length;
+  document.getElementById('zn-stat').innerHTML=`
+    <div class="zn-stat-card"><div class="zn-stat-val">${total}</div><div class="zn-stat-lbl">전체 청크</div></div>
+    <div class="zn-stat-card"><div class="zn-stat-val" style="color:#4ade80;">${used}</div><div class="zn-stat-lbl">점유 청크</div></div>
+    <div class="zn-stat-card"><div class="zn-stat-val" style="color:#38bdf8;">${owners}</div><div class="zn-stat-lbl">소유자 수</div></div>
+    <div class="zn-stat-card"><div class="zn-stat-val">${total-used}</div><div class="zn-stat-lbl">빈 청크</div></div>`;
+}
+function resetZone(){if(!requireAdmin())return;const pw=prompt('초기화 확인용 비밀번호:');if(!pw)return;hashPW(pw).then(h=>{if(h!==ADMIN_HASH){alert('비밀번호 오류');return;}if(confirm('구역 데이터 초기화?')){zoneData={};saveZone();rebuildZone();}});}
+function exportZone(){navigator.clipboard.writeText(JSON.stringify({cols:document.getElementById('zn-cols').value,rows:document.getElementById('zn-rows').value,data:zoneData},null,2)).then(()=>alert('복사됨!'));}
+function importZone(){const d=prompt('JSON 붙여넣기:');if(!d)return;try{const o=JSON.parse(d);document.getElementById('zn-cols').value=o.cols||16;document.getElementById('zn-rows').value=o.rows||16;zoneData=o.data||{};saveZone();rebuildZone();}catch(e){alert('형식 오류');}}
+
+/* ══════════════════════════════════════════
+   조공 포인트
+══════════════════════════════════════════ */
+const TB_GOAL=6000;
+let tribute=JSON.parse(localStorage.getItem('stella_tribute')||'{}');
+let tributeLog=JSON.parse(localStorage.getItem('stella_tribute_log')||'[]');
+function saveTributeLog(){localStorage.setItem('stella_tribute_log',JSON.stringify(tributeLog));}
+function addLog(msg){const now=new Date();tributeLog.push({time:now.toLocaleString('ko-KR'),msg});saveTributeLog();}
+function saveTribute(){localStorage.setItem('stella_tribute',JSON.stringify(tribute));}
+function renderTribute(){
+  const tbq=(document.getElementById('tb-search')||{}).value||"".trim().toLowerCase();
+  const names=Object.keys(tribute).sort().filter(n=>!tbq||n.toLowerCase().includes(tbq));
+  const total=names.reduce((s,n)=>s+tribute[n],0);
+  const done=names.filter(n=>tribute[n]>=TB_GOAL).length;
+  document.getElementById('tb-summary').innerHTML=`
+    <div class="tb-scard"><div class="tb-sval">${names.length}</div><div class="tb-slbl">참여 인원</div></div>
+    <div class="tb-scard"><div class="tb-sval" style="color:#fbbf24;">${total.toLocaleString()}</div><div class="tb-slbl">총 포인트</div></div>
+    <div class="tb-scard"><div class="tb-sval" style="color:#4ade80;">${done}/${names.length}</div><div class="tb-slbl">목표 달성</div></div>`;
+  const list=document.getElementById('tb-list');
+  if(!names.length){list.innerHTML='<div class="mm-empty">조공 기록을 추가해주세요.</div>';return;}
+  list.innerHTML=names.map(n=>{
+    const pts=tribute[n];
+    const pct=Math.min(100,pts/TB_GOAL*100);
+    return `<div class="tb-row">
+      <div class="tb-row-name">${n}</div>
+      <div class="tb-row-bar"><div class="tb-row-fill" style="width:${pct}%;${pct>=100?'background:linear-gradient(90deg,#4ade80,#16a34a);color:#052e16;':''}">${pct>=10?Math.round(pct)+'%':''}</div></div>
+      <div class="tb-row-pts">${pts.toLocaleString()}P</div>
+      <span class="tb-row-del" onclick="editTribute('${n}')" title="수정">✏️</span>
+      <span class="tb-row-del" onclick="delTribute('${n}')" title="삭제">✕</span>
+    </div>`;
+  }).join('');
+  // 로그 표시
+  const logHtml=tributeLog.length?'<div style="margin-top:16px;"><div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">📜 조공 로그</div><div style="max-height:200px;overflow-y:auto;border:1px solid var(--b1);border-radius:6px;padding:8px;">'+tributeLog.slice(-30).reverse().map(l=>'<div style="font-size:10px;color:var(--muted);padding:3px 0;border-bottom:1px solid var(--b1);">'+l.time+' — '+l.msg+'</div>').join('')+'</div></div>':'';
+  list.insertAdjacentHTML('afterend','<div id="tb-log-area">'+logHtml+'</div>');
+  const old=document.querySelectorAll('#tb-log-area');if(old.length>1)old[0].remove();
+}
+function openTributeModal(){
+  if(!requireAdmin())return;
+  document.getElementById('tb-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closeTributeModal()">
+    <div class="mb-modal"><h3>조공 추가</h3>
+      <label>이름</label><input id="tb-name" placeholder="마을원 이름">
+      <label>포인트</label><input id="tb-pts" type="number" placeholder="추가할 포인트" min="1">
+      <div class="mb-modal-btns"><button class="mb-btn" onclick="closeTributeModal()">취소</button><button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#fbbf24,#d97706);" onclick="addTribute()">추가</button></div>
+    </div></div>`;
+}
+function closeTributeModal(){document.getElementById('tb-modal-root').innerHTML='';}
+function addTribute(){
+  const n=document.getElementById('tb-name').value.trim();
+  const pts=parseInt(document.getElementById('tb-pts').value)||0;
+  if(!n||!pts){alert('이름과 포인트를 입력하세요.');return;}
+  tribute[n]=(tribute[n]||0)+pts;
+  addLog(n+' +'+pts+'P 추가 (관리자)');
+  saveTribute();renderTribute();closeTributeModal();
+}
+function delTribute(n){if(!requireAdmin())return;if(confirm(n+' 기록 삭제?')){addLog(n+' 삭제됨 (관리자, 기존 '+tribute[n]+'P)');delete tribute[n];saveTribute();renderTribute();}}
+function resetTribute(){if(!requireAdmin())return;const pw=prompt('초기화 확인용 비밀번호:');if(!pw)return;hashPW(pw).then(h=>{if(h!==ADMIN_HASH){alert('비밀번호 오류');return;}if(confirm('조공 데이터 초기화?')){addLog('전체 조공 초기화 (관리자)');tribute={};saveTribute();renderTribute();}});}
+function editTribute(n){
+  if(!requireAdmin())return;
+  const cur=tribute[n]||0;
+  const val=prompt(n+' 포인트 수정 (현재: '+cur+'P):',cur);
+  if(val===null)return;
+  const nv=parseInt(val);if(isNaN(nv))return;
+  addLog(n+' 포인트 수정: '+cur+'P → '+nv+'P (관리자)');
+  tribute[n]=nv;saveTribute();renderTribute();
+}
+function exportTribute(){navigator.clipboard.writeText(JSON.stringify(tribute,null,2)).then(()=>alert('복사됨!'));}
+function importTribute(){const d=prompt('JSON 붙여넣기:');if(!d)return;try{tribute=JSON.parse(d);saveTribute();renderTribute();}catch(e){alert('형식 오류');}}
+
+/* ══════════════════════════════════════════
+   타이머
+══════════════════════════════════════════ */
+let pomoInterval,pomoRunning=false,pomoOnBreak=false,pomoTime=25*60;
+let swInterval,swRunning=false,swTime=0;
+let cdInterval,cdRunning=false,cdTime=0;
+
+function fmtTime(s){const m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function fmtSW(ms){const s=Math.floor(ms/1000);const m=Math.floor(s/60);return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+'.'+Math.floor((ms%1000)/100);}
+
+function togglePomo(){
+  if(pomoRunning){clearInterval(pomoInterval);pomoRunning=false;document.getElementById('side-pomo-btn').textContent='계속';document.getElementById('side-pomo-btn').className='tm-btn tm-btn-start';document.getElementById('side-pomo-display').className='tm-display paused';return;}
+  pomoRunning=true;
+  document.getElementById('side-pomo-btn').textContent='일시정지';document.getElementById('side-pomo-btn').className='tm-btn tm-btn-stop';
+  document.getElementById('side-pomo-display').className='tm-display '+(pomoOnBreak?'break':'running');
+  pomoInterval=setInterval(()=>{
+    pomoTime--;
+    document.getElementById('side-pomo-display').textContent=fmtTime(pomoTime);
+    if(pomoTime<=0){
+      clearInterval(pomoInterval);pomoRunning=false;
+      try{new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=').play();}catch(e){}
+      if(!pomoOnBreak){pomoOnBreak=true;pomoTime=parseInt(document.getElementById('pomo-break').value)*60;document.getElementById('side-pomo-label').textContent='☕ 휴식 시간';document.getElementById('side-pomo-display').className='tm-display break';}
+      else{pomoOnBreak=false;pomoTime=parseInt(document.getElementById('pomo-work').value)*60;document.getElementById('side-pomo-label').textContent='집중 시간';document.getElementById('side-pomo-display').className='tm-display';}
+      document.getElementById('side-pomo-display').textContent=fmtTime(pomoTime);
+      document.getElementById('side-pomo-btn').textContent='시작';document.getElementById('side-pomo-btn').className='tm-btn tm-btn-start';
+    }
+  },1000);
+}
+function resetPomo(){clearInterval(pomoInterval);pomoRunning=false;pomoOnBreak=false;pomoTime=parseInt(document.getElementById('pomo-work').value)*60;document.getElementById('side-pomo-display').textContent=fmtTime(pomoTime);document.getElementById('side-pomo-display').className='tm-display';document.getElementById('side-pomo-btn').textContent='시작';document.getElementById('side-pomo-btn').className='tm-btn tm-btn-start';document.getElementById('side-pomo-label').textContent='집중 시간';}
+
+function toggleSW(){
+  if(swRunning){clearInterval(swInterval);swRunning=false;document.getElementById('sw-btn').textContent='계속';document.getElementById('sw-btn').className='tm-btn tm-btn-start';document.getElementById('sw-display').className='tm-display paused';return;}
+  swRunning=true;const start=Date.now()-swTime;
+  document.getElementById('sw-btn').textContent='정지';document.getElementById('sw-btn').className='tm-btn tm-btn-stop';document.getElementById('sw-display').className='tm-display running';
+  swInterval=setInterval(()=>{swTime=Date.now()-start;document.getElementById('sw-display').textContent=fmtSW(swTime);},100);
+}
+function resetSW(){clearInterval(swInterval);swRunning=false;swTime=0;document.getElementById('sw-display').textContent='00:00.0';document.getElementById('sw-display').className='tm-display';document.getElementById('sw-btn').textContent='시작';document.getElementById('sw-btn').className='tm-btn tm-btn-start';}
+
+function toggleCD(){
+  if(cdRunning){clearInterval(cdInterval);cdRunning=false;document.getElementById('side-cd-btn').textContent='계속';document.getElementById('side-cd-btn').className='tm-btn tm-btn-start';document.getElementById('side-cd-display').className='tm-display paused';return;}
+  if(cdTime<=0)cdTime=parseInt(document.getElementById('cd-min').value)*60+parseInt(document.getElementById('cd-sec').value);
+  if(cdTime<=0)return;
+  cdRunning=true;
+  document.getElementById('side-cd-btn').textContent='정지';document.getElementById('side-cd-btn').className='tm-btn tm-btn-stop';document.getElementById('side-cd-display').className='tm-display running';
+  cdInterval=setInterval(()=>{
+    cdTime--;document.getElementById('side-cd-display').textContent=fmtTime(cdTime);
+    if(cdTime<=0){clearInterval(cdInterval);cdRunning=false;document.getElementById('side-cd-display').className='tm-display';document.getElementById('side-cd-btn').textContent='시작';document.getElementById('side-cd-btn').className='tm-btn tm-btn-start';document.getElementById('side-cd-label').textContent='⏰ 완료!';try{new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=').play();}catch(e){}}
+  },1000);
+}
+function resetCD(){clearInterval(cdInterval);cdRunning=false;cdTime=0;document.getElementById('side-cd-display').textContent='00:00';document.getElementById('side-cd-display').className='tm-display';document.getElementById('side-cd-btn').textContent='시작';document.getElementById('side-cd-btn').className='tm-btn tm-btn-start';document.getElementById('side-cd-label').textContent='요리 시간, 강화 대기 등에 활용';}
+
+/* ══════════════════════════════════════════
+   메모장
+══════════════════════════════════════════ */
+let memos=JSON.parse(localStorage.getItem('stella_memos')||'[]');
+function saveMemos(){localStorage.setItem('stella_memos',JSON.stringify(memos));}
+function renderMemos(){
+  const list=document.getElementById('mm-list');
+  if(!list)return;
+  if(!memos.length){list.innerHTML='<div class="mm-empty">📋 메모를 추가해주세요.</div>';return;}
+  list.innerHTML=memos.map((m,i)=>`<div class="mm-card">
+    <input class="mm-card-title" value="${m.title.replace(/"/g,'&quot;')}" onchange="updateMemo(${i},'title',this.value)" style="background:transparent;border:none;outline:none;font-size:13px;font-weight:700;color:var(--text);width:100%;font-family:'Noto Sans KR',sans-serif;">
+    <textarea class="mm-card-body" onchange="updateMemo(${i},'body',this.value)" style="background:transparent;border:1px solid var(--b1);border-radius:4px;padding:6px;outline:none;resize:vertical;min-height:60px;font-family:'Noto Sans KR',sans-serif;color:var(--sub);font-size:11.5px;">${m.body}</textarea>
+    <div class="mm-card-footer"><span>${m.date}</span><span class="mm-card-del" onclick="delMemo(${i})">삭제</span></div>
+  </div>`).join('');
+}
+function addMemo(){
+  const now=new Date();
+  memos.unshift({title:'새 메모',body:'',date:now.toLocaleDateString('ko-KR')});
+  saveMemos();renderMemos();
+}
+function updateMemo(i,field,val){memos[i][field]=val;saveMemos();}
+function delMemo(i){if(confirm('메모 삭제?')){memos.splice(i,1);saveMemos();renderMemos();}}
+function exportMemos(){navigator.clipboard.writeText(JSON.stringify(memos,null,2)).then(()=>alert('복사됨!'));}
+function importMemos(){const d=prompt('JSON 붙여넣기:');if(!d)return;try{memos=JSON.parse(d);saveMemos();renderMemos();}catch(e){alert('형식 오류');}}
+
+/* ── 페이지 초기화 훅 ── */
+const _origGo = go;
+
+
+/* ══════════════════════════════════════════
+   사이드 패널 토글
+══════════════════════════════════════════ */
+function toggleSideMemo(){
+  document.getElementById('side-timer').classList.remove('open');
+  document.getElementById('side-memo').classList.toggle('open');
+  renderSideMemos();
+}
+function toggleSideTimer(){
+  document.getElementById('side-memo').classList.remove('open');
+  document.getElementById('side-timer').classList.toggle('open');
+}
+function showMemberDetail(i){
+  const m=members[i];if(!m)return;
+  // 구역 위치 찾기
+  const chunks=[];for(const[k,v]of Object.entries(zoneData)){if(v===m.name||v===m.mc)chunks.push(k);}
+  const chunkStr=chunks.length?chunks.map(k=>'['+k+']').join(', '):'점유 구역 없음';
+  // 조공 진행도
+  const pts=tribute[m.name]||tribute[m.mc]||0;
+  const pct=Math.min(100,pts/6000*100);
+  const root=document.getElementById('mb-modal-root');
+  root.innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)this.remove()">
+    <div class="mb-modal" style="max-width:380px;">
+      <h3 style="display:flex;align-items:center;gap:8px;"><div class="mb-avatar" style="width:36px;height:36px;font-size:16px;">${m.name[0]}</div>${m.name}</h3>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px;">마크닉</div>
+        <div style="font-size:13px;color:var(--text);font-family:'JetBrains Mono',monospace;">${m.mc}</div>
+      </div>
+      <div style="display:flex;gap:6px;margin-bottom:14px;">
+        <span class="mb-tag ${m.type==='본계'?'mb-tag-main':'mb-tag-sub'}">${m.type}</span>
+        <span class="mb-tag mb-tag-job">${m.job}</span>
+      </div>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">🗺️ 점유 구역</div>
+        <div style="font-size:12px;color:var(--text);background:var(--s2);padding:8px;border-radius:4px;">${chunkStr}</div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px;">⭐ 조공 진행도</div>
+        <div class="tb-row-bar"><div class="tb-row-fill" style="width:${pct}%;${pct>=100?'background:linear-gradient(90deg,#4ade80,#16a34a);color:#052e16;':''}">${Math.round(pct)}%</div></div>
+        <div style="font-size:11px;color:var(--sub);margin-top:4px;">${pts.toLocaleString()} / 6,000 P</div>
+      </div>
+      <div class="mb-modal-btns" style="margin-top:14px;"><button class="mb-btn" onclick="this.closest('.mb-modal-bg').remove()" style="width:100%;">닫기</button></div>
+    </div></div>`;
+}
+function renderSideMemos(){
+  const list=document.getElementById('side-mm-list');
+  if(!list)return;
+  if(!memos.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:11px;">메모를 추가해주세요.</div>';return;}
+  list.innerHTML=memos.map((m,i)=>`<div style="background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:8px 10px;margin-bottom:6px;">
+    <input value="${m.title.replace(/"/g,'&quot;')}" onchange="updateMemo(${i},'title',this.value);renderSideMemos();" style="background:transparent;border:none;outline:none;font-size:12px;font-weight:700;color:var(--text);width:100%;font-family:'Noto Sans KR',sans-serif;margin-bottom:4px;">
+    <textarea onchange="updateMemo(${i},'body',this.value)" style="background:transparent;border:1px solid var(--b1);border-radius:4px;padding:4px 6px;outline:none;resize:vertical;min-height:40px;width:100%;font-family:'Noto Sans KR',sans-serif;color:var(--sub);font-size:10.5px;box-sizing:border-box;">${m.body}</textarea>
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-top:3px;"><span>${m.date}</span><span style="cursor:pointer;" onclick="delMemo(${i});renderSideMemos();">삭제</span></div>
+  </div>`).join('');
+}
+
+/* ══════════════════════════════════════════
+   유통기한 감가 계산기
+══════════════════════════════════════════ */
+function initExpiry(){
+  const now=new Date();
+  const local=new Date(now-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const el1=document.getElementById('exp-date');
+  const el2=document.getElementById('exp-sell');
+  if(el1)el1.value=local;
+  if(el2)el2.value=local;
+  calcExpiry();
+}
+function applyExpiryToCards(){
+  const expDate=document.getElementById('exp-date')?new Date(document.getElementById('exp-date').value):null;
+  const sellDate=document.getElementById('exp-sell')?new Date(document.getElementById('exp-sell').value):null;
+  if(!expDate||!sellDate||isNaN(expDate.getTime())||isNaN(sellDate.getTime()))return;
+  const diffH=(sellDate-expDate)/3600000;
+  let rate=1;
+  if(diffH>0&&diffH<=6)rate=0.8;
+  else if(diffH>6&&diffH<=12)rate=0.6;
+  else if(diffH>12)rate=0.4;
+  document.querySelectorAll('.food-price-tag').forEach(el=>{
+    const orig=parseInt(el.dataset.orig);
+    if(!orig)return;
+    if(rate<1){el.textContent=Math.round(orig*rate)+'셀';el.style.color='#f87171';el.title='원가 '+orig+'셀 → 감가 '+Math.round((1-rate)*100)+'%';}
+    else{el.textContent=orig+'셀';el.style.color='';el.title='';}
+  });
+}
+function calcExpiry(){
+  const price=parseInt(document.getElementById('exp-price').value)||0;
+  document.getElementById('exp-v1').textContent=Math.round(price*0.8)+' 셀';
+  document.getElementById('exp-v2').textContent=Math.round(price*0.6)+' 셀';
+  document.getElementById('exp-v3').textContent=Math.round(price*0.4)+' 셀';
+  const expDate=new Date(document.getElementById('exp-date').value);
+  const sellDate=new Date(document.getElementById('exp-sell').value);
+  const status=document.getElementById('exp-status');
+  if(!expDate||!sellDate||isNaN(expDate)||isNaN(sellDate)){status.textContent='';return;}
+  const diffH=(sellDate-expDate)/3600000;
+  if(diffH<=0){status.innerHTML='<span style="color:#4ade80;">✓ 유통기한 이내 — 감가 없음 ('+price+' 셀)</span>';}
+  else if(diffH<=6){status.innerHTML='<span style="color:#d97706;">⚠ 만료 후 '+diffH.toFixed(1)+'시간 — <strong>-20%</strong> → '+Math.round(price*0.8)+' 셀</span>';}
+  else if(diffH<=12){status.innerHTML='<span style="color:#ea580c;">⚠ 만료 후 '+diffH.toFixed(1)+'시간 — <strong>-40%</strong> → '+Math.round(price*0.6)+' 셀</span>';}
+  else{status.innerHTML='<span style="color:#dc2626;">⚠ 만료 후 '+(diffH/24).toFixed(1)+'일 — <strong>-60%</strong> → '+Math.round(price*0.4)+' 셀</span>';}
+  applyExpiryToCards();
+}
+
+/* ══════════════════════════════════════════
+   마을 탭 검색
+══════════════════════════════════════════ */
+function highlightZone(){
+  const q=(document.getElementById('zn-search').value||'').trim().toLowerCase();
+  document.querySelectorAll('.zn-cell').forEach(cell=>{
+    const owner=(cell.title||'').toLowerCase();
+    if(q&&owner.includes(q)){cell.style.outline='3px solid #fbbf24';cell.style.zIndex='2';cell.style.transform='scale(1.1)';}
+    else{cell.style.outline='';cell.style.zIndex='';cell.style.transform='';}
+  });
 }
 
 /* ── 레시피 서브탭 전환 ── */
@@ -2245,7 +3047,7 @@ function positionTip(e) {
   <div style="font-size:11px;color:var(--muted);line-height:1.8;">
     <span style="color:var(--sub);font-weight:600;">제작자</span> <span style="color:var(--text);">02qB</span> <span style="font-size:10px;color:var(--muted);">(달)</span>
     <span style="margin:0 8px;color:var(--b2);">|</span>
-    <span style="color:var(--sub);font-weight:600;">v1.0.2</span> <span style="color:var(--muted);">release</span>
+    <span style="color:var(--sub);font-weight:600;">v2.0.0</span> <span style="color:var(--muted);">release</span>
   </div>
 </footer>
 </body>

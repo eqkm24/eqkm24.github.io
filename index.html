@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스텔라 마을 가이드</title>
+<title>스텔라 마을 위키</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23c084fc'/%3E%3Cstop offset='100%25' stop-color='%23818cf8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M32 4c1.2 0 2.3.7 2.8 1.8l7 14.2 15.7 2.3c1.2.2 2.1 1 2.5 2.1.3 1.1 0 2.3-.9 3.1L47.7 38.6l2.7 15.6c.2 1.2-.3 2.3-1.3 3-.5.3-1 .5-1.6.5-.4 0-.9-.1-1.3-.3L32 49.8l-14.2 7.5c-1 .5-2.3.4-3.2-.3s-1.3-1.8-1.1-3l2.7-15.6L4.9 27.5c-.8-.8-1.2-2-.9-3.1.4-1.1 1.3-1.9 2.5-2.1l15.7-2.3 7-14.2C29.7 4.7 30.8 4 32 4z' fill='url(%23g)' stroke='%23a78bfa' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='24' cy='22' r='2.5' fill='white' opacity='.45'/%3E%3Ccircle cx='20' cy='28' r='1.2' fill='white' opacity='.3'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
@@ -227,7 +227,30 @@ body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text
   background:var(--s1);border:1px solid var(--b1);color:var(--sub);transition:all .15s;
 }
 .rtab:hover{border-color:var(--b3);color:var(--text);}
-.rtab-on[data-rsec="bench"]  {background:#061520;color:var(--bench);border-color:#1e3a60;}
+.rtab-on[data-psec="crop"]{background:#0a1e0a;color:#4ade80;border-color:#1a4a1a;}
+.rtab-on[data-psec="fish"]{background:#061520;color:#60a5fa;border-color:#1e3a60;}
+.rtab-on[data-psec="food"]{background:#120820;color:#c084fc;border-color:#4a1a6a;}
+[data-theme="light"] .rtab-on[data-psec="crop"]{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
+[data-theme="light"] .rtab-on[data-psec="fish"]{background:#e8f1ff;color:#2563eb;border-color:#bdd4ff;}
+[data-theme="light"] .rtab-on[data-psec="food"]{background:#f0eaff;color:#7c3aed;border-color:#d4b8ff;}
+/* 시세 아이템 카드 */
+.pi-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad-s);padding:10px 14px;display:flex;align-items:center;gap:10px;transition:border-color .15s;}
+.pi-card:hover{border-color:var(--b3);}
+.pi-card-name{flex:1;font-size:13px;font-weight:600;color:var(--text);}
+.pi-card-grade{font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;flex-shrink:0;}
+.pi-card-price{font-size:14px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--gold);flex-shrink:0;min-width:60px;text-align:right;}
+.pi-card-time{font-size:9.5px;color:var(--muted);flex-shrink:0;}
+.pi-card-edit{font-size:11px;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:3px;transition:color .12s;flex-shrink:0;}
+.pi-card-edit:hover{color:var(--text);}
+.pi-card-del{font-size:10px;color:var(--muted);cursor:pointer;padding:4px 6px;border-radius:3px;transition:color .12s;flex-shrink:0;}
+.pi-card-del:hover{color:#f87171;}
+.pi-section-hd{display:flex;align-items:center;justify-content:space-between;margin:16px 0 8px;}
+.pi-section-title{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.5px;}
+.pi-add-btn{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:var(--s2);border:1px solid var(--b2);color:var(--sub);transition:all .15s;}
+.pi-add-btn:hover{border-color:var(--b3);color:var(--text);}
+.pi-list{display:flex;flex-direction:column;gap:5px;margin-bottom:20px;}
+.pi-empty{text-align:center;padding:24px;color:var(--muted);border:1px dashed var(--b2);border-radius:var(--rad-s);font-size:12px;}
+.pi-sync-badge{font-size:10px;color:var(--muted);padding:2px 8px;border:1px solid var(--b1);border-radius:20px;}
 .rtab-on[data-rsec="brazier"]{background:#1a0a00;color:var(--brazier);border-color:#5a2800;}
 .rtab-on[data-rsec="counter"]{background:#041008;color:var(--counter);border-color:#0a3a14;}
 [data-theme="light"] .rtab-on[data-rsec="bench"]  {background:#e8f1ff;color:var(--bench);border-color:#bdd4ff;}
@@ -803,6 +826,12 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .mb-modal input:focus,.mb-modal select:focus{border-color:var(--b3);}
 .mb-modal-btns{display:flex;gap:8px;margin-top:16px;}
 .mb-modal-btns button{flex:1;}
+/* 직업 선택 버튼 */
+.job-sel-wrap{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+.job-sel-btn{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:var(--s3);border:1px solid var(--b2);color:var(--sub);transition:all .12s;}
+.job-sel-btn:hover{border-color:var(--b3);color:var(--text);}
+.job-sel-btn.job-sel-on{background:#0a1e0a;color:#4ade80;border-color:#1a4a1a;}
+[data-theme="light"] .job-sel-btn.job-sel-on{background:#e6fdf0;color:#16a34a;border-color:#a8e8b8;}
 
 /* ═══════════ ZONE PAGE ═══════════ */
 .zn-map{display:grid;gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:var(--rad-s);overflow:hidden;margin-bottom:14px;}
@@ -897,7 +926,9 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 .nav-dd-menu .nav-tab{display:block;width:100%;text-align:left;padding:8px 14px;border-radius:4px;font-size:12px;font-weight:600;font-family:'Noto Sans KR',sans-serif;cursor:pointer;background:transparent;border:none;color:var(--sub);transition:all .1s;}
 .nav-dd-menu .nav-tab:hover{background:var(--s2);color:var(--text);}
 .nav-dd-menu .nav-tab.on{background:var(--s3);color:var(--text);}
-.nav-admin-btn.logged-in{border-color:#4ade80;background:#0a1e0a;}
+.nav-admin-btn{padding:5px 12px;border-radius:var(--rad-s);border:1px solid var(--b2);background:var(--s2);cursor:pointer;font-size:12px;font-weight:700;font-family:'Noto Sans KR',sans-serif;color:var(--sub);transition:all .15s;white-space:nowrap;}
+.nav-admin-btn:hover{border-color:var(--b3);color:var(--text);}
+.nav-admin-btn.logged-in{border-color:#4ade80;background:#0a1e0a;color:#4ade80;}
 [data-theme="light"] .nav-admin-btn.logged-in{border-color:#16a34a;background:#e6fdf0;}
 [data-theme="light"] .nav-dd-menu{background:#fff;box-shadow:0 8px 24px rgba(0,0,0,.1);}
 .nav-utils{display:flex;align-items:center;gap:4px;}
@@ -916,8 +947,8 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 [data-theme="light"] .side-panel{background:#ffffff;}
 
 /* ═══════════ SEARCH BAR ═══════════ */
-.search-bar{margin-bottom:14px;}
-.search-input{width:100%;padding:8px 12px 8px 32px;border:1px solid var(--b2);border-radius:20px;background:var(--s2);color:var(--text);font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;}
+.search-bar{margin-bottom:10px;}
+.search-input{width:100%;padding:6px 12px 6px 30px;border:1px solid var(--b2);border-radius:20px;background:var(--s2);color:var(--text);font-size:11.5px;font-family:'Noto Sans KR',sans-serif;outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23666' viewBox='0 0 24 24'%3E%3Cpath d='M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:10px center;}
 .search-input:focus{border-color:var(--b3);}
 .search-input::placeholder{color:var(--muted);}
 
@@ -956,7 +987,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <nav class="topnav">
   <div class="nav-logo" onclick="go('main')" style="cursor:pointer;">
     <div class="nav-logo-mark">✨</div>
-    <div class="nav-logo-text">스텔라 마을 <em>가이드</em></div>
+    <div class="nav-logo-text">스텔라 마을 <em>위키</em></div>
   </div>
   <div class="nav-tabs">
     <div class="nav-dd">
@@ -987,7 +1018,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     <button class="nav-icon-btn" onclick="toggleSideMemo()" title="메모장"><span style="font-size:14px;">📋</span></button>
     <button class="nav-icon-btn" onclick="toggleSideTimer()" title="타이머"><span style="font-size:14px;">⏱️</span></button>
     <button class="nav-icon-btn" onclick="toggleTheme()" id="theme-btn" title="테마 전환"><span id="theme-icon" style="font-size:14px;">☀️</span></button>
-    <button class="nav-icon-btn nav-admin-btn" onclick="openAdminLogin()" title="관리자"><span style="font-size:14px;">🔒</span></button>
+    <button class="nav-admin-btn" onclick="openAdminLogin()" title="관리자">로그인</button>
   </div>
 </nav>
 <!-- 사이드 메모 -->
@@ -1025,7 +1056,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 <div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 54px);text-align:center;padding-top:0;">
   <div style="font-size:52px;margin-bottom:8px;">✨</div>
   <h1 style="font-size:32px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을</h1>
-  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">루나월드 · 스텔라 마을 종합 정보 허브</p>
+  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">Stella · Since.26-02-07</p>
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;width:100%;margin-bottom:24px;">
     <div class="main-card" onclick="go('member')"><div class="main-icon">👥</div><div class="main-val" id="dash-members">0</div><div class="main-label">마을원</div></div>
     <div class="main-card" onclick="go('zone')"><div class="main-icon">🗺️</div><div class="main-val" id="dash-chunks">0</div><div class="main-label">점유 청크</div></div>
@@ -1676,14 +1707,21 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
 </div></div>
 
 <!-- ══════════════════════════════════════════════════════════
-     PAGE 4 : 요리 시세
+     PAGE 4 : 시세
 ══════════════════════════════════════════════════════════ -->
 <div class="page" id="pg-price">
 <div class="wrap">
 
   <div class="ph">
-    <div class="ph-title">📊 변동 <span style="color:#f59e0b;">시세</span> 트래커</div>
-    <div class="ph-sub">디스코드 변동 가격 메시지 파싱 · 농작물/물고기 기본가 조회 · 유통기한 감가 계산</div>
+    <div class="ph-title">📊 변동 <span style="color:#f59e0b;">시세</span></div>
+    <div class="ph-sub">실시간 공유 시세 · 누구나 수정 가능 · 마지막 수정 시각 표시</div>
+  </div>
+
+  <!-- 시세 서브탭 -->
+  <div class="rtabs" id="price-subtabs">
+    <button class="rtab rtab-on" data-psec="crop" onclick="switchPriceTab('crop')">🌾 농작물</button>
+    <button class="rtab" data-psec="fish" onclick="switchPriceTab('fish')">🐟 물고기</button>
+    <button class="rtab" data-psec="food" onclick="switchPriceTab('food')">🍳 요리</button>
   </div>
 
   <!-- 유통기한 감가 계산기 -->
@@ -1702,34 +1740,13 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     <div id="exp-status" style="font-size:11px;color:var(--muted);margin-top:8px;"></div>
   </div>
 
-  <!-- 입력 영역 -->
-  <div class="price-input-area">
-    <div class="pi-label">📋 디스코드 메시지 <span class="pi-hint">— 여러 메시지를 순서대로 전부 붙여넣으세요. 중간에 끊겨도 괜찮아요.</span></div>
-    <textarea class="pi-textarea" id="msg-all"
-      placeholder="# 요리사 상점의 변동 가격이 갱신되었습니다.
-📈 상승 아이템
-- [레어] 일품 부야베스
-  - `원가`: 90
-  ...
-📉 하락 아이템
-- [커먼] 쌈밥
-  ...
+  <!-- 시세 탭 패널들 -->
+  <div id="psec-crop" class="psec"></div>
+  <div id="psec-fish" class="psec" style="display:none;"></div>
+  <div id="psec-food" class="psec" style="display:none;"></div>
 
-메시지가 여러 개여도 전부 이어서 붙여넣으면 됩니다!"></textarea>
-  </div>
-  <div class="price-btn-row">
-    <button class="parse-btn" onclick="parseAll()">📊 분석하기</button>
-    <button class="clear-btn" onclick="clearAll()">초기화</button>
-    <span class="parse-info" id="parse-info"></span>
-  </div>
-
-  <!-- 결과 영역 -->
-  <div id="price-result-area">
-    <div class="price-empty">
-      <div class="price-empty-icon">📋</div>
-      <div class="price-empty-text">위의 입력창에 디스코드 메시지를 붙여넣고<br>분석하기 버튼을 눌러주세요.</div>
-    </div>
-  </div>
+  <!-- 입력/추가 모달 루트 -->
+  <div id="price-modal-root"></div>
 
 </div></div>
 
@@ -1772,8 +1789,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   <div class="search-bar"><input class="search-input" id="mb-search" placeholder="마을원 검색..." oninput="renderMembers()"></div>
   <div class="mb-toolbar">
     <button class="mb-btn mb-btn-add" onclick="openMemberModal()">+ 마을원 추가</button>
-    <button class="mb-btn" onclick="exportMembers()">내보내기</button>
-    <button class="mb-btn" onclick="importMembers()">불러오기</button>
+    <button class="mb-btn mb-btn-reset" id="mb-reset-btn" style="display:none;" onclick="resetMembers()">초기화</button>
     <span style="flex:1;"></span>
     <span style="font-size:11px;color:var(--muted);" id="mb-count">0명</span>
   </div>
@@ -1796,9 +1812,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
     <input class="tm-set-input" id="zn-cols" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
     <span style="font-size:11px;color:var(--muted);">×</span>
     <input class="tm-set-input" id="zn-rows" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
-    <button class="mb-btn" onclick="resetZone()">초기화</button>
-    <button class="mb-btn" onclick="exportZone()">내보내기</button>
-    <button class="mb-btn" onclick="importZone()">불러오기</button>
+    <button class="mb-btn" id="zn-reset-btn" style="display:none;" onclick="resetZone()">초기화</button>
   </div>
   <div class="zn-stat" id="zn-stat"></div>
   <div class="zn-legend" id="zn-legend"></div>
@@ -1818,9 +1832,7 @@ input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.2);}
   <div class="tb-summary" id="tb-summary"></div>
   <div class="mb-toolbar">
     <button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#fbbf24,#d97706);" onclick="openTributeModal()">+ 조공 추가</button>
-    <button class="mb-btn" onclick="resetTribute()">초기화</button>
-    <button class="mb-btn" onclick="exportTribute()">내보내기</button>
-    <button class="mb-btn" onclick="importTribute()">불러오기</button>
+    <button class="mb-btn" id="tb-reset-btn" style="display:none;" onclick="resetTribute()">초기화</button>
   </div>
   <div class="tb-list" id="tb-list"></div>
   <div class="tb-xp-ref">
@@ -1913,8 +1925,13 @@ async function doAdminLogin(){
 function updateAdminUI(){
   const btn=document.querySelector('.nav-admin-btn');
   if(!btn)return;
-  if(isAdmin){btn.classList.add('logged-in');btn.innerHTML='<span style="font-size:14px;">🔓</span>';btn.title='관리자 (로그아웃)';}
-  else{btn.classList.remove('logged-in');btn.innerHTML='<span style="font-size:14px;">🔒</span>';btn.title='관리자 로그인';}
+  if(isAdmin){btn.classList.add('logged-in');btn.textContent='관리자 ✓';btn.title='관리자 (로그아웃)';}
+  else{btn.classList.remove('logged-in');btn.textContent='로그인';btn.title='관리자 로그인';}
+  // 각 페이지 관리자 전용 버튼 갱신
+  const rb=document.getElementById('mb-reset-btn');if(rb)rb.style.display=isAdmin?'':'none';
+  const zb=document.getElementById('zn-reset-btn');if(zb)zb.style.display=isAdmin?'':'none';
+  const tb=document.getElementById('tb-reset-btn');if(tb)tb.style.display=isAdmin?'':'none';
+  renderMembers();
 }
 function requireAdmin(){
   if(!isAdmin){alert('관리자 로그인이 필요합니다.');return false;}
@@ -1946,7 +1963,7 @@ function go(tab) {
   if (tab === 'main') updateDashboard();
   if (tab === 'zone' && !window._zoneInit) { window._zoneInit=true; rebuildZone(); }
   if (tab === 'tribute') renderTribute();
-  if (tab === 'price' && !window._expInit) { window._expInit=true; setTimeout(initExpiry,100); }
+  if (tab === 'price') { switchPriceTab(curPriceTab||'crop'); if(!window._expInit){window._expInit=true;setTimeout(initExpiry,100);} }
   if (tab === 'memo') renderMemos();
 }
 
@@ -2102,44 +2119,89 @@ function renderMembers(){
   const g=document.getElementById('mb-grid');
   if(!g)return;
   document.getElementById('mb-count').textContent=members.length+'명';
+  // 초기화 버튼 관리자 시 표시
+  const rb=document.getElementById('mb-reset-btn');
+  if(rb)rb.style.display=isAdmin?'':'none';
   const mq=(document.getElementById('mb-search')||{}).value||"".trim().toLowerCase();
   const filtered=mq?members.filter(m=>m.name.toLowerCase().includes(mq)||m.mc.toLowerCase().includes(mq)):members;
   if(!filtered.length){g.innerHTML='<div class="mm-empty">'+(mq?'검색 결과가 없어요.':'마을원을 추가해주세요.')+'</div>';return;}
-  g.innerHTML=filtered.map((m,i)=>{const idx=members.indexOf(m);return `<div class="mb-card" onclick="showMemberDetail(idx)" style="cursor:pointer;">
-    <div class="mb-avatar">${m.name[0]}</div>
+  g.innerHTML=filtered.map((m,i)=>{
+    const idx=members.indexOf(m);
+    const jobLabel=(m.jobs&&m.jobs.length)?m.jobs.join(' · '):(m.job||'');
+    const avatarColor=m.color||'#38bdf8';
+    return `<div class="mb-card" onclick="openMemberModal(${idx})" style="cursor:pointer;">
+    <div class="mb-avatar" style="background:${avatarColor}22;border:2px solid ${avatarColor};color:${avatarColor};">${m.name[0]}</div>
     <div class="mb-info">
       <div class="mb-name">${m.name}</div>
       <div class="mb-mc">${m.mc}</div>
       <div class="mb-tags">
         <span class="mb-tag ${m.type==='본계'?'mb-tag-main':'mb-tag-sub'}">${m.type}</span>
-        <span class="mb-tag mb-tag-job">${m.job}</span>
+        <span class="mb-tag mb-tag-job">${jobLabel}</span>
       </div>
     </div>
-    <span class="mb-del" onclick="delMember(${idx})">✕</span>
+    ${isAdmin?`<span class="mb-del" onclick="event.stopPropagation();delMember(${idx})">✕</span>`:''}
   </div>`;}).join('');
 }
-function openMemberModal(){
-  if(!requireAdmin())return;
+function openMemberModal(editIdx){
+  const isEdit = editIdx !== undefined;
+  const m = isEdit ? members[editIdx] : null;
+  const selectedJobs = (m && m.jobs) ? m.jobs : (m && m.job ? [m.job] : []);
+  const selectedColor = (m && m.color) ? m.color : '#38bdf8';
+  const jobList = ['농사','낚시','채광','요리','기타'];
+  const jobBtns = jobList.map(j=>`<button type="button" class="job-sel-btn${selectedJobs.includes(j)?' job-sel-on':''}" onclick="toggleJobSel(this,'${j}')" data-job="${j}">${j}</button>`).join('');
   document.getElementById('mb-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closeMemberModal()">
-    <div class="mb-modal"><h3>마을원 추가</h3>
-      <label>이름</label><input id="mm-name" placeholder="닉네임">
-      <label>마크닉</label><input id="mm-mc" placeholder="마인크래프트 닉네임">
-      <label>구분</label><select id="mm-type"><option>본계</option><option>부계</option></select>
-      <label>메인 직업</label><select id="mm-job"><option>농사</option><option>낚시</option><option>채광</option><option>요리</option><option>기타</option></select>
-      <div class="mb-modal-btns"><button class="mb-btn" onclick="closeMemberModal()">취소</button><button class="mb-btn mb-btn-add" onclick="addMember()">추가</button></div>
+    <div class="mb-modal"><h3>${isEdit?'마을원 수정':'마을원 추가'}</h3>
+      <label>이름</label><input id="mm-name" placeholder="닉네임" value="${isEdit?m.name:''}">
+      <label>마크닉</label><input id="mm-mc" placeholder="마인크래프트 닉네임" value="${isEdit?(m.mc||''):''}">
+      <label>구분</label><select id="mm-type"><option${(!isEdit||m.type==='본계')?' selected':''}>본계</option><option${(isEdit&&m.type==='부계')?' selected':''}>부계</option></select>
+      <label>직업 <span style="font-size:10px;color:var(--muted);">(최대 2개 선택)</span></label>
+      <div class="job-sel-wrap" id="job-sel-wrap">${jobBtns}</div>
+      <label>내 색상 <span style="font-size:10px;color:var(--muted);">(마을 구역에 표시될 색)</span></label>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+        <input type="color" id="mm-color" value="${selectedColor}" style="width:40px;height:32px;padding:2px;border:1px solid var(--b2);border-radius:var(--rad-s);background:var(--s2);cursor:pointer;">
+        <span id="mm-color-preview" style="font-size:11px;color:var(--sub);">구역에서 이 색으로 표시됩니다</span>
+      </div>
+      <div class="mb-modal-btns"><button class="mb-btn" onclick="closeMemberModal()">취소</button><button class="mb-btn mb-btn-add" onclick="${isEdit?`saveMemberEdit(${editIdx})`:'addMember()'}">${isEdit?'저장':'추가'}</button></div>
     </div></div>`;
+}
+function toggleJobSel(btn, job){
+  const wrap = document.getElementById('job-sel-wrap');
+  const selected = [...wrap.querySelectorAll('.job-sel-on')];
+  if(btn.classList.contains('job-sel-on')){
+    btn.classList.remove('job-sel-on');
+  } else {
+    if(selected.length>=2){alert('직업은 최대 2개까지 선택할 수 있어요.');return;}
+    btn.classList.add('job-sel-on');
+  }
+}
+function getSelectedJobs(){
+  const wrap = document.getElementById('job-sel-wrap');
+  if(!wrap) return [];
+  return [...wrap.querySelectorAll('.job-sel-on')].map(b=>b.dataset.job);
 }
 function closeMemberModal(){document.getElementById('mb-modal-root').innerHTML='';}
 function addMember(){
   const n=document.getElementById('mm-name').value.trim();
   const mc=document.getElementById('mm-mc').value.trim();
   if(!n){alert('이름을 입력하세요.');return;}
-  members.push({name:n,mc:mc||n,type:document.getElementById('mm-type').value,job:document.getElementById('mm-job').value});
+  const jobs=getSelectedJobs();
+  if(!jobs.length){alert('직업을 1개 이상 선택하세요.');return;}
+  const color=document.getElementById('mm-color').value||'#38bdf8';
+  members.push({name:n,mc:mc||n,type:document.getElementById('mm-type').value,job:jobs[0],jobs,color});
+  saveMembers();renderMembers();closeMemberModal();
+}
+function saveMemberEdit(idx){
+  const n=document.getElementById('mm-name').value.trim();
+  const mc=document.getElementById('mm-mc').value.trim();
+  if(!n){alert('이름을 입력하세요.');return;}
+  const jobs=getSelectedJobs();
+  if(!jobs.length){alert('직업을 1개 이상 선택하세요.');return;}
+  const color=document.getElementById('mm-color').value||'#38bdf8';
+  members[idx]={...members[idx],name:n,mc:mc||n,type:document.getElementById('mm-type').value,job:jobs[0],jobs,color};
   saveMembers();renderMembers();closeMemberModal();
 }
 function delMember(i){if(!requireAdmin())return;if(confirm(members[i].name+' 삭제?')){members.splice(i,1);saveMembers();renderMembers();}}
-function exportMembers(){const d=JSON.stringify(members,null,2);navigator.clipboard.writeText(d).then(()=>alert('복사됨!'));}
-function importMembers(){const d=prompt('JSON 데이터 붙여넣기:');if(!d)return;try{members=JSON.parse(d);saveMembers();renderMembers();}catch(e){alert('형식 오류');}}
+function resetMembers(){if(!requireAdmin())return;if(confirm('마을원 명단 전체 초기화?')){members=[];saveMembers();renderMembers();}}
 
 /* ══════════════════════════════════════════
    마을 구역
@@ -2174,6 +2236,9 @@ function rebuildZone(){
   renderZoneStat();
 }
 function getOwnerColor(name){
+  // 멤버 color 필드 우선 사용
+  const member = members.find(m=>m.name===name||m.mc===name);
+  if(member&&member.color) return member.color;
   let h=0;for(let i=0;i<name.length;i++)h=name.charCodeAt(i)+((h<<5)-h);
   return ZN_COLORS[Math.abs(h)%ZN_COLORS.length];
 }
@@ -2200,8 +2265,7 @@ function renderZoneStat(){
     <div class="zn-stat-card"><div class="zn-stat-val">${total-used}</div><div class="zn-stat-lbl">빈 청크</div></div>`;
 }
 function resetZone(){if(!requireAdmin())return;const pw=prompt('초기화 확인용 비밀번호:');if(!pw)return;hashPW(pw).then(h=>{if(h!==ADMIN_HASH){alert('비밀번호 오류');return;}if(confirm('구역 데이터 초기화?')){zoneData={};saveZone();rebuildZone();}});}
-function exportZone(){navigator.clipboard.writeText(JSON.stringify({cols:document.getElementById('zn-cols').value,rows:document.getElementById('zn-rows').value,data:zoneData},null,2)).then(()=>alert('복사됨!'));}
-function importZone(){const d=prompt('JSON 붙여넣기:');if(!d)return;try{const o=JSON.parse(d);document.getElementById('zn-cols').value=o.cols||16;document.getElementById('zn-rows').value=o.rows||16;zoneData=o.data||{};saveZone();rebuildZone();}catch(e){alert('형식 오류');}}
+function _updateZoneAdminUI(){const b=document.getElementById('zn-reset-btn');if(b)b.style.display=isAdmin?'':'none';}
 
 /* ══════════════════════════════════════════
    조공 포인트
@@ -2257,7 +2321,6 @@ function renderTribute(){
   const old=document.querySelectorAll('#tb-log-area');if(old.length>1)old[0].remove();
 }
 function openTributeModal(){
-  if(!requireAdmin())return;
   document.getElementById('tb-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closeTributeModal()">
     <div class="mb-modal"><h3>조공 추가</h3>
       <label>이름</label><input id="tb-name" placeholder="마을원 이름">
@@ -2271,22 +2334,20 @@ function addTribute(){
   const pts=parseInt(document.getElementById('tb-pts').value)||0;
   if(!n||!pts){alert('이름과 포인트를 입력하세요.');return;}
   tribute[n]=(tribute[n]||0)+pts;
-  addLog(n+' +'+pts+'P 추가 (관리자)');
+  addLog(n+' +'+pts+'P 추가');
   saveTribute();renderTribute();closeTributeModal();
 }
 function delTribute(n){if(!requireAdmin())return;if(confirm(n+' 기록 삭제?')){addLog(n+' 삭제됨 (관리자, 기존 '+tribute[n]+'P)');delete tribute[n];saveTribute();renderTribute();}}
 function resetTribute(){if(!requireAdmin())return;const pw=prompt('초기화 확인용 비밀번호:');if(!pw)return;hashPW(pw).then(h=>{if(h!==ADMIN_HASH){alert('비밀번호 오류');return;}if(confirm('조공 데이터 초기화?')){addLog('전체 조공 초기화 (관리자)');tribute={};saveTribute();renderTribute();}});}
 function editTribute(n){
-  if(!requireAdmin())return;
   const cur=tribute[n]||0;
   const val=prompt(n+' 포인트 수정 (현재: '+cur+'P):',cur);
   if(val===null)return;
   const nv=parseInt(val);if(isNaN(nv))return;
-  addLog(n+' 포인트 수정: '+cur+'P → '+nv+'P (관리자)');
+  addLog(n+' 포인트 수정: '+cur+'P → '+nv+'P');
   tribute[n]=nv;saveTribute();renderTribute();
 }
-function exportTribute(){navigator.clipboard.writeText(JSON.stringify(tribute,null,2)).then(()=>alert('복사됨!'));}
-function importTribute(){const d=prompt('JSON 붙여넣기:');if(!d)return;try{tribute=JSON.parse(d);saveTribute();renderTribute();}catch(e){alert('형식 오류');}}
+function _updateTributeAdminUI(){const b=document.getElementById('tb-reset-btn');if(b)b.style.display=isAdmin?'':'none';}
 
 /* ══════════════════════════════════════════
    타이머
@@ -2469,8 +2530,131 @@ function calcExpiry(){
 }
 
 /* ══════════════════════════════════════════
-   마을 탭 검색
+   실시간 공유 시세 시스템
 ══════════════════════════════════════════ */
+const PRICE_CATS = {
+  crop: { label:'🌾 농작물', fbKey:'stella_price_crop', grades:['일반','고급','희귀'] },
+  fish: { label:'🐟 물고기', fbKey:'stella_price_fish', grades:['일반','고급','희귀'] },
+  food: { label:'🍳 요리',   fbKey:'stella_price_food', grades:['커먼','언커먼','레어'] }
+};
+let priceDB = { crop:{}, fish:{}, food:{} };
+let curPriceTab = 'crop';
+
+function _initPriceSync(){
+  if(!window._fbOn){setTimeout(_initPriceSync,100);return;}
+  Object.entries(PRICE_CATS).forEach(([cat,cfg])=>{
+    window._fbOn(cfg.fbKey, val=>{
+      priceDB[cat] = val && typeof val==='object' && !Array.isArray(val) ? val : {};
+      if(curPriceTab===cat) renderPriceTab(cat);
+    });
+  });
+}
+_initPriceSync();
+
+function switchPriceTab(cat){
+  curPriceTab=cat;
+  document.querySelectorAll('#price-subtabs .rtab').forEach(b=>{
+    b.classList.toggle('rtab-on', b.dataset.psec===cat);
+  });
+  document.querySelectorAll('.psec').forEach(p=>p.style.display='none');
+  document.getElementById('psec-'+cat).style.display='';
+  renderPriceTab(cat);
+}
+
+function renderPriceTab(cat){
+  const cfg=PRICE_CATS[cat];
+  const data=priceDB[cat];
+  const el=document.getElementById('psec-'+cat);
+  if(!el)return;
+
+  // 등급별 그룹핑
+  const byGrade={};
+  cfg.grades.forEach(g=>byGrade[g]=[]);
+  Object.entries(data).forEach(([id,item])=>{
+    const g=item.grade||'일반';
+    if(!byGrade[g])byGrade[g]=[];
+    byGrade[g].push({id,...item});
+  });
+
+  let html='';
+  cfg.grades.forEach(grade=>{
+    const items=byGrade[grade]||[];
+    html+=`<div class="pi-section-hd">
+      <span class="pi-section-title">${_gradeLabel(grade,cat)}</span>
+      <div style="display:flex;gap:6px;align-items:center;">
+        ${items.length?`<span class="pi-sync-badge">최근 수정: ${_latestTime(items)}</span>`:''}
+        <button class="pi-add-btn" onclick="openPriceModal('${cat}','${grade}')">+ 추가</button>
+      </div>
+    </div>`;
+    if(!items.length){
+      html+=`<div class="pi-list"><div class="pi-empty">아직 등록된 시세가 없어요.</div></div>`;
+    } else {
+      html+=`<div class="pi-list">`;
+      items.sort((a,b)=>a.name.localeCompare(b.name,'ko')).forEach(item=>{
+        html+=`<div class="pi-card">
+          <span class="pi-card-grade ${_gradeClass(item.grade,cat)}">${item.grade}</span>
+          <span class="pi-card-name">${item.name}</span>
+          <span class="pi-card-price">${item.price.toLocaleString()} 셀</span>
+          <span class="pi-card-time">${item.updatedAt||''}</span>
+          <span class="pi-card-edit" onclick="openPriceModal('${cat}','${item.grade}','${item.id}')" title="수정">✏️</span>
+          <span class="pi-card-del" onclick="delPriceItem('${cat}','${item.id}')" title="삭제">✕</span>
+        </div>`;
+      });
+      html+=`</div>`;
+    }
+  });
+  el.innerHTML=html;
+}
+
+function _gradeLabel(g,cat){
+  const map={'일반':'⬜ 일반','고급':'🟩 고급','희귀':'🟦 희귀','커먼':'⬜ 커먼','언커먼':'🟩 언커먼','레어':'🟦 레어'};
+  return map[g]||g;
+}
+function _gradeClass(g,cat){
+  const m={'일반':'c-n','고급':'c-100','희귀':'c-80','커먼':'c-n','언커먼':'c-100','레어':'c-80'};
+  return 'chip '+(m[g]||'c-n');
+}
+function _latestTime(items){
+  const times=items.map(i=>i.updatedAt).filter(Boolean).sort();
+  return times.length?times[times.length-1]:'';
+}
+function _nowStr(){
+  return new Date().toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+
+function openPriceModal(cat, grade, editId){
+  const cfg=PRICE_CATS[cat];
+  const item = editId ? priceDB[cat][editId] : null;
+  const gradeOpts=cfg.grades.map(g=>`<option value="${g}"${(item?item.grade:grade)===g?' selected':''}>${g}</option>`).join('');
+  document.getElementById('price-modal-root').innerHTML=`<div class="mb-modal-bg" onclick="if(event.target===this)closePriceModal()">
+    <div class="mb-modal"><h3>${cfg.label} 시세 ${item?'수정':'추가'}</h3>
+      <label>아이템 이름</label><input id="pm-name" placeholder="아이템 이름" value="${item?item.name:''}">
+      <label>등급</label><select id="pm-grade">${gradeOpts}</select>
+      <label>가격 (셀)</label><input id="pm-price" type="number" placeholder="셀" min="0" value="${item?item.price:''}">
+      <div class="mb-modal-btns">
+        <button class="mb-btn" onclick="closePriceModal()">취소</button>
+        <button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#f59e0b,#d97706);" onclick="savePriceItem('${cat}','${editId||''}')">저장</button>
+      </div>
+    </div></div>`;
+}
+function closePriceModal(){document.getElementById('price-modal-root').innerHTML='';}
+function savePriceItem(cat, editId){
+  const name=document.getElementById('pm-name').value.trim();
+  const grade=document.getElementById('pm-grade').value;
+  const price=parseInt(document.getElementById('pm-price').value);
+  if(!name){alert('이름을 입력하세요.');return;}
+  if(isNaN(price)||price<0){alert('가격을 입력하세요.');return;}
+  const id = editId || 'pi_'+Date.now();
+  const updatedAt = _nowStr();
+  const cfg=PRICE_CATS[cat];
+  window._fbSet(cfg.fbKey+'/'+id,{name,grade,price,updatedAt});
+  closePriceModal();
+}
+function delPriceItem(cat,id){
+  if(!confirm('시세 항목을 삭제할까요?'))return;
+  const cfg=PRICE_CATS[cat];
+  window._fbRemove(cfg.fbKey+'/'+id);
+}
 function highlightZone(){
   const q=(document.getElementById('zn-search').value||'').trim().toLowerCase();
   document.querySelectorAll('.zn-cell').forEach(cell=>{

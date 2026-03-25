@@ -1,100 +1,179 @@
 /* ═══ 메인 페이지 ═══ */
 
 /* ────────────────────────────────────────
-   /생활 정보 파싱
-   루나월드 /생활 정보 메시지 형식 예시:
-   ✨ [닉네임] 님의 생활 정보
-   채광 레벨: 15 (숙련도 4200/5000)
-   낚시 레벨: 8  (숙련도 900/1200)
-   농사 레벨: 12 (숙련도 2800/3500)
-   요리 레벨: 5  (숙련도 320/600)
-   보유 마나: 320 / 500
+   /생활 정보 파싱 — 실제 루나월드 포맷
+   [20:44:09] ===== 생활 정보 =====
+   명성: 20 (62,510.8 / 129,000, 48.46%)
+   [숙련도]
+   ㆍ채광 (Lv:21 / 35,228.4 / 122,400, 28.78%)
+   [스킬]
+   ㆍ단련된 곡괭이 (Lv:11)
+   [스탯 정보]
+   ㆍ채광 데미지 증가 (base:0 / temp:0 / equip:22.5 / total:22.5)
 ──────────────────────────────────────── */
 function parseLifeInfo(text) {
   if (!text || !text.trim()) return null;
-  const result = { nickname: '', skills: {}, mana: null, raw: text };
+  const result = {
+    nickname: '',
+    fame: null,
+    skills: {},
+    activeSkills: {},
+    stats: {},
+    raw: text
+  };
 
-  // 닉네임 파싱 (다양한 형식 대응)
-  const nickMatch = text.match(/\[(.+?)\]|(\S+)\s*님의\s*생활|플레이어[:\s]+(\S+)/);
-  if (nickMatch) result.nickname = nickMatch[1] || nickMatch[2] || nickMatch[3] || '';
+  // 명성 파싱
+  const fameM = text.match(/명성:\s*(\d+)\s*\(([\d,\.]+)\s*\/\s*([\d,\.]+),\s*([\d\.]+)%\)/);
+  if (fameM) {
+    result.fame = {
+      level: parseInt(fameM[1]),
+      exp:    parseFloat(fameM[2].replace(/,/g,'')),
+      maxExp: parseFloat(fameM[3].replace(/,/g,'')),
+      pct:    parseFloat(fameM[4])
+    };
+  }
 
-  // 레벨 파싱
-  const jobs = { '채광': 'mining', '낚시': 'fishing', '농사': 'farming', '요리': 'cooking' };
-  for (const [kr, en] of Object.entries(jobs)) {
-    // "채광 레벨: 15 (숙련도 4200/5000)" 또는 "채광: Lv.15"
-    const m = text.match(new RegExp(kr + '[^\\d]*(\\d+)[^\\d]*(\\d+)?\\/(\\d+)?'));
-    if (m) {
-      result.skills[en] = {
-        level: parseInt(m[1]),
-        exp: m[2] ? parseInt(m[2]) : null,
-        maxExp: m[3] ? parseInt(m[3]) : null,
+  // 숙련도 섹션 파싱
+  const profSection = text.match(/\[숙련도\](.*?)(?=\[|$)/s);
+  if (profSection) {
+    const JOB_MAP = { '채광':'mining','낚시':'fishing','농사':'farming','요리':'cooking' };
+    for (const line of profSection[1].split('\n')) {
+      const m = line.match(/ㆍ(.+?)\s*\(Lv:(\d+)\s*\/\s*([\d,\.]+)\s*\/\s*([\d,\.]+),\s*([\d\.]+)%\)/);
+      if (!m) continue;
+      const name = m[1].trim();
+      const en   = JOB_MAP[name];
+      const data = {
+        label:  name,
+        level:  parseInt(m[2]),
+        exp:    parseFloat(m[3].replace(/,/g,'')),
+        maxExp: parseFloat(m[4].replace(/,/g,'')),
+        pct:    parseFloat(m[5])
       };
+      if (en) result.skills[en] = data;
     }
   }
 
-  // 마나 파싱
-  const manaM = text.match(/마나[:\s]+([\d,]+)\s*\/\s*([\d,]+)/);
-  if (manaM) result.mana = { cur: parseInt(manaM[1].replace(/,/g,'')), max: parseInt(manaM[2].replace(/,/g,'')) };
+  // 스킬 섹션 파싱
+  const skillSection = text.match(/\[스킬\](.*?)(?=\[임시|$)/s);
+  if (skillSection) {
+    for (const line of skillSection[1].split('\n')) {
+      const m = line.match(/ㆍ(.+?)\s*\(Lv:(\d+)\)/);
+      if (m) result.activeSkills[m[1].trim()] = parseInt(m[2]);
+    }
+  }
 
-  return (result.nickname || Object.keys(result.skills).length) ? result : null;
+  // 스탯 섹션 파싱 (total만, 중복은 합산)
+  const statSection = text.match(/\[스탯 정보\](.*?)(?=\[|$)/s);
+  if (statSection) {
+    for (const line of statSection[1].split('\n')) {
+      const m = line.match(/ㆍ(.+?)\s*\(.*?total:([\d\.]+)\)/);
+      if (!m) continue;
+      const name = m[1].trim();
+      const val  = parseFloat(m[2]);
+      if (val > 0) {
+        result.stats[name] = Math.round(((result.stats[name] || 0) + val) * 1000) / 1000;
+      }
+    }
+  }
+
+  return (result.fame || Object.keys(result.skills).length) ? result : null;
 }
 
 function renderCharacterCard(info) {
   const root = document.getElementById('char-card-area');
   if (!root) return;
   if (!info) {
-    root.innerHTML = `<div class="char-parse-error">파싱할 수 없는 형식입니다. /생활 정보 메시지를 그대로 붙여넣어 주세요.</div>`;
+    root.innerHTML = `<div class="char-parse-error">파싱할 수 없는 형식입니다.<br><span style="font-size:11px;">/생활 정보 메시지를 그대로 붙여넣어 주세요.</span></div>`;
     return;
   }
 
   const JOB_META = {
-    mining:  { icon:'⛏', label:'채광', color:'#ffaa78' },
-    fishing: { icon:'🎣', label:'낚시', color:'#88b8ff' },
-    farming: { icon:'🌾', label:'농사', color:'#78d898' },
-    cooking: { icon:'🍳', label:'요리', color:'#ffd070' },
+    mining:  { icon:'⛏', label:'채광',  color:'#ffaa78' },
+    fishing: { icon:'🎣', label:'낚시',  color:'#88b8ff' },
+    farming: { icon:'🌾', label:'농사',  color:'#78d898' },
+    cooking: { icon:'🍳', label:'요리',  color:'#ffd070' },
   };
 
-  const skillsHtml = Object.entries(info.skills).map(([en, sk]) => {
-    const m = JOB_META[en];
-    const pct = (sk.exp && sk.maxExp) ? Math.round(sk.exp / sk.maxExp * 100) : null;
+  // 명성 바
+  const fameHtml = info.fame ? `
+    <div class="char-fame-row">
+      <span class="char-fame-label">✨ 명성</span>
+      <span class="char-fame-lv">Lv.${info.fame.level}</span>
+      <div class="char-skill-bar-wrap" style="flex:1;">
+        <div class="char-skill-bar">
+          <div class="char-skill-fill" style="width:${info.fame.pct}%;background:#d0a8ff;"></div>
+        </div>
+        <span class="char-skill-pct">${info.fame.pct}%</span>
+      </div>
+    </div>` : '';
+
+  // 숙련도 (4대 직업)
+  const jobKeys = ['mining','fishing','farming','cooking'];
+  const skillsHtml = jobKeys.map(en => {
+    const sk = info.skills[en];
+    const m  = JOB_META[en];
+    if (!sk) return `
+    <div class="char-skill-row">
+      <span class="char-skill-icon">${m.icon}</span>
+      <span class="char-skill-label">${m.label}</span>
+      <span class="char-skill-lv" style="color:var(--muted)">—</span>
+    </div>`;
     return `
     <div class="char-skill-row">
       <span class="char-skill-icon">${m.icon}</span>
       <span class="char-skill-label">${m.label}</span>
       <span class="char-skill-lv" style="color:${m.color}">Lv.${sk.level}</span>
-      ${pct !== null ? `
       <div class="char-skill-bar-wrap">
-        <div class="char-skill-bar" style="width:${pct}%;background:${m.color}20;border-color:${m.color}40;">
-          <div class="char-skill-fill" style="width:${pct}%;background:${m.color};"></div>
+        <div class="char-skill-bar">
+          <div class="char-skill-fill" style="width:${sk.pct}%;background:${m.color};"></div>
         </div>
-        <span class="char-skill-pct">${sk.exp?.toLocaleString()}/${sk.maxExp?.toLocaleString()}</span>
-      </div>` : ''}
+        <span class="char-skill-pct">${sk.pct}%</span>
+      </div>
     </div>`;
   }).join('');
 
-  const manaHtml = info.mana ? `
-    <div class="char-mana-row">
-      <span style="font-size:11px;color:var(--muted);">💧 마나</span>
-      <span style="font-size:12px;font-weight:700;color:#88b8ff;font-family:'JetBrains Mono',monospace;">${info.mana.cur.toLocaleString()} / ${info.mana.max.toLocaleString()}</span>
+  // 보유 스킬
+  const skillEntries = Object.entries(info.activeSkills);
+  const activeSkillHtml = skillEntries.length ? `
+    <div class="char-section-title">⚡ 보유 스킬</div>
+    <div class="char-active-skills">
+      ${skillEntries.map(([name, lv]) =>
+        `<span class="char-skill-tag">${name} <span style="color:var(--accent);font-weight:900;">Lv.${lv}</span></span>`
+      ).join('')}
+    </div>` : '';
+
+  // 주요 스탯 (상위 6개)
+  const topStats = Object.entries(info.stats)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6);
+  const statsHtml = topStats.length ? `
+    <div class="char-section-title">📊 주요 스탯</div>
+    <div class="char-stats-grid">
+      ${topStats.map(([name, val]) =>
+        `<div class="char-stat-item">
+          <span class="char-stat-name">${name}</span>
+          <span class="char-stat-val">+${val}</span>
+        </div>`
+      ).join('')}
     </div>` : '';
 
   root.innerHTML = `
     <div class="char-result-card">
       <div class="char-result-hd">
-        <img src="https://mc-heads.net/avatar/${encodeURIComponent(info.nickname||'Steve')}/40"
-          style="width:40px;height:40px;border-radius:8px;image-rendering:pixelated;border:2px solid var(--b2);"
-          onerror="this.style.display='none'">
+        <div style="width:40px;height:40px;border-radius:8px;background:var(--s3);border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-size:20px;">🧑‍🌾</div>
         <div>
-          <div style="font-size:15px;font-weight:900;color:var(--text);">${info.nickname || '마을원'}</div>
-          <div style="font-size:11px;color:var(--muted);">생활 스탯</div>
+          <div style="font-size:14px;font-weight:900;color:var(--text);">내 캐릭터 스펙</div>
+          ${info.fame ? `<div style="font-size:11px;color:var(--muted);">명성 ${info.fame.level}  · 스탯 포인트 파싱됨</div>` : ''}
         </div>
         <button class="char-clear-btn" onclick="clearCharCard()">✕</button>
       </div>
+      ${fameHtml}
+      <div style="font-size:10px;font-weight:800;color:var(--muted);margin:10px 0 6px;letter-spacing:.5px;">숙련도</div>
       <div class="char-skills-list">${skillsHtml}</div>
-      ${manaHtml}
+      ${activeSkillHtml}
+      ${statsHtml}
     </div>`;
 
-  // 결과 저장
   try { localStorage.setItem('stella_char_info', JSON.stringify(info)); } catch(e){}
 }
 

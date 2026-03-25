@@ -342,3 +342,40 @@
 /* 마을 pill active */
 .nav-pill.t-village.pill-on { color:#c8a8ff;background:#221a48;border-color:#403870; }
 [data-theme="light"] .nav-pill.t-village.pill-on { color:var(--accent);background:var(--accent-bg);border-color:#ccc4f8; }
+
+/* ── 캐릭터 카드 확장 스타일 ── */
+.char-fame-row {
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:10px;padding-bottom:10px;
+  border-bottom:1px solid var(--b1);
+}
+.char-fame-label { font-size:12px;font-weight:800;color:var(--muted);flex-shrink:0; }
+.char-fame-lv    { font-size:13px;font-weight:900;color:#d0a8ff;flex-shrink:0;min-width:42px; }
+
+.char-section-title {
+  font-size:10px;font-weight:800;color:var(--muted);
+  letter-spacing:.5px;margin:10px 0 6px;
+  text-transform:uppercase;
+}
+
+/* 보유 스킬 태그 */
+.char-active-skills {
+  display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px;
+}
+.char-skill-tag {
+  font-size:11px;font-weight:700;
+  background:var(--s2);border:1px solid var(--b2);
+  padding:3px 9px;border-radius:20px;color:var(--sub);
+}
+
+/* 주요 스탯 그리드 */
+.char-stats-grid {
+  display:grid;grid-template-columns:1fr 1fr;gap:5px;
+}
+.char-stat-item {
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad-xs);padding:5px 8px;
+}
+.char-stat-name { font-size:10px;color:var(--sub);font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+.char-stat-val  { font-size:11px;font-weight:900;color:var(--counter);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-left:4px; }

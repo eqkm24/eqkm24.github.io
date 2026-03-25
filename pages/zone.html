@@ -1,0 +1,18 @@
+<div class="page" id="pg-zone">
+<div class="wrap">
+  <div class="ph">
+    <div class="ph-title">🗺️ 마을 <span style="color:#4ade80;">구역</span></div>
+    <div class="ph-sub">청크 기반 마을 땅 점유 현황 — 셀 클릭으로 소유자 설정</div>
+  </div>
+  <div class="search-bar"><input class="search-input" id="zn-search" placeholder="소유자 검색..." oninput="highlightZone()"></div>
+  <div class="zn-tools">
+    <span style="font-size:11px;color:var(--sub);">그리드 크기:</span>
+    <input class="tm-set-input" id="zn-cols" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
+    <span style="font-size:11px;color:var(--muted);">×</span>
+    <input class="tm-set-input" id="zn-rows" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
+    <button class="mb-btn" id="zn-reset-btn" style="display:none;" onclick="resetZone()">초기화</button>
+  </div>
+  <div class="zn-stat" id="zn-stat"></div>
+  <div class="zn-legend" id="zn-legend"></div>
+  <div class="zn-map" id="zn-map"></div>
+</div></div>

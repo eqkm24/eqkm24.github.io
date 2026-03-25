@@ -1,0 +1,68 @@
+/* ═══ 타이머 & 메모장 — 페이지 고유 스타일 ═══ */
+
+/* 사이드 패널 내부 타이머 */
+.side-tm-section { padding: 14px; border-bottom: 1px solid var(--b1); }
+.side-tm-label {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  letter-spacing: .5px; margin-bottom: 8px;
+}
+.side-pomo-display {
+  font-size: 36px; font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center; color: var(--text);
+  margin: 8px 0;
+}
+.side-pomo-display.running { color: #3aaa6a; }
+.side-pomo-display.paused  { color: #c89010; }
+.side-pomo-display.break   { color: #5a88d8; }
+
+/* 스톱워치 / 카운트다운 */
+.sw-display, .cd-display {
+  font-size: 32px; font-weight: 800;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center; color: var(--text); margin: 8px 0;
+}
+.sw-display.running { color: #3aaa6a; }
+.cd-display.running { color: #5a88d8; }
+
+/* 사이드 메모 */
+.side-memo-card {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+  transition: all .12s;
+}
+.side-memo-card:hover { border-color: var(--b3); }
+.side-memo-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  margin-bottom: 3px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.side-memo-body {
+  font-size: 10.5px; color: var(--sub); line-height: 1.5;
+  max-height: 48px; overflow: hidden;
+}
+.side-memo-date {
+  font-size: 9.5px; color: var(--muted);
+  margin-top: 4px; display: flex; justify-content: space-between;
+}
+.side-memo-del { cursor: pointer; transition: color .12s; }
+.side-memo-del:hover { color: #e07070; }
+
+/* 포모도로 설정 */
+.pomo-settings {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 6px; margin-top: 10px;
+}
+.pomo-set-item {
+  display: flex; flex-direction: column; gap: 3px;
+}
+.pomo-set-item label {
+  font-size: 9.5px; color: var(--muted);
+}
+.pomo-set-item input {
+  padding: 4px 8px; border: 1px solid var(--b2);
+  border-radius: 6px; background: var(--s2);
+  color: var(--text); font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: center; outline: none;
+}

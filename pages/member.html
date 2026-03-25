@@ -1,0 +1,16 @@
+<div class="page" id="pg-member">
+<div class="wrap">
+  <div class="ph">
+    <div class="ph-title">👥 마을원 <span style="color:#38bdf8;">명단</span></div>
+    <div class="ph-sub">스텔라 마을 구성원 정보</div>
+  </div>
+  <div class="search-bar"><input class="search-input" id="mb-search" placeholder="마을원 검색..." oninput="renderMembers()"></div>
+  <div class="mb-toolbar">
+    <button class="mb-btn mb-btn-add" onclick="openMemberModal()">+ 마을원 등록</button>
+    <button class="mb-btn mb-btn-reset" id="mb-reset-btn" style="display:none;" onclick="resetMembers()">초기화</button>
+    <span style="flex:1;"></span>
+    <span style="font-size:11px;color:var(--muted);" id="mb-count">0명</span>
+  </div>
+  <div class="mb-grid" id="mb-grid"></div>
+  <div id="mb-modal-root"></div>
+</div></div>

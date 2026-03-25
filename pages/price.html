@@ -1,0 +1,66 @@
+<!-- ═══ price 페이지 콘텐츠 ═══ -->
+<div class="page" id="pg-price">
+<div class="wrap">
+
+  <div class="ph">
+    <div class="ph-title">📊 변동 <span style="color:#f59e0b;">시세</span></div>
+    <div class="ph-sub">디스코드 메시지 붙여넣기 → 분석 → 전체 공유 · 누가 올려도 모두가 최신 시세 확인 가능</div>
+  </div>
+
+  <!-- 시세 하위 카테고리 — 마을 스타일 섹션 헤더 -->
+  <div style="display:flex;flex-direction:column;gap:24px;">
+    <div>
+      <div class="price-sec-hd" onclick="togglePriceSec('crop')" id="psh-crop">
+        <span class="price-sec-icon">🌾</span>
+        <span class="price-sec-title">농작물 시세</span>
+        <span class="price-sec-badge">4시간 갱신 · 최대 ±15%</span>
+        <span class="price-sec-arrow" id="psa-crop">▼</span>
+      </div>
+      <div id="psec-crop" class="psec-panel price-sec-body"></div>
+    </div>
+    <div>
+      <div class="price-sec-hd" onclick="togglePriceSec('fish')" id="psh-fish">
+        <span class="price-sec-icon">🐟</span>
+        <span class="price-sec-title">물고기 시세</span>
+        <span class="price-sec-badge">4시간 갱신 · 최대 ±15%</span>
+        <span class="price-sec-arrow" id="psa-fish">▼</span>
+      </div>
+      <div id="psec-fish" class="psec-panel price-sec-body" style="display:none;"></div>
+    </div>
+    <div>
+      <div class="price-sec-hd" onclick="togglePriceSec('food')" id="psh-food">
+        <span class="price-sec-icon">🍳</span>
+        <span class="price-sec-title">요리 시세</span>
+        <span class="price-sec-badge">4시간 갱신 · 최대 +10% / -20%</span>
+        <span class="price-sec-arrow" id="psa-food">▼</span>
+      </div>
+      <div id="psec-food" class="psec-panel price-sec-body" style="display:none;"></div>
+    </div>
+  </div>
+  <div class="exp-calc">
+    <div class="exp-calc-title">📅 유통기한 감가 계산기</div>
+    <!-- 상점별 변동폭 요약 -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+      <div style="font-size:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:5px 10px;color:var(--sub);line-height:1.6;">
+        <span style="color:#4ade80;font-weight:700;">🌾 농작물</span> &nbsp;최대 <span style="color:#f87171;">-15%</span> / <span style="color:#4ade80;">+10%</span>
+      </div>
+      <div style="font-size:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:5px 10px;color:var(--sub);line-height:1.6;">
+        <span style="color:#60a5fa;font-weight:700;">🐟 물고기</span> &nbsp;최대 <span style="color:#f87171;">-15%</span> / <span style="color:#4ade80;">+10%</span>
+      </div>
+      <div style="font-size:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:5px 10px;color:var(--sub);line-height:1.6;">
+        <span style="color:#c084fc;font-weight:700;">🍳 요리</span> &nbsp;최대 <span style="color:#f87171;">-20%</span> / <span style="color:#4ade80;">+10%</span>
+      </div>
+      <div style="font-size:10px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--rad-s);padding:5px 10px;color:var(--sub);line-height:1.6;">
+        <span style="color:#fb923c;font-weight:700;">⛏ 광물</span> &nbsp;최대 <span style="color:#f87171;">-10%</span> / <span style="color:#4ade80;">+8%</span>
+      </div>
+      <div style="font-size:10px;background:var(--s3);border:1px solid var(--b1);border-radius:var(--rad-s);padding:5px 10px;color:var(--muted);line-height:1.6;">
+        🕐 갱신: 00:00 기준 <strong style="color:var(--sub);">4시간마다</strong>&nbsp;(00·04·08·12·16·20시)
+      </div>
+    </div>
+    <div class="exp-row">
+      <div class="exp-field"><label>판매 원가 (셀)</label><input id="exp-price" type="number" value="100" min="1" oninput="calcExpiry()"></div>
+      <div class="exp-field"><label>유통기한 만료일</label><input id="exp-date" type="datetime-local" onchange="calcExpiry()"></div>
+      <div class="exp-field"><label>판매 시점</label><input id="exp-sell" type="datetime-local" onchange="calcExpiry()"></div>
+    </div>
+    <div class="exp-result" id="exp-result" style="grid-template-columns:repeat(4,1fr);">
+      <div class="exp-card"><div class="exp-card-time">유통기한 이내</div><div class="exp-card-rate" style="color:#4ade80;">감가 없음</div><div class="exp-card-val" id="exp-v0" style="color:#4ade80;">100 셀</div></div>

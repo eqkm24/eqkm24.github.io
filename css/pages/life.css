@@ -1,0 +1,191 @@
+/* ═══ 생활 통합 페이지 ═══ */
+
+/* ── 직업 탭 (큰 필 버튼) ── */
+.lj-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: 20px; padding: 5px; width: fit-content;
+  margin-bottom: 0;
+}
+.lj-btn {
+  padding: 9px 28px; border-radius: 16px; border: none;
+  font-size: 13.5px; font-weight: 800;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; color: var(--muted); background: transparent;
+  transition: all .18s; white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.lj-btn:hover { color: var(--sub); background: var(--s3); }
+.lj-btn.lj-on {
+  background: var(--s1); color: var(--text);
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+
+/* ── 서브탭 (언더라인 스타일, all-dding 풍) ── */
+.ls-tab-wrap {
+  display: flex; gap: 0; border-bottom: 2px solid var(--b1);
+  margin-bottom: 24px;
+}
+.ls-tab {
+  padding: 10px 24px; border: none; background: transparent;
+  font-size: 13px; font-weight: 800;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; color: var(--muted);
+  border-bottom: 2px solid transparent; margin-bottom: -2px;
+  transition: all .15s; white-space: nowrap;
+}
+.ls-tab:hover { color: var(--sub); }
+.ls-tab.ls-on {
+  color: var(--text);
+  border-bottom-color: var(--ls-color, var(--accent));
+}
+
+/* ── 제작 카드 (새 스타일) ── */
+.lc-card-new {
+  position: relative;
+}
+.lc-card-new .lc-card-hd {
+  margin-bottom: 10px;
+}
+.lc-fac-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 20px; border: 1px solid;
+  flex-shrink: 0;
+}
+.lc-fac-bench   { color: #88b8ff; background: #0e2030; border-color: #88b8ff40; }
+.lc-fac-brazier { color: #ffaa78; background: #281000; border-color: #ffaa7840; }
+.lc-fac-counter { color: #78d898; background: #0a2018; border-color: #78d89840; }
+.lc-card-time {
+  font-size: 10px; color: var(--muted); display: flex; align-items: center; gap: 2px;
+}
+.lc-mats-hd2 {
+  font-size: 10px; font-weight: 800; color: var(--muted);
+  letter-spacing: .5px; margin-bottom: 8px;
+}
+.lc-prob-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  color: #ffd070; background: #261800; border: 1px solid #ffd07040;
+  padding: 1px 7px; border-radius: 20px; margin-left: 6px;
+}
+
+/* ── 스킬 헤더 (보주 정보) ── */
+.life-sk-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; border-radius: var(--rad);
+  background: var(--s2); border: 1px solid var(--b1);
+  margin-bottom: 20px;
+  border-left: 4px solid var(--sk-color, var(--accent));
+}
+.life-sk-header-icon { font-size: 28px; flex-shrink: 0; }
+.life-sk-header-title {
+  font-size: 15px; font-weight: 900; color: var(--text); margin-bottom: 3px;
+}
+.life-sk-header-sub { font-size: 12px; color: var(--sub); }
+.life-sk-header-sub strong { color: var(--sk-color, var(--accent)); }
+
+/* ── 스킬 목록 레이아웃 ── */
+.life-sk-list { display: flex; flex-direction: column; }
+
+/* ── 스킬 카드 ── */
+.life-sk-card {
+  background: var(--s1); border: 1px solid var(--b1);
+  border-radius: var(--rad); overflow: hidden;
+  transition: border-color .15s, box-shadow .15s;
+}
+.life-sk-card:hover { border-color: var(--b3); box-shadow: 0 4px 16px rgba(0,0,0,.2); }
+
+.life-sk-card-hd {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 18px; cursor: pointer; user-select: none;
+}
+
+/* P / A 도트 */
+.life-sk-type-dot {
+  width: 30px; height: 30px; border-radius: 8px;
+  font-size: 11px; font-weight: 900; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 1px;
+}
+.lsk-passive {
+  background: #1a2848; color: #8fbfff; border: 1px solid #304870;
+}
+.lsk-active {
+  background: #281808; color: #ffb080; border: 1px solid #502810;
+}
+[data-theme="light"] .lsk-passive { background: #e8f0ff; color: #5a88d8; border-color: #c0d4ff; }
+[data-theme="light"] .lsk-active  { background: #fff0e8; color: #c07040; border-color: #f8c8a8; }
+
+.life-sk-name {
+  font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px;
+}
+.life-sk-desc {
+  font-size: 12px; color: var(--sub); line-height: 1.65;
+}
+.life-sk-tier-badge {
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  background: var(--s3); border: 1px solid var(--b2);
+  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+}
+.life-sk-excl-badge {
+  font-size: 10px; font-weight: 700; color: #f87171;
+  background: #2a0a0a; border: 1px solid #f8717140;
+  padding: 2px 8px; border-radius: 20px; white-space: nowrap;
+}
+.life-sk-arrow {
+  font-size: 10px; color: var(--muted); transition: transform .2s;
+  flex-shrink: 0; margin-top: 4px;
+}
+
+/* ── 스킬 상세 (펼침) ── */
+.life-sk-table-wrap {
+  max-height: 0; overflow: hidden;
+  transition: max-height .28s ease;
+  border-top: 0 solid var(--b1);
+}
+.lsk-open .life-sk-table-wrap {
+  border-top: 1px solid var(--b1);
+}
+.life-sk-act-row {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  padding: 12px 18px; background: var(--s2);
+  border-bottom: 1px solid var(--b1);
+  font-size: 11.5px; color: var(--sub);
+}
+.life-sk-act-item strong { color: var(--text); margin-right: 4px; }
+.life-sk-table {
+  width: 100%; border-collapse: collapse; font-size: 11px;
+}
+.life-sk-table th {
+  background: var(--s2); color: var(--sub); padding: 6px 12px;
+  text-align: center; border-bottom: 1px solid var(--b1);
+  font-weight: 700; font-size: 10.5px; letter-spacing: .3px;
+}
+.life-sk-table td {
+  padding: 6px 12px; text-align: center; border-bottom: 1px solid var(--b1);
+  color: var(--text); font-family: 'JetBrains Mono', monospace;
+}
+.life-sk-table tr:last-child td { border-bottom: none; }
+.life-sk-table tr:nth-child(even) td { background: var(--s2); }
+
+/* ── 연결선 ── */
+.life-sk-connector {
+  display: flex; justify-content: center; padding: 4px 0;
+}
+.life-sk-line {
+  width: 2px; height: 20px; background: var(--b2); border-radius: 1px;
+}
+
+/* ── 효율 계산기 준비 중 ── */
+.wip-banner {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 320px; text-align: center; gap: 16px;
+}
+.wip-icon { font-size: 52px; }
+.wip-title { font-size: 22px; font-weight: 900; color: var(--text); }
+.wip-sub { font-size: 14px; color: var(--sub); line-height: 1.7; }
+.wip-badge {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  background: var(--s2); border: 1px solid var(--b1);
+  padding: 5px 16px; border-radius: 20px;
+}

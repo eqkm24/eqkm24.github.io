@@ -1,0 +1,232 @@
+/* ═══ 생활 제작 페이지 ═══ */
+
+/* 카테고리 탭 */
+.lc-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 20px;
+  padding: 5px;
+  width: fit-content;
+}
+.lc-tab {
+  padding: 9px 24px;
+  border-radius: 16px;
+  border: none;
+  font-size: 13px;
+  font-weight: 800;
+  font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  transition: all .18s;
+  white-space: nowrap;
+}
+.lc-tab:hover { color: var(--sub); background: var(--s3); }
+.lc-tab.lc-on {
+  background: var(--s1);
+  color: var(--text);
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+
+/* 검색창 */
+.lc-search-input {
+  width: 100%;
+  padding: 12px 14px 12px 42px;
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  background: var(--s2);
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  outline: none;
+  transition: all .15s;
+}
+.lc-search-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(160,144,240,.12); }
+.lc-search-input::placeholder { color: var(--muted); }
+
+/* 카드 그리드 */
+.lc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 900px) { .lc-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .lc-grid { grid-template-columns: 1fr; } }
+
+/* 제작 카드 */
+.lc-card {
+  background: var(--s1);
+  border: 1px solid var(--b1);
+  border-radius: var(--rad);
+  padding: 16px;
+  transition: all .18s;
+  box-shadow: var(--shadow-sm);
+}
+.lc-card:hover {
+  border-color: var(--b3);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+/* 카드 헤더 */
+.lc-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.lc-card-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--s3);
+  border: 1px solid var(--b2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  overflow: hidden;
+  image-rendering: pixelated;
+}
+.lc-card-img img { width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.lc-card-meta { flex: 1; min-width: 0; }
+.lc-card-type {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lc-card-time {
+  font-size: 10px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.lc-card-name {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: -.3px;
+}
+
+/* 등급 배지 */
+.lc-grade {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: .3px;
+}
+.lc-grade-n { background: var(--s3); color: var(--muted); border: 1px solid var(--b2); }
+.lc-grade-a { background: #102818; color: #78d898; border: 1px solid #185030; }
+.lc-grade-r { background: #182040; color: #88b8ff; border: 1px solid #284060; }
+.lc-grade-h { background: #221a48; color: #d0a8ff; border: 1px solid #403870; }
+[data-theme="light"] .lc-grade-a { background: #eafaf0; color: #2a9858; border-color: #90e0b0; }
+[data-theme="light"] .lc-grade-r { background: #e8f2ff; color: #3878c8; border-color: #a8d0f8; }
+[data-theme="light"] .lc-grade-h { background: var(--accent-bg); color: var(--accent); border-color: #ccc4f8; }
+
+/* 재료 섹션 */
+.lc-mats-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--b1);
+}
+.lc-mats-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--muted);
+  letter-spacing: .5px;
+}
+.lc-facility {
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: .3px;
+}
+.lc-fac-bench   { background: #182040; color: #88b8ff; border: 1px solid #284060; }
+.lc-fac-brazier { background: #281000; color: #ffaa78; border: 1px solid #482000; }
+.lc-fac-counter { background: #0a2018; color: #78d898; border: 1px solid #184030; }
+[data-theme="light"] .lc-fac-bench   { background: #e8f2ff; color: #4070c8; border-color: #b8d0ff; }
+[data-theme="light"] .lc-fac-brazier { background: #fff0e8; color: #c06030; border-color: #f8b888; }
+[data-theme="light"] .lc-fac-counter { background: #eafaf0; color: #2a9858; border-color: #90e0b0; }
+
+.lc-mats-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lc-mat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  color: var(--sub);
+}
+.lc-mat-qty {
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 확률 표시 */
+.lc-prob {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.lc-prob-100 { background: #0a2018; color: #78d898; border: 1px solid #184030; }
+.lc-prob-60  { background: #221a48; color: #d0a8ff; border: 1px solid #403870; }
+[data-theme="light"] .lc-prob-100 { background: #eafaf0; color: #2a9858; border-color: #90e0b0; }
+[data-theme="light"] .lc-prob-60  { background: var(--accent-bg); color: var(--accent); border-color: #ccc4f8; }
+
+/* 빈 상태 */
+.lc-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── 제작 타입 필 ── */
+.lc-type-pill {
+  display: inline-flex; align-items: center;
+  font-size: 10px; font-weight: 800; padding: 3px 9px;
+  border-radius: 20px; background: var(--s3);
+  color: var(--sub); border: 1px solid var(--b2);
+  flex-shrink: 0;
+}
+/* 확률 행 */
+.lc-prob-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+}
+.lc-prob-tag {
+  font-size: 10px; font-weight: 800;
+  color: #ffd070; background: #261800;
+  border: 1px solid #ffd07040; padding: 2px 8px; border-radius: 20px;
+}

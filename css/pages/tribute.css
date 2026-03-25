@@ -1,0 +1,26 @@
+/* ═══ 조공 포인트 — 페이지 고유 스타일 ═══ */
+
+/* 조공 XP 참고 카드 */
+.tb-xp-ref-title {
+  font-size: 12px; font-weight: 700; color: var(--sub);
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.tb-xp-item {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: var(--sub); padding: 4px 0;
+  border-bottom: 1px solid var(--b1);
+}
+.tb-xp-item:last-child { border-bottom: none; }
+.tb-xp-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700; color: var(--text);
+}
+
+/* 검색바 */
+.tb-search-wrap { margin-bottom: 14px; }
+
+/* 진행바 - 달성 완료 글로우 */
+.tb-row-fill.done {
+  background: linear-gradient(90deg, #80d8a0, #60c888);
+  box-shadow: 0 0 8px rgba(100,210,140,.4);
+}

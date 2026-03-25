@@ -176,7 +176,11 @@ function _renderRecipeGrid(job) {
     return `
     <div class="lc-card lc-card-new">
       <div class="lc-card-hd">
-        <div class="lc-card-img">${it.emoji || '📦'}</div>
+        <div class="lc-card-img">${(()=>{
+          const imgs = typeof LC_IMGS !== 'undefined' ? LC_IMGS : {};
+          const k = Object.keys(imgs).find(k => it.name.includes(k) || k.includes(it.name));
+          return k ? `<img src="${imgs[k]}" alt="${it.name}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">` : (it.emoji||'📦');
+        })()}</div>
         <div style="flex:1;min-width:0;">
           <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
             <span class="lc-fac-badge ${fac.cls}">${fac.icon} ${fac.label}</span>

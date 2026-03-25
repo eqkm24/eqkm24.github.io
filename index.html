@@ -17,23 +17,24 @@
 <link rel="stylesheet" href="css/pages/tribute.css">
 <link rel="stylesheet" href="css/pages/timer.css">
 <link rel="stylesheet" href="css/pages/life.css">
+<link rel="stylesheet" href="css/pages/main.css">
 <script>(function(){const t=localStorage.getItem('theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
 <!-- ═══ TOPNAV ═══ -->
-<nav class="topnav">
+<nav class="topnav" id="topnav">
+  <!-- 로고 -->
   <div class="nav-logo" onclick="go('main')" style="cursor:pointer;flex-shrink:0;">
     <div class="nav-logo-mark">✨</div>
-    <div class="nav-logo-text">스텔라 마을 <em>위키</em></div>
+    <div class="nav-logo-text">스텔라<em> 마을</em></div>
   </div>
 
-  <!-- 4개 카테고리 드롭다운 -->
-  <div class="nav-tabs" style="flex:1;justify-content:center;gap:4px;">
-
-    <!-- 마을정보 -->
+  <!-- 중앙 탭 -->
+  <div class="nav-center">
+    <!-- 마을 -->
     <div class="nav-dd">
-      <button class="nav-dd-btn" onclick="toggleDD('dd-village')">🏠 마을정보</button>
+      <button class="nav-pill" id="pill-village" onclick="requireVillageAccess('dd-village')">마을</button>
       <div class="nav-dd-menu" id="dd-village">
         <button class="nav-tab t-member"  onclick="go('member');closeDD()">👥 마을원 명단</button>
         <button class="nav-tab t-zone"    onclick="go('zone');closeDD()">🗺 마을 구역</button>
@@ -42,9 +43,12 @@
       </div>
     </div>
 
+    <!-- 제작 -->
+    <button class="nav-pill t-recipe" id="pill-recipe" onclick="go('recipe')">제작</button>
+
     <!-- 생활 -->
     <div class="nav-dd">
-      <button class="nav-dd-btn" onclick="toggleDD('dd-life')">🌿 생활</button>
+      <button class="nav-pill t-life" id="pill-life" onclick="toggleDD('dd-life')">생활</button>
       <div class="nav-dd-menu" id="dd-life">
         <button class="nav-tab t-life" onclick="go('life');switchLifeJob('mining',null);closeDD()">⛏ 채광</button>
         <button class="nav-tab t-life" onclick="go('life');switchLifeJob('fishing',null);closeDD()">🎣 낚시</button>
@@ -53,29 +57,31 @@
       </div>
     </div>
 
-    <!-- 제작 레시피 -->
-    <button class="nav-tab t-recipe" onclick="go('recipe')">🛠 제작 레시피</button>
-
-    <!-- 효율 계산기 -->
-    <button class="nav-tab t-calc" onclick="go('calc')">💀 효율 계산기</button>
-
-    <!-- 변동 시세 -->
-    <button class="nav-tab t-price" onclick="go('price')">📊 변동 시세</button>
-
+    <!-- 놀이터 (준비중) -->
+    <button class="nav-pill" id="pill-play" onclick="showPlaygroundWip(this)">놀이터</button>
   </div>
 
-  <div class="nav-utils" style="flex-shrink:0;">
-    <button class="gs-shortcut-badge" onclick="openGlobalSearch()" title="통합 검색 (Ctrl+K)">
-      <span style="font-size:13px;">🔍</span>
-      <span style="font-size:10px;color:var(--muted);border:1px solid var(--b2);padding:1px 5px;border-radius:4px;background:var(--s3);">K</span>
+  <!-- 우측 유틸 -->
+  <div class="nav-utils">
+    <button class="nav-icon-btn gs-open-btn" onclick="openGlobalSearch()" title="통합 검색 (Ctrl+K)">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <span class="nav-kbd">K</span>
     </button>
-    <button class="nav-icon-btn" onclick="toggleSideMemo()"  title="메모장"><span style="font-size:14px;">📋</span></button>
-    <button class="nav-icon-btn" onclick="toggleSideTimer()" title="타이머"><span style="font-size:14px;">⏱️</span></button>
-    <button class="nav-icon-btn" onclick="toggleTheme()"     title="테마 전환"><span id="theme-icon" style="font-size:14px;">☀️</span></button>
+    <button class="nav-icon-btn" onclick="toggleSideMemo()" title="메모장">📋</button>
+    <button class="nav-icon-btn" onclick="toggleSideTimer()" title="타이머">⏱️</button>
+    <button class="nav-icon-btn" onclick="toggleTheme()" title="테마 전환"><span id="theme-icon">☀️</span></button>
     <button class="nav-admin-btn" onclick="openAdminLogin()">관리자</button>
-    <button class="nav-logout-btn" onclick="doLogout()" title="PIN 초기화 후 잠금화면으로">🔒 잠금</button>
+    <button class="nav-logout-btn" onclick="doLogout()" title="잠금">🔒</button>
   </div>
 </nav>
+
+<!-- 놀이터 준비중 팝업 -->
+<div id="playground-wip" style="display:none;position:fixed;z-index:500;
+  background:var(--s1);border:1px solid var(--b1);border-radius:12px;
+  padding:10px 16px;font-size:12px;color:var(--sub);
+  box-shadow:0 8px 24px rgba(0,0,0,.3);white-space:nowrap;pointer-events:none;">
+  🚧 준비 중입니다
+</div>
 
 <!-- ═══ 사이드 패널 ═══ -->
 <div class="side-panel side-memo" id="side-memo">
@@ -110,75 +116,165 @@
 <!-- ═══ 페이지 ═══ -->
 <div id="pages-root">
 <div class="page on" id="pg-main">
-<div class="wrap" style="max-width:860px;">
+<div class="main-wrap">
 
-  <!-- 히어로 -->
-  <div style="text-align:center;padding:40px 0 36px;">
-    <div style="font-size:48px;margin-bottom:8px;">✨</div>
-    <h1 style="font-size:30px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을</h1>
-    <p style="font-size:13px;color:var(--sub);margin-bottom:0;">루나월드 · 스텔라 마을 종합 정보 허브</p>
+  <!-- ── 히어로 섹션 ── -->
+  <section class="hero-section">
+    <div class="hero-glow"></div>
+    <div class="hero-inner">
+      <div class="hero-badge">루나월드 · 스텔라 마을</div>
+      <h1 class="hero-title">스텔라 마을 위키</h1>
+      <p class="hero-sub">채광부터 요리까지, 마을의 모든 정보를 한 곳에서</p>
+    </div>
+  </section>
+
+  <!-- ── 스탯 바 ── -->
+  <div class="stat-bar">
+    <div class="stat-item" onclick="requireVillageAccess('dd-village',()=>go('member'))">
+      <span class="stat-icon">👥</span>
+      <span class="stat-val" id="dash-members">0</span>
+      <span class="stat-lbl">마을원</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" onclick="requireVillageAccess('dd-village',()=>go('zone'))">
+      <span class="stat-icon">🗺️</span>
+      <span class="stat-val" id="dash-chunks">0</span>
+      <span class="stat-lbl">청크</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" onclick="requireVillageAccess('dd-village',()=>go('tribute'))">
+      <span class="stat-icon">⭐</span>
+      <span class="stat-val" id="dash-tribute">0</span>
+      <span class="stat-lbl">조공P</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item" onclick="go('price')">
+      <span class="stat-icon">📊</span>
+      <span class="stat-val">시세</span>
+      <span class="stat-lbl">변동 시세</span>
+    </div>
   </div>
 
-  <!-- 스탯 카드 4개 -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;">
-    <div class="main-card" onclick="go('member')">
-      <div class="main-icon">👥</div>
-      <div class="main-val" id="dash-members">0</div>
-      <div class="main-label">마을원</div>
+  <!-- ── 메인 그리드 ── -->
+  <div class="main-grid">
+
+    <!-- 좌측 컬럼 -->
+    <div class="main-col-left">
+
+      <!-- 캐릭터 스펙 카드 -->
+      <div class="m-card">
+        <div class="m-card-hd">
+          <span class="m-card-title">🧑‍🌾 내 캐릭터 스펙</span>
+          <button class="m-card-more" onclick="clearCharCard()">초기화</button>
+        </div>
+        <div class="m-card-body">
+          <p style="font-size:11.5px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+            인게임에서 <code class="inline-code">/생활 정보</code> 를 입력 후 결과 메시지를 아래에 붙여넣으세요.
+          </p>
+          <textarea id="char-paste-input"
+            class="char-paste-area"
+            placeholder="/생활 정보 결과를 여기에 붙여넣으세요..."
+            onpaste="onCharPaste(this)"
+            oninput="onCharPaste(this)"></textarea>
+          <div id="char-card-area"></div>
+        </div>
+      </div>
+
+      <!-- 빠른 이동 -->
+      <div class="m-card">
+        <div class="m-card-hd">
+          <span class="m-card-title">⚡ 빠른 이동</span>
+        </div>
+        <div class="m-card-body" style="padding:12px;">
+          <div class="quick-grid">
+            <button class="quick-btn" onclick="go('life');switchLifeJob('mining',null)">
+              <span class="quick-icon">⛏</span>
+              <span class="quick-label">채광</span>
+              <span class="quick-sub">스킬·제련</span>
+            </button>
+            <button class="quick-btn" onclick="go('life');switchLifeJob('fishing',null)">
+              <span class="quick-icon">🎣</span>
+              <span class="quick-label">낚시</span>
+              <span class="quick-sub">스킬·효율</span>
+            </button>
+            <button class="quick-btn" onclick="go('life');switchLifeJob('farming',null)">
+              <span class="quick-icon">🌾</span>
+              <span class="quick-label">농사</span>
+              <span class="quick-sub">스킬·작물가</span>
+            </button>
+            <button class="quick-btn" onclick="go('life');switchLifeJob('cooking',null)">
+              <span class="quick-icon">🍳</span>
+              <span class="quick-label">요리</span>
+              <span class="quick-sub">스킬·수익</span>
+            </button>
+            <button class="quick-btn" onclick="go('recipe')">
+              <span class="quick-icon">🛠</span>
+              <span class="quick-label">제작</span>
+              <span class="quick-sub">조합법 사전</span>
+            </button>
+            <button class="quick-btn" onclick="go('price')">
+              <span class="quick-icon">📊</span>
+              <span class="quick-label">시세</span>
+              <span class="quick-sub">실시간 변동</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div class="main-card" onclick="go('zone')">
-      <div class="main-icon">🗺️</div>
-      <div class="main-val" id="dash-chunks">0</div>
-      <div class="main-label">점유 청크</div>
-    </div>
-    <div class="main-card" onclick="go('tribute')">
-      <div class="main-icon">⭐</div>
-      <div class="main-val" id="dash-tribute">0</div>
-      <div class="main-label">총 조공P</div>
-    </div>
-    <div class="main-card" onclick="go('price')">
-      <div class="main-icon">📊</div>
-      <div class="main-val">시세</div>
-      <div class="main-label">변동 시세</div>
+
+    <!-- 우측 컬럼 -->
+    <div class="main-col-right">
+
+      <!-- 요리 시세 TOP 3 -->
+      <div class="m-card m-card-price">
+        <div class="m-card-hd">
+          <span class="m-card-title">🍳 요리 변동 시세 TOP 3</span>
+          <button class="m-card-more" onclick="go('price')">전체보기 →</button>
+        </div>
+        <div class="m-card-body" style="padding:0;">
+          <div style="padding:10px 16px 6px;font-size:10px;color:var(--muted);">원가 대비 상승률 기준</div>
+          <div id="main-price-top3">
+            <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 공지사항 위젯 -->
+      <div class="m-card">
+        <div class="m-card-hd">
+          <span class="m-card-title">📣 공지사항</span>
+          <button class="m-card-more" onclick="requireVillageAccess('dd-village',()=>go('notice'))">전체보기 →</button>
+        </div>
+        <div class="m-card-body" style="padding:0;">
+          <div id="main-notice-widget">
+            <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 웹 업데이트 노트 -->
+      <div class="m-card">
+        <div class="m-card-hd">
+          <span class="m-card-title">🔄 업데이트 노트</span>
+          <span id="un-admin-btn"></span>
+        </div>
+        <div class="m-card-body" style="padding:0;">
+          <div id="main-update-notes">
+            <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- 바로가기 버튼 -->
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:28px;">
-    <button class="main-qbtn" onclick="go('life');switchLifeJob('mining',null)">⛏ 생활·채광</button>
-    <button class="main-qbtn" onclick="go('recipe')">🛠 제작 레시피</button>
-    <button class="main-qbtn" onclick="go('price')">📊 변동 시세</button>
-    <button class="main-qbtn" onclick="go('notice')">📣 공지사항</button>
-  </div>
+  <!-- ── 푸터 ── -->
+  <footer class="main-footer">
+    <div id="visitor-counter" style="font-size:11px;color:var(--muted);"></div>
+    <div style="font-size:10px;color:var(--muted);">v2.5.0 · 스텔라 마을 위키 · lunawiki.gitbook.io 기반</div>
+  </footer>
 
-  <!-- 위젯 2열 -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
-
-    <!-- 공지사항 위젯 -->
-    <div class="main-widget-card">
-      <div class="main-widget-hd">
-        <span class="main-widget-title">📣 공지사항</span>
-        <button class="main-widget-more" onclick="go('notice')">전체보기 →</button>
-      </div>
-      <div id="main-notice-widget">
-        <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
-      </div>
-    </div>
-
-    <!-- 시세 위젯 -->
-    <div class="main-widget-card">
-      <div class="main-widget-hd">
-        <span class="main-widget-title">📊 시세 변동</span>
-        <button class="main-widget-more" onclick="go('price')">전체보기 →</button>
-      </div>
-      <div id="main-price-widget">
-        <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
-      </div>
-    </div>
-
-  </div>
-
-  <div style="font-size:10px;color:var(--muted);text-align:center;">v2.2.0 · 제작자 02qB · lunawiki.gitbook.io 기반</div>
 </div>
 </div>
 
@@ -432,6 +528,7 @@
 <script src="js/pages/search.js"></script>
 <script src="js/pages/price-widget.js"></script>
 <script src="js/pages/life.js"></script>
+<script src="js/pages/main.js"></script>
 <script>
 async function doLogout(){
   if(!confirm('로그아웃 하시겠어요?'))return;
@@ -443,7 +540,6 @@ function filterNotice(type, btn) {
   document.querySelectorAll('.notice-filter-btn').forEach(b => b.classList.remove('nf-on'));
   btn.classList.add('nf-on');
   window._noticeFilter = type;
-  // notice-filter select 호환
   const sel = document.getElementById('notice-filter');
   if (sel) sel.value = type;
   renderNotices();
@@ -456,6 +552,36 @@ function _updateNoticeAdminBtn() {
   el.innerHTML = isAdmin()
     ? `<button class="mb-btn mb-btn-add" onclick="openNoticeModal()" style="font-size:11.5px;padding:6px 14px;">+ 공지 등록</button>`
     : '';
+}
+
+/* 놀이터 준비중 팝업 */
+function showPlaygroundWip(btn) {
+  const pop = document.getElementById('playground-wip');
+  if (!pop) return;
+  const rect = btn.getBoundingClientRect();
+  pop.style.display = 'block';
+  pop.style.left = rect.left + 'px';
+  pop.style.top  = (rect.bottom + 8) + 'px';
+  clearTimeout(pop._timer);
+  pop._timer = setTimeout(() => pop.style.display = 'none', 2000);
+}
+
+/* nav pill active 상태 관리 */
+const _PILL_MAP = {
+  member:'village', zone:'village', tribute:'village', notice:'village',
+  life:'life', recipe:'recipe',
+};
+const _origGo2 = go;
+function go(tab) {
+  _origGo2(tab);
+  // 모든 pill active 해제
+  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('pill-on'));
+  const key = _PILL_MAP[tab];
+  if (key === 'recipe') {
+    document.getElementById('pill-recipe')?.classList.add('pill-on');
+  } else if (key === 'life') {
+    document.getElementById('pill-life')?.classList.add('pill-on');
+  }
 }
 </script>
 </body>

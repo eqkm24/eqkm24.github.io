@@ -159,7 +159,19 @@ function go(tab) {
   if (tab === 'recipe') { renderLifecat(); }
   if (tab === 'life') { initLifePage(); }
   if (tab === 'member') renderMembers();
-  if (tab === 'main') { updateDashboard(); renderNoticeWidget(); renderPriceWidget && renderPriceWidget(); }
+  if (tab === 'main') {
+    updateDashboard();
+    renderNoticeWidget && renderNoticeWidget();
+    renderPriceTop3 && renderPriceTop3();
+    renderUpdateNotes && renderUpdateNotes();
+    // 관리자 업데이트 노트 버튼
+    const unBtn = document.getElementById('un-admin-btn');
+    if (unBtn) unBtn.innerHTML = isAdmin() ? '<button class="m-card-more" onclick="openUpdateNoteModal()">+ 작성</button>' : '';
+    // 방문자 카운터
+    initVisitorCounter && initVisitorCounter();
+    // 저장된 캐릭터 복원
+    restoreSavedChar && restoreSavedChar();
+  }
   if (tab === 'zone' && !window._zoneInit) { window._zoneInit=true; rebuildZone(); }
   if (tab === 'tribute') renderTribute();
   if (tab === 'notice') { renderNotices(); _updateNoticeAdminBtn && _updateNoticeAdminBtn(); }

@@ -159,3 +159,88 @@ window._authLogout = function() {
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
   location.reload();
 };
+
+/* ══════════════════════════════════════
+   마을 카테고리 닉네임 인증
+══════════════════════════════════════ */
+const VILLAGE_SESSION_KEY = 'stella_village_nick';
+
+function isVillageAuth() {
+  return !!sessionStorage.getItem(VILLAGE_SESSION_KEY);
+}
+
+// callback: 인증 성공 후 실행할 함수
+function requireVillageAccess(ddId, callback) {
+  if (isAdmin()) {
+    // 관리자는 바로 통과
+    if (callback) callback();
+    else if (ddId) toggleDD(ddId);
+    return;
+  }
+  if (isVillageAuth()) {
+    if (callback) callback();
+    else if (ddId) toggleDD(ddId);
+    return;
+  }
+  // 닉네임 입력 모달
+  _showVillageNickModal(ddId, callback);
+}
+
+function _showVillageNickModal(ddId, callback) {
+  const root = document.getElementById('adm-modal-root');
+  if (!root) return;
+  root.insertAdjacentHTML('beforeend', `
+    <div class="mb-modal-bg" id="village-nick-bg" onclick="if(event.target.id==='village-nick-bg')this.remove()">
+      <div class="mb-modal" style="max-width:320px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:8px;">🏠</div>
+        <h3 style="margin-bottom:4px;">마을 카테고리</h3>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;">
+          마을원 명단에 등록된 닉네임을 입력해주세요
+        </p>
+        <input id="village-nick-input"
+          class="mb-modal input"
+          style="width:100%;padding:10px 12px;border:1px solid var(--b2);border-radius:8px;background:var(--s2);color:var(--text);font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;box-sizing:border-box;text-align:center;"
+          placeholder="마인크래프트 닉네임"
+          onkeydown="if(event.key==='Enter')submitVillageNick('${ddId||''}')">
+        <div id="village-nick-msg" style="font-size:12px;color:var(--warn);min-height:16px;margin:10px 0;"></div>
+        <div class="mb-modal-btns">
+          <button class="mb-btn" onclick="document.getElementById('village-nick-bg').remove()">취소</button>
+          <button class="mb-btn mb-btn-add" onclick="submitVillageNick('${ddId||''}')">확인</button>
+        </div>
+        <p style="font-size:10px;color:var(--muted);margin-top:12px;">
+          명단에 없는 경우 마을 운영자에게 문의해주세요
+        </p>
+      </div>
+    </div>`);
+  // callback 임시 저장
+  window._villageCallback = callback || null;
+  setTimeout(() => document.getElementById('village-nick-input')?.focus(), 80);
+}
+
+function submitVillageNick(ddId) {
+  const input = document.getElementById('village-nick-input');
+  const msg   = document.getElementById('village-nick-msg');
+  const nick  = (input?.value || '').trim();
+  if (!nick) { if(msg) msg.textContent='닉네임을 입력해주세요.'; return; }
+
+  // members 배열에서 일치 여부 확인 (mc 또는 name)
+  const found = (window.members || []).some(m =>
+    (m.mc && m.mc.toLowerCase() === nick.toLowerCase()) ||
+    (m.name && m.name.toLowerCase() === nick.toLowerCase())
+  );
+
+  if (found) {
+    sessionStorage.setItem(VILLAGE_SESSION_KEY, nick);
+    document.getElementById('village-nick-bg')?.remove();
+    if (window._villageCallback) {
+      window._villageCallback();
+      window._villageCallback = null;
+    } else if (ddId) {
+      toggleDD(ddId);
+    }
+  } else {
+    if (msg) msg.textContent = '마을원 명단에서 찾을 수 없습니다.';
+    input.value = '';
+    input.focus();
+  }
+}

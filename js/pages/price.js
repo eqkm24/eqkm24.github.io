@@ -79,6 +79,8 @@ function _initPriceSync(){
         PT[cat].data      = val.items;
         PT[cat].savedAt   = val.savedAt||'';
         PT[cat].savedCount= val.items.length;
+        // 메인 TOP3 갱신
+        if (cat === 'food' && typeof renderPriceTop3 === 'function') renderPriceTop3();
       } else {
         PT[cat].data=[];PT[cat].savedAt='';PT[cat].savedCount=0;
       }

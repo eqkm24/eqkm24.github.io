@@ -117,8 +117,14 @@
   letter-spacing:.5px;
 }
 .hero-title {
-  font-size:clamp(28px,5vw,48px);font-weight:900;
-  color:var(--text);letter-spacing:-1.5px;margin-bottom:10px;line-height:1.1;
+  font-size:clamp(32px,5.5vw,56px);font-weight:900;
+  color:var(--text);letter-spacing:-2px;margin-bottom:10px;line-height:1.05;
+}
+.hero-title em {
+  color:transparent;
+  background:linear-gradient(135deg,#b0a0f8,#e080c8);
+  -webkit-background-clip:text;background-clip:text;
+  font-style:normal;
 }
 .hero-sub {
   font-size:14px;color:var(--sub);line-height:1.7;
@@ -138,8 +144,9 @@
 .stat-item:hover { background:var(--s2); }
 .stat-icon { font-size:18px; }
 .stat-val {
-  font-size:20px;font-weight:900;color:var(--text);
+  font-size:22px;font-weight:900;color:var(--text);
   font-family:'JetBrains Mono',monospace;line-height:1;
+  letter-spacing:-0.5px;
 }
 .stat-lbl { font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.3px; }
 .stat-divider { width:1px;height:40px;background:var(--b1);flex-shrink:0; }
@@ -153,7 +160,13 @@
 /* 공통 카드 */
 .m-card {
   background:var(--s1);border:1px solid var(--b1);
-  border-radius:var(--rad);overflow:hidden;box-shadow:var(--shadow-sm);
+  border-radius:var(--rad);overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.04);
+  transition:border-color .2s, box-shadow .2s;
+}
+.m-card:hover {
+  border-color:var(--b2);
+  box-shadow:0 4px 20px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06);
 }
 .m-card-price { border-color:var(--b1); }
 .m-card-hd {
@@ -233,7 +246,7 @@
 }
 .quick-btn:hover {
   border-color:var(--accent);background:var(--accent-bg);
-  transform:translateY(-2px);box-shadow:0 4px 14px rgba(160,144,240,.15);
+  transform:translateY(-3px);box-shadow:0 6px 20px rgba(160,144,240,.25);
 }
 .quick-icon { font-size:20px; }
 .quick-label { font-size:12px;font-weight:800;color:var(--text); }
@@ -308,3 +321,24 @@
 @media(max-width:640px) {
   .main-wrap { padding: 0 14px 60px; }
 }
+
+/* 로고 글로우 (스텔라) */
+.nav-logo-glow {
+  font-size: 16px; font-weight: 900; letter-spacing: -.3px;
+  color: #fff;
+  text-shadow:
+    0 0 8px rgba(200,180,255,.9),
+    0 0 20px rgba(160,130,240,.6),
+    0 0 40px rgba(140,110,220,.3);
+  transition: text-shadow .3s;
+}
+.nav-logo-glow:hover {
+  text-shadow:
+    0 0 10px rgba(220,200,255,1),
+    0 0 28px rgba(180,150,255,.8),
+    0 0 56px rgba(160,130,240,.5);
+}
+
+/* 마을 pill active */
+.nav-pill.t-village.pill-on { color:#c8a8ff;background:#221a48;border-color:#403870; }
+[data-theme="light"] .nav-pill.t-village.pill-on { color:var(--accent);background:var(--accent-bg);border-color:#ccc4f8; }

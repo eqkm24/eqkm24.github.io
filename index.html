@@ -34,7 +34,7 @@
   <div class="nav-center">
     <!-- 마을 -->
     <div class="nav-dd">
-      <button class="nav-pill" id="pill-village" onclick="requireVillageAccess('dd-village')">마을</button>
+      <button class="nav-pill t-village" id="pill-village" onclick="requireVillageAccess('dd-village')">마을</button>
       <div class="nav-dd-menu" id="dd-village">
         <button class="nav-tab t-member"  onclick="go('member');closeDD()">👥 마을원 명단</button>
         <button class="nav-tab t-zone"    onclick="go('zone');closeDD()">🗺 마을 구역</button>
@@ -58,7 +58,7 @@
     </div>
 
     <!-- 놀이터 (준비중) -->
-    <button class="nav-pill" id="pill-play" onclick="showPlaygroundWip(this)">놀이터</button>
+    <button class="nav-pill" id="pill-play" onmouseenter="showPlaygroundWip(this)" onmouseleave="hidePlaygroundWip()">놀이터</button>
   </div>
 
   <!-- 우측 유틸 -->
@@ -123,7 +123,7 @@
     <div class="hero-glow"></div>
     <div class="hero-inner">
       <div class="hero-badge">루나월드 · 스텔라 마을</div>
-      <h1 class="hero-title">스텔라 마을 위키</h1>
+      <h1 class="hero-title">스텔라 마을 <em>위키</em></h1>
       <p class="hero-sub">채광부터 요리까지, 마을의 모든 정보를 한 곳에서</p>
     </div>
   </section>
@@ -567,8 +567,10 @@ function showPlaygroundWip(btn) {
   pop.style.display = 'block';
   pop.style.left = rect.left + 'px';
   pop.style.top  = (rect.bottom + 8) + 'px';
-  clearTimeout(pop._timer);
-  pop._timer = setTimeout(() => pop.style.display = 'none', 2000);
+}
+function hidePlaygroundWip() {
+  const pop = document.getElementById('playground-wip');
+  if (pop) pop.style.display = 'none';
 }
 
 /* nav pill active 상태 관리는 app.js go()에서 처리 */

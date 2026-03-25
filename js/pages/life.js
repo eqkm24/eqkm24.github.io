@@ -19,7 +19,7 @@ let _lifeSubtab = 'recipe';  // 'recipe' | 'skill'
 ════════════════════════════ */
 function switchLifeJob(key, el) {
   _lifeJob = key;
-  _lifeSubtab = 'recipe';
+  _lifeSubtab = key === 'cooking' ? 'skill' : 'recipe';
   document.querySelectorAll('.lj-btn').forEach(b => b.classList.remove('lj-on'));
   if (el) el.classList.add('lj-on');
   else {
@@ -48,12 +48,41 @@ function _renderLifeSubtabs() {
   const job = LIFE_JOBS.find(j => j.key === _lifeJob);
   const c = job ? job.color : 'var(--accent)';
 
-  // 요리는 제작 없음(레시피 별도) — 일단 동일하게
-  wrap.innerHTML = `
-    <button class="ls-tab ls-on" onclick="switchLifeSubtab('recipe',this)">🛠 제작 & 조합법</button>
-    <button class="ls-tab"        onclick="switchLifeSubtab('skill',this)">⚡ 스킬 정보</button>
-  `;
-  // 언더라인 색상 주입
+  // 직업별 서브탭 정의
+  const TAB_MAP = {
+    mining:  [
+      { key:'recipe', label:'🛠 제작 & 조합법' },
+      { key:'skill',  label:'⚡ 스킬 정보' },
+      { key:'smelt',  label:'🔩 제련' },
+    ],
+    fishing: [
+      { key:'recipe', label:'🛠 제작 & 조합법' },
+      { key:'skill',  label:'⚡ 스킬 정보' },
+      { key:'calc',   label:'📊 효율 계산기' },
+      { key:'sim',    label:'🎮 낚시 시뮬레이터' },
+      { key:'price',  label:'💰 물고기 시세' },
+    ],
+    farming: [
+      { key:'recipe', label:'🛠 제작 & 조합법' },
+      { key:'skill',  label:'⚡ 스킬 정보' },
+      { key:'price',  label:'💰 작물 시세' },
+    ],
+    cooking: [
+      { key:'skill',  label:'⚡ 스킬 정보' },
+      { key:'calc',   label:'📊 효율 계산기' },
+      { key:'price',  label:'💰 요리 시세' },
+    ],
+  };
+
+  const tabs = TAB_MAP[_lifeJob] || TAB_MAP.mining;
+  // 현재 서브탭이 없으면 첫 번째로
+  if (!tabs.find(t => t.key === _lifeSubtab)) _lifeSubtab = tabs[0].key;
+
+  wrap.innerHTML = tabs.map(t =>
+    `<button class="ls-tab ${t.key === _lifeSubtab ? 'ls-on' : ''}"
+      onclick="switchLifeSubtab('${t.key}',this)">${t.label}</button>`
+  ).join('');
+
   wrap.style.setProperty('--ls-color', c);
 }
 
@@ -61,16 +90,36 @@ function _renderLifeSubtabs() {
 function _renderLifeContent() {
   const root = document.getElementById('life-content');
   if (!root) return;
-  if (_lifeSubtab === 'recipe') {
-    root.innerHTML = _buildRecipePanel(_lifeJob);
-    // DOM 삽입 후 즉시 그리드 렌더
-    _renderRecipeGrid(_lifeJob);
-  } else {
-    root.innerHTML = _buildSkillPanel(_lifeJob);
+
+  switch (_lifeSubtab) {
+    case 'recipe':
+      root.innerHTML = _buildRecipePanel(_lifeJob);
+      _renderRecipeGrid(_lifeJob);
+      const si = document.getElementById('life-recipe-search');
+      if (si) si.addEventListener('input', () => _renderRecipeGrid(_lifeJob));
+      break;
+    case 'skill':
+      root.innerHTML = _buildSkillPanel(_lifeJob);
+      break;
+    case 'smelt':
+      root.innerHTML = _buildSmeltPanel();
+      break;
+    case 'calc':
+      if (_lifeJob === 'fishing') root.innerHTML = _buildFishCalcPanel();
+      else if (_lifeJob === 'cooking') root.innerHTML = _buildCookCalcPanel();
+      else root.innerHTML = '<div class="lc-empty">준비 중입니다.</div>';
+      break;
+    case 'sim':
+      root.innerHTML = _buildFishSimPanel();
+      _initFishSim();
+      break;
+    case 'price':
+      root.innerHTML = _buildPricePanel(_lifeJob);
+      _renderLifePriceData(_lifeJob);
+      break;
+    default:
+      root.innerHTML = '<div class="lc-empty">준비 중입니다.</div>';
   }
-  // 검색 이벤트 재등록
-  const si = document.getElementById('life-recipe-search');
-  if (si) si.addEventListener('input', () => _renderRecipeGrid(_lifeJob));
 }
 
 /* ══════════════════════════════════
@@ -413,4 +462,529 @@ function switchLifecat(cat) {
   _lifeSubtab = 'recipe';
   const btn = document.querySelector(`.lj-btn[data-job="${job}"]`);
   switchLifeJob(job, btn);
+}
+
+/* ══════════════════════════════════════════════════
+   채광 - 제련 패널
+══════════════════════════════════════════════════ */
+function _buildSmeltPanel() {
+  const SMELT_DATA = [
+    { ore:'일반 미스릴 원석',     result:'미스릴 주괴',     qty:3, fuel:4, time:'30초', grade:'n' },
+    { ore:'일반 아르젠타이트 원석', result:'아르젠타이트 주괴', qty:3, fuel:4, time:'30초', grade:'a' },
+    { ore:'일반 벨리움 원석',     result:'벨리움 주괴',     qty:3, fuel:4, time:'30초', grade:'r' },
+  ];
+  const GRADE_COLOR = { n:'var(--r-n)', a:'var(--r-a)', r:'var(--r-r)', h:'var(--r-h)' };
+
+  return `
+  <div class="smelt-wrap">
+    <div class="smelt-info">
+      <span class="smelt-fac">🔥 허름한 화로</span>
+      <span style="font-size:11px;color:var(--muted);">연료: 마그마 블록 ×N</span>
+    </div>
+    <div class="lc-grid">
+      ${SMELT_DATA.map(d => `
+      <div class="lc-card">
+        <div class="lc-card-hd">
+          <div class="lc-card-img">🪨</div>
+          <div class="lc-card-meta">
+            <div class="lc-card-type">
+              <span class="lc-grade ${d.grade === 'n' ? 'lc-grade-n' : d.grade === 'a' ? 'lc-grade-a' : 'lc-grade-r'}">${{n:'일반',a:'고급',r:'희귀'}[d.grade]}</span>
+              <span class="lc-card-time">⏱ ${d.time}</span>
+            </div>
+            <div class="lc-card-name">${d.result}</div>
+          </div>
+        </div>
+        <div class="lc-mats-hd">
+          <span class="lc-mats-label">필요 재료</span>
+          <span class="lc-facility lc-fac-brazier">🔥 허름한 화로</span>
+        </div>
+        <div class="lc-mats-list">
+          <span class="lc-mat-tag">${d.ore} <span class="lc-mat-qty">×${d.qty}</span></span>
+          <span class="lc-mat-tag">마그마 블록 <span class="lc-mat-qty">×${d.fuel}</span></span>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   낚시 - 효율 계산기
+══════════════════════════════════════════════════ */
+function _buildFishCalcPanel() {
+  return `
+  <div class="life-calc-wrap">
+    <div class="life-calc-card">
+      <div class="life-calc-hd">📊 낚시 효율 계산기</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7;">
+        낚시 레벨 및 스킬 보유 여부를 입력하면 시간당 예상 수익과 효율을 계산해드려요.
+      </p>
+      <div class="life-calc-fields">
+        <div class="life-calc-field">
+          <label>🎣 낚시 레벨</label>
+          <input type="number" id="fc-level" value="20" min="1" max="30" oninput="calcFishEfficiency()">
+        </div>
+        <div class="life-calc-field">
+          <label>💧 마나 최대치</label>
+          <input type="number" id="fc-mana" value="500" min="100" max="2000" oninput="calcFishEfficiency()">
+        </div>
+        <div class="life-calc-field">
+          <label>⏱ 낚시 딜레이 감소 (%)</label>
+          <input type="number" id="fc-delay" value="0" min="0" max="50" oninput="calcFishEfficiency()">
+        </div>
+        <div class="life-calc-field">
+          <label>🪝 미끼 등급</label>
+          <select id="fc-bait" onchange="calcFishEfficiency()">
+            <option value="0">없음</option>
+            <option value="1">지렁이 미끼 (일반)</option>
+            <option value="2">어분 미끼 (고급)</option>
+            <option value="3">루어 미끼 (희귀)</option>
+          </select>
+        </div>
+      </div>
+      <div id="fish-calc-result" class="life-calc-result" style="display:none;"></div>
+    </div>
+  </div>`;
+}
+
+function calcFishEfficiency() {
+  const level = parseInt(document.getElementById('fc-level')?.value) || 20;
+  const mana  = parseInt(document.getElementById('fc-mana')?.value)  || 500;
+  const delay = parseInt(document.getElementById('fc-delay')?.value) || 0;
+  const bait  = parseInt(document.getElementById('fc-bait')?.value)  || 0;
+
+  // 기본 낚시 사이클: 약 30초 (딜레이 감소 적용)
+  const baseCycle = 30;
+  const reducedCycle = baseCycle * (1 - delay / 100);
+  const fishPerHour = Math.floor(3600 / reducedCycle);
+
+  // 등급 확률 (레벨 + 미끼 기반 간략 계산)
+  const rarityBonus = bait * 5 + Math.floor(level / 5);
+  const normalPct  = Math.max(20, 70 - rarityBonus);
+  const goodPct    = Math.min(40, 20 + rarityBonus * 0.5);
+  const rarePct    = Math.min(30, 5  + rarityBonus * 0.3);
+  const heroPct    = Math.min(10, 1  + rarityBonus * 0.1);
+
+  // 마나 소모 (스킬 사용 기준)
+  const manaPerSkill = 30;
+  const skillUsable  = Math.floor(mana / manaPerSkill);
+
+  const result = document.getElementById('fish-calc-result');
+  if (!result) return;
+  result.style.display = '';
+  result.innerHTML = `
+    <div class="calc-result-grid">
+      <div class="calc-result-item">
+        <div class="calc-result-val">${fishPerHour.toLocaleString()}</div>
+        <div class="calc-result-lbl">시간당 낚시 횟수</div>
+      </div>
+      <div class="calc-result-item">
+        <div class="calc-result-val">${reducedCycle.toFixed(1)}초</div>
+        <div class="calc-result-lbl">사이클 시간</div>
+      </div>
+      <div class="calc-result-item">
+        <div class="calc-result-val">${skillUsable}회</div>
+        <div class="calc-result-lbl">스킬 사용 가능</div>
+      </div>
+    </div>
+    <div class="calc-grade-bar">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:700;">예상 등급 분포</div>
+      <div class="grade-bar-row"><span class="grade-bar-label" style="color:var(--r-n)">일반</span><div class="grade-bar-track"><div class="grade-bar-fill" style="width:${normalPct}%;background:var(--r-n);"></div></div><span class="grade-bar-pct">${normalPct}%</span></div>
+      <div class="grade-bar-row"><span class="grade-bar-label" style="color:var(--r-a)">고급</span><div class="grade-bar-track"><div class="grade-bar-fill" style="width:${goodPct}%;background:var(--r-a);"></div></div><span class="grade-bar-pct">${goodPct.toFixed(0)}%</span></div>
+      <div class="grade-bar-row"><span class="grade-bar-label" style="color:var(--r-r)">희귀</span><div class="grade-bar-track"><div class="grade-bar-fill" style="width:${rarePct}%;background:var(--r-r);"></div></div><span class="grade-bar-pct">${rarePct.toFixed(0)}%</span></div>
+      <div class="grade-bar-row"><span class="grade-bar-label" style="color:var(--r-h)">영웅</span><div class="grade-bar-track"><div class="grade-bar-fill" style="width:${heroPct}%;background:var(--r-h);"></div></div><span class="grade-bar-pct">${heroPct.toFixed(1)}%</span></div>
+    </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   낚시 - 시뮬레이터
+══════════════════════════════════════════════════ */
+function _buildFishSimPanel() {
+  return `
+  <div class="life-calc-wrap">
+    <div class="life-calc-card">
+      <div class="life-calc-hd">🎮 낚시 시뮬레이터</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.7;">
+        루나월드 낚시 시스템을 시뮬레이션합니다. 미끼와 스킬을 설정하고 낚시를 시작하세요.
+      </p>
+      <div class="life-calc-fields" style="margin-bottom:16px;">
+        <div class="life-calc-field">
+          <label>🪝 미끼</label>
+          <select id="sim-bait">
+            <option value="normal">지렁이 미끼</option>
+            <option value="good">어분 미끼</option>
+            <option value="rare">루어 미끼</option>
+          </select>
+        </div>
+        <div class="life-calc-field">
+          <label>🎣 낚시 레벨</label>
+          <input type="number" id="sim-level" value="20" min="1" max="30">
+        </div>
+      </div>
+
+      <!-- 낚시 화면 -->
+      <div class="fish-sim-screen" id="fish-sim-screen">
+        <div class="fish-sim-water">
+          <div class="fish-sim-float" id="sim-float">🪝</div>
+          <div class="fish-sim-nibble-bar" id="sim-nibble-bar" style="display:none;">
+            <div class="fish-sim-nibble-fill" id="sim-nibble-fill"></div>
+          </div>
+        </div>
+        <div id="sim-status" class="fish-sim-status">준비됨</div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:16px;">
+          <button class="mb-btn mb-btn-add" id="sim-cast-btn" onclick="simCast()">🎣 던지기</button>
+          <button class="mb-btn" onclick="simReset()">리셋</button>
+        </div>
+      </div>
+
+      <!-- 결과 기록 -->
+      <div style="margin-top:16px;">
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:8px;">🏆 낚시 기록</div>
+        <div id="sim-log" class="sim-log-list"></div>
+        <div id="sim-stats" class="sim-stats"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+let _simState = 'idle'; // idle | casting | biting | reeling
+let _simTimer = null;
+let _simLog   = [];
+let _simCounts = { n:0, a:0, r:0, h:0, total:0 };
+
+function _initFishSim() {
+  _simState = 'idle';
+  _simLog   = [];
+  _simCounts = { n:0, a:0, r:0, h:0, total:0 };
+  _simRenderLog();
+}
+
+function simCast() {
+  if (_simState !== 'idle') return;
+  _simState = 'casting';
+  const status = document.getElementById('sim-status');
+  const floatEl = document.getElementById('sim-float');
+  if (status) status.textContent = '찌를 던졌습니다...';
+  if (floatEl) { floatEl.style.animation = 'simSplash .4s ease'; setTimeout(() => { if(floatEl) floatEl.style.animation = ''; }, 400); }
+
+  const level  = parseInt(document.getElementById('sim-level')?.value) || 20;
+  const bait   = document.getElementById('sim-bait')?.value || 'normal';
+  const waitMs = Math.max(3000, 15000 - level * 300 - (bait === 'rare' ? 3000 : bait === 'good' ? 1500 : 0));
+  const actualWait = waitMs * (0.7 + Math.random() * 0.6);
+
+  clearTimeout(_simTimer);
+  _simTimer = setTimeout(() => _simNibble(level, bait), actualWait);
+}
+
+function _simNibble(level, bait) {
+  if (_simState !== 'casting') return;
+  _simState = 'biting';
+  const status  = document.getElementById('sim-status');
+  const nibBar  = document.getElementById('sim-nibble-bar');
+  const nibFill = document.getElementById('sim-nibble-fill');
+  const floatEl = document.getElementById('sim-float');
+  if (status)  status.textContent = '⚡ 입질! 빠르게 클릭!';
+  if (floatEl) floatEl.textContent = '💦';
+  if (nibBar)  nibBar.style.display = '';
+
+  // 반응 시간 바 애니메이션
+  const reelTime = Math.max(1500, 3000 - level * 60);
+  if (nibFill) {
+    nibFill.style.transition = `width ${reelTime}ms linear`;
+    nibFill.style.width = '100%';
+  }
+
+  clearTimeout(_simTimer);
+  _simTimer = setTimeout(() => {
+    // 시간 초과 — 놓침
+    _simMiss();
+  }, reelTime);
+
+  const btn = document.getElementById('sim-cast-btn');
+  if (btn) { btn.textContent = '🎣 당기기!'; btn.onclick = () => simReel(level, bait); }
+}
+
+function simReel(level, bait) {
+  if (_simState !== 'biting') return;
+  clearTimeout(_simTimer);
+  _simState = 'idle';
+  const nibBar = document.getElementById('sim-nibble-bar');
+  if (nibBar) nibBar.style.display = 'none';
+
+  // 등급 결정
+  const bonus   = (bait === 'rare' ? 15 : bait === 'good' ? 8 : 0) + Math.floor(level / 3);
+  const roll    = Math.random() * 100;
+  let grade = 'n';
+  if      (roll < 2  + bonus * 0.1) grade = 'h';
+  else if (roll < 10 + bonus * 0.3) grade = 'r';
+  else if (roll < 35 + bonus * 0.5) grade = 'a';
+
+  const FISH_NAMES = {
+    n: ['붕어', '잉어', '피라냐', '틸라피아', '메기'],
+    a: ['은연어', '참돔', '농어', '넙치', '옥돔'],
+    r: ['황금잉어', '블루마린', '금눈돔', '자주복'],
+    h: ['전설의 대왕오징어', '심해 아귀', '황제연어'],
+  };
+  const names = FISH_NAMES[grade];
+  const name = names[Math.floor(Math.random() * names.length)];
+  const GRADE_LABEL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
+  const GRADE_COLOR = { n:'var(--r-n)', a:'var(--r-a)', r:'var(--r-r)', h:'var(--r-h)' };
+
+  _simCounts[grade]++;
+  _simCounts.total++;
+  _simLog.unshift({ grade, name, time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit',second:'2-digit'}) });
+  if (_simLog.length > 20) _simLog.pop();
+
+  const status  = document.getElementById('sim-status');
+  const floatEl = document.getElementById('sim-float');
+  if (status)  { status.innerHTML = `<span style="color:${GRADE_COLOR[grade]};font-weight:900;">[${GRADE_LABEL[grade]}] ${name}</span> 획득!`; }
+  if (floatEl) floatEl.textContent = '🐟';
+
+  const btn = document.getElementById('sim-cast-btn');
+  if (btn) { btn.textContent = '🎣 던지기'; btn.onclick = simCast; }
+
+  setTimeout(() => { if(floatEl) floatEl.textContent = '🪝'; }, 1000);
+  _simRenderLog();
+}
+
+function _simMiss() {
+  _simState = 'idle';
+  const status  = document.getElementById('sim-status');
+  const nibBar  = document.getElementById('sim-nibble-bar');
+  const nibFill = document.getElementById('sim-nibble-fill');
+  const floatEl = document.getElementById('sim-float');
+  if (status)  status.textContent = '😔 놓쳤어요... 다시 던지세요.';
+  if (nibBar)  nibBar.style.display = 'none';
+  if (nibFill) { nibFill.style.transition = 'none'; nibFill.style.width = '0'; }
+  if (floatEl) floatEl.textContent = '🪝';
+  const btn = document.getElementById('sim-cast-btn');
+  if (btn) { btn.textContent = '🎣 던지기'; btn.onclick = simCast; }
+}
+
+function simReset() {
+  clearTimeout(_simTimer);
+  _simState = 'idle';
+  _simLog = [];
+  _simCounts = { n:0, a:0, r:0, h:0, total:0 };
+  const els = ['sim-status','sim-float','sim-nibble-bar','sim-log','sim-stats'];
+  const defaults = ['준비됨','🪝','','',''];
+  els.forEach((id, i) => { const el = document.getElementById(id); if(el) { if(id==='sim-nibble-bar') el.style.display='none'; else el.innerHTML = defaults[i] || ''; if(id==='sim-status') el.textContent = '준비됨'; if(id==='sim-float') el.textContent = '🪝'; }});
+  const btn = document.getElementById('sim-cast-btn');
+  if (btn) { btn.textContent = '🎣 던지기'; btn.onclick = simCast; }
+}
+
+function _simRenderLog() {
+  const logEl   = document.getElementById('sim-log');
+  const statsEl = document.getElementById('sim-stats');
+  if (!logEl) return;
+
+  const GRADE_COLOR = { n:'var(--r-n)', a:'var(--r-a)', r:'var(--r-r)', h:'var(--r-h)' };
+  const GRADE_LABEL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
+
+  logEl.innerHTML = _simLog.slice(0, 10).map(l => `
+    <div class="sim-log-row">
+      <span class="sim-log-time">${l.time}</span>
+      <span class="sim-log-grade" style="color:${GRADE_COLOR[l.grade]};">[${GRADE_LABEL[l.grade]}]</span>
+      <span class="sim-log-name">${l.name}</span>
+    </div>`).join('') || '<div style="text-align:center;padding:16px;color:var(--muted);font-size:12px;">아직 낚은 물고기가 없어요</div>';
+
+  if (statsEl && _simCounts.total > 0) {
+    statsEl.innerHTML = `
+      <div class="sim-stats-row">
+        <span>총 ${_simCounts.total}마리</span>
+        <span style="color:var(--r-n)">일반 ${_simCounts.n}</span>
+        <span style="color:var(--r-a)">고급 ${_simCounts.a}</span>
+        <span style="color:var(--r-r)">희귀 ${_simCounts.r}</span>
+        <span style="color:var(--r-h)">영웅 ${_simCounts.h}</span>
+      </div>`;
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   요리 - 효율 계산기
+══════════════════════════════════════════════════ */
+function _buildCookCalcPanel() {
+  // 요리 원가 DB (기본)
+  const COOK_DB = [
+    { name:'쌈밥',         grade:'n', base:51,  sell:51  },
+    { name:'가스파초',      grade:'n', base:40,  sell:40  },
+    { name:'무조림',        grade:'n', base:42,  sell:42  },
+    { name:'옥수수 전',     grade:'a', base:44,  sell:44  },
+    { name:'데리야끼',      grade:'a', base:55,  sell:55  },
+    { name:'세비체',        grade:'r', base:58,  sell:58  },
+    { name:'부야베스',      grade:'r', base:68,  sell:68  },
+    { name:'에스카베체',    grade:'r', base:65,  sell:65  },
+    { name:'양장피',        grade:'h', base:72,  sell:72  },
+    { name:'파에야',        grade:'h', base:92,  sell:92  },
+    { name:'해산물 그릴 플래터', grade:'h', base:95, sell:95 },
+  ];
+
+  const rows = COOK_DB.map(c => {
+    const min = Math.floor(c.base * 0.80);
+    const max = Math.ceil(c.base * 1.10);
+    const GRADE_CLS = { n:'lc-grade-n', a:'lc-grade-a', r:'lc-grade-r', h:'lc-grade-h' };
+    const GRADE_LBL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
+    return `<tr>
+      <td><span class="lc-grade ${GRADE_CLS[c.grade]}">${GRADE_LBL[c.grade]}</span> ${c.name}</td>
+      <td style="font-family:'JetBrains Mono',monospace;text-align:right;">${c.base}셀</td>
+      <td style="font-family:'JetBrains Mono',monospace;text-align:right;color:var(--r-r);">${min}셀</td>
+      <td style="font-family:'JetBrains Mono',monospace;text-align:right;color:var(--r-a);">${max}셀</td>
+      <td style="text-align:right;font-size:10px;color:var(--muted);">${Math.round((max-c.base)/c.base*100)}%↑</td>
+    </tr>`;
+  }).join('');
+
+  return `
+  <div class="life-calc-wrap">
+    <div class="life-calc-card">
+      <div class="life-calc-hd">📊 요리 수익 계산표</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7;">
+        요리사 상점 기준 · 변동폭: 최대 <span style="color:var(--warn);">-20%</span> ~ <span style="color:var(--counter);">+10%</span>
+      </p>
+      <div style="overflow-x:auto;">
+        <table class="cook-calc-table">
+          <thead>
+            <tr><th>요리</th><th>원가</th><th>최저가</th><th>최고가</th><th>상승폭</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════════════
+   변동 가격 패널 (낚시/농사/요리 공통)
+══════════════════════════════════════════════════ */
+function _buildPricePanel(job) {
+  const LABELS = { fishing:'물고기', farming:'농작물', cooking:'요리' };
+  const label = LABELS[job] || job;
+  const FIREBASE_KEY = { fishing:'stella_price_fish', farming:'stella_price_crop', cooking:'stella_price_food' };
+  const fbKey = FIREBASE_KEY[job];
+
+  return `
+  <div class="life-price-wrap">
+    <div class="life-price-hd">
+      <span class="life-price-title">💰 ${label} 변동 시세</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span id="life-price-saved-at" style="font-size:11px;color:var(--muted);"></span>
+        <button class="mb-btn" onclick="openLifePriceInput('${job}')">+ 시세 등록</button>
+      </div>
+    </div>
+
+    <!-- 시세 파싱 입력창 (토글) -->
+    <div id="life-price-input-area" style="display:none;margin-bottom:16px;">
+      <div class="m-card" style="padding:16px;">
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+          디스코드에서 변동 가격 메시지를 복사해 붙여넣으세요.<br>
+          <code class="inline-code">📊 ${label} 상점</code> 형태의 메시지를 지원합니다.
+        </p>
+        <textarea id="life-price-paste" class="char-paste-area" placeholder="디스코드 변동 가격 메시지를 붙여넣으세요..."></textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button class="mb-btn mb-btn-add" onclick="parseAndSaveLifePrice('${job}')">분석 & 저장</button>
+          <button class="mb-btn" onclick="document.getElementById('life-price-input-area').style.display='none'">취소</button>
+        </div>
+        <div id="life-price-parse-msg" style="font-size:12px;margin-top:8px;min-height:16px;"></div>
+      </div>
+    </div>
+
+    <!-- 시세 카드 그리드 -->
+    <div class="lc-grid" id="life-price-grid">
+      <div class="lc-empty">시세 데이터가 없어요.<br>+ 시세 등록 버튼으로 등록해주세요.</div>
+    </div>
+  </div>`;
+}
+
+function openLifePriceInput(job) {
+  const area = document.getElementById('life-price-input-area');
+  if (area) area.style.display = area.style.display === 'none' ? '' : 'none';
+}
+
+function parseAndSaveLifePrice(job) {
+  const text = document.getElementById('life-price-paste')?.value || '';
+  const msg  = document.getElementById('life-price-parse-msg');
+  if (!text.trim()) { if(msg) msg.style.color='var(--warn)', msg.textContent='메시지를 붙여넣어 주세요.'; return; }
+
+  // 파싱
+  const items = [];
+  const lines = text.split('\n');
+  let cur = null;
+  for (const raw of lines) {
+    const line = raw.replace(/`/g,'').trim();
+    if (!line) continue;
+    const hm = line.match(/^-\s*\[(.+?)\]\s*(.+)$/);
+    if (hm) {
+      if (cur) items.push(cur);
+      cur = { grade: hm[1].trim(), name: hm[2].trim(), base: null, current: null, diff: null };
+      continue;
+    }
+    if (!cur) continue;
+    const baseM    = line.match(/원가\s*[:\uff1a]\s*([\d,]+)/);
+    const currM    = line.match(/현재\s*변동가\s*[:\uff1a]\s*([\d,]+)/);
+    const diffM    = line.match(/원가\s*대비\s*변동폭\s*[:\uff1a]\s*([+-]?[\d,]+)/);
+    if (baseM) cur.base    = parseInt(baseM[1].replace(/,/g,''));
+    if (currM) cur.current = parseInt(currM[1].replace(/,/g,''));
+    if (diffM) cur.diff    = parseInt(diffM[1].replace(/,/g,''));
+  }
+  if (cur) items.push(cur);
+
+  if (!items.length) { if(msg) msg.style.color='var(--warn)', msg.textContent='파싱할 수 없는 형식입니다.'; return; }
+
+  const FIREBASE_KEY = { fishing:'stella_price_fish', farming:'stella_price_crop', cooking:'stella_price_food' };
+  const fbKey = FIREBASE_KEY[job];
+  const payload = { items, savedAt: new Date().toLocaleString('ko-KR', { timeZone:'Asia/Seoul' }) };
+
+  if (window._fbSet) {
+    window._fbSet(fbKey, payload).then(() => {
+      if (msg) { msg.style.color='var(--counter)'; msg.textContent=`✅ ${items.length}개 항목 저장 완료!`; }
+      document.getElementById('life-price-input-area').style.display = 'none';
+    });
+  } else {
+    if (msg) { msg.style.color='var(--warn)'; msg.textContent='Firebase 연결 실패. 잠시 후 다시 시도해주세요.'; }
+  }
+}
+
+function _renderLifePriceData(job) {
+  const FIREBASE_KEY = { fishing:'stella_price_fish', farming:'stella_price_crop', cooking:'stella_price_food' };
+  const fbKey = FIREBASE_KEY[job];
+  if (!fbKey || !window._fbOn) return;
+
+  window._fbOn(fbKey, data => {
+    const grid    = document.getElementById('life-price-grid');
+    const savedAt = document.getElementById('life-price-saved-at');
+    if (!grid) return;
+    if (savedAt && data?.savedAt) savedAt.textContent = data.savedAt + ' 기준';
+
+    const items = data?.items || [];
+    if (!items.length) { grid.innerHTML = '<div class="lc-empty">시세 데이터가 없어요.<br>+ 시세 등록 버튼으로 등록해주세요.</div>'; return; }
+
+    const GRADE_CLS = { '커먼':'lc-grade-n','일반':'lc-grade-n','고급':'lc-grade-a','언커먼':'lc-grade-a','희귀':'lc-grade-r','레어':'lc-grade-r','영웅':'lc-grade-h','에픽':'lc-grade-h' };
+    grid.innerHTML = items.map(it => {
+      const diff  = it.diff ?? (it.current != null && it.base != null ? it.current - it.base : null);
+      const pct   = (diff != null && it.base) ? (diff / it.base * 100) : null;
+      const sign  = diff != null ? (diff >= 0 ? '+' : '') : '';
+      const color = diff == null ? 'var(--muted)' : diff > 0 ? 'var(--counter)' : diff < 0 ? 'var(--warn)' : 'var(--sub)';
+      const gcls  = GRADE_CLS[it.grade] || 'lc-grade-n';
+      return `
+      <div class="lc-card">
+        <div class="lc-card-hd">
+          <div class="lc-card-img">💰</div>
+          <div class="lc-card-meta">
+            <div class="lc-card-type"><span class="lc-grade ${gcls}">${it.grade}</span></div>
+            <div class="lc-card-name">${it.name}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:10px;">
+          <div>
+            <div style="font-size:10px;color:var(--muted);margin-bottom:2px;">현재가</div>
+            <div style="font-size:20px;font-weight:900;font-family:'JetBrains Mono',monospace;color:var(--text);">${it.current ?? it.base ?? '?'}셀</div>
+          </div>
+          ${diff != null ? `
+          <div style="text-align:right;">
+            <div style="font-size:16px;font-weight:900;color:${color};">${sign}${diff}셀</div>
+            ${pct != null ? `<div style="font-size:11px;color:${color};font-weight:700;">${sign}${pct.toFixed(1)}%</div>` : ''}
+          </div>` : ''}
+        </div>
+        ${it.base != null ? `<div style="font-size:10px;color:var(--muted);margin-top:6px;">원가: ${it.base}셀</div>` : ''}
+      </div>`;
+    }).join('');
+  });
 }

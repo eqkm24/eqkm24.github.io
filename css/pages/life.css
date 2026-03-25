@@ -189,3 +189,163 @@
   background: var(--s2); border: 1px solid var(--b1);
   padding: 5px 16px; border-radius: 20px;
 }
+
+/* ══════════════════════════════════════════
+   효율 계산기 공통
+══════════════════════════════════════════ */
+.life-calc-wrap { max-width:720px; }
+.life-calc-card {
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:var(--rad);padding:22px;
+  box-shadow:var(--shadow-sm);
+}
+.life-calc-hd {
+  font-size:16px;font-weight:900;color:var(--text);
+  margin-bottom:14px;letter-spacing:-.3px;
+}
+.life-calc-fields {
+  display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;
+}
+.life-calc-field label {
+  display:block;font-size:11px;font-weight:700;
+  color:var(--muted);margin-bottom:5px;
+}
+.life-calc-field input,
+.life-calc-field select {
+  width:100%;padding:9px 12px;
+  border:1px solid var(--b2);border-radius:8px;
+  background:var(--s2);color:var(--text);
+  font-size:13px;font-family:'Noto Sans KR',sans-serif;
+  outline:none;transition:border-color .15s;box-sizing:border-box;
+}
+.life-calc-field input:focus,
+.life-calc-field select:focus { border-color:var(--accent); }
+
+.life-calc-result {
+  margin-top:16px;background:var(--s2);
+  border:1px solid var(--b1);border-radius:var(--rad-s);padding:16px;
+}
+.calc-result-grid {
+  display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;
+}
+.calc-result-item {
+  text-align:center;background:var(--s1);border:1px solid var(--b1);
+  border-radius:var(--rad-s);padding:12px 8px;
+}
+.calc-result-val {
+  font-size:22px;font-weight:900;color:var(--text);
+  font-family:'JetBrains Mono',monospace;letter-spacing:-1px;
+}
+.calc-result-lbl { font-size:10px;color:var(--muted);margin-top:3px;font-weight:700; }
+
+/* 등급 비율 바 */
+.calc-grade-bar { margin-top:12px; }
+.grade-bar-row {
+  display:flex;align-items:center;gap:8px;margin-bottom:6px;
+}
+.grade-bar-label { font-size:11px;font-weight:700;width:28px;flex-shrink:0;text-align:right; }
+.grade-bar-track {
+  flex:1;height:8px;background:var(--s3);border-radius:20px;overflow:hidden;
+}
+.grade-bar-fill { height:100%;border-radius:20px;transition:width .5s ease; }
+.grade-bar-pct { font-size:11px;color:var(--muted);width:36px;flex-shrink:0;font-family:'JetBrains Mono',monospace; }
+
+/* ══════════════════════════════════════════
+   낚시 시뮬레이터
+══════════════════════════════════════════ */
+.fish-sim-screen {
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad-s);padding:20px;text-align:center;
+  margin:16px 0;
+}
+.fish-sim-water {
+  position:relative;height:100px;display:flex;
+  align-items:center;justify-content:center;
+  border-radius:8px;background:linear-gradient(180deg,var(--s3) 0%,#0a1a2e 100%);
+  margin-bottom:12px;overflow:hidden;
+}
+.fish-sim-float {
+  font-size:28px;transition:transform .2s;cursor:pointer;
+  animation:floatBob 2s ease-in-out infinite;
+}
+@keyframes floatBob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes simSplash { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
+.fish-sim-nibble-bar {
+  position:absolute;bottom:8px;left:12px;right:12px;
+  height:6px;background:var(--s4);border-radius:3px;overflow:hidden;
+}
+.fish-sim-nibble-fill {
+  height:100%;width:0;border-radius:3px;
+  background:linear-gradient(90deg,#4ade80,#f87171);
+}
+.fish-sim-status {
+  font-size:13px;font-weight:700;color:var(--sub);min-height:20px;
+}
+
+/* 낚시 기록 */
+.sim-log-list {
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad-s);overflow:hidden;max-height:200px;overflow-y:auto;
+}
+.sim-log-row {
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-bottom:1px solid var(--b1);font-size:12px;
+}
+.sim-log-row:last-child { border-bottom:none; }
+.sim-log-time  { font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);flex-shrink:0; }
+.sim-log-grade { font-weight:800;flex-shrink:0; }
+.sim-log-name  { color:var(--text); }
+.sim-stats {
+  margin-top:8px;background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad-s);padding:8px 12px;
+}
+.sim-stats-row {
+  display:flex;align-items:center;gap:12px;font-size:12px;font-weight:700;flex-wrap:wrap;
+}
+
+/* ══════════════════════════════════════════
+   요리 수익 계산표
+══════════════════════════════════════════ */
+.cook-calc-table {
+  width:100%;border-collapse:collapse;font-size:12.5px;
+}
+.cook-calc-table th {
+  padding:8px 12px;text-align:right;font-size:11px;
+  font-weight:800;color:var(--muted);border-bottom:1px solid var(--b1);
+  white-space:nowrap;
+}
+.cook-calc-table th:first-child { text-align:left; }
+.cook-calc-table td {
+  padding:9px 12px;border-bottom:1px solid var(--b1);color:var(--text);
+}
+.cook-calc-table td:first-child { font-weight:700; }
+.cook-calc-table tr:last-child td { border-bottom:none; }
+.cook-calc-table tr:hover td { background:var(--s2); }
+
+/* ══════════════════════════════════════════
+   변동 가격 패널
+══════════════════════════════════════════ */
+.life-price-wrap { }
+.life-price-hd {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;flex-wrap:wrap;gap:8px;
+}
+.life-price-title { font-size:16px;font-weight:900;color:var(--text); }
+
+/* ══════════════════════════════════════════
+   제련 패널
+══════════════════════════════════════════ */
+.smelt-wrap { }
+.smelt-info {
+  display:flex;align-items:center;gap:12px;
+  background:var(--s2);border:1px solid var(--b1);
+  border-radius:var(--rad-s);padding:10px 14px;margin-bottom:16px;
+}
+.smelt-fac {
+  font-size:12px;font-weight:800;color:var(--brazier);
+}
+
+@media(max-width:640px) {
+  .life-calc-fields { grid-template-columns:1fr; }
+  .calc-result-grid { grid-template-columns:1fr 1fr; }
+}

@@ -91,6 +91,16 @@ function go(tab) {
   // nav pill active 상태
   document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('pill-on'));
   const PILL_MAP = { member:'village',zone:'village',tribute:'village',notice:'village', life:'life', recipe:'recipe' };
+  // 마을 pill active 처리
+  const villagePages = ['member','zone','tribute','notice'];
+  const villagePill = document.getElementById('pill-village');
+  if (villagePill) {
+    if (villagePages.includes(tab)) {
+      villagePill.classList.add('pill-on');
+    } else {
+      villagePill.classList.remove('pill-on');
+    }
+  }
   const pillKey = PILL_MAP[tab];
   if (pillKey === 'recipe') document.getElementById('pill-recipe')?.classList.add('pill-on');
   else if (pillKey === 'life') document.getElementById('pill-life')?.classList.add('pill-on');

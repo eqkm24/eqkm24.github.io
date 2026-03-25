@@ -230,3 +230,24 @@
   color: #ffd070; background: #261800;
   border: 1px solid #ffd07040; padding: 2px 8px; border-radius: 20px;
 }
+
+/* ── 통합 검색용 시설 배지 (life.css에서 공유) ── */
+.lc-fac-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  border-radius: 20px; border: 1px solid; flex-shrink: 0;
+}
+
+.lc-search-input { margin-bottom: 0; }
+
+/* 시설 배지 (통합 검색 카드용) */
+.lc-fac-badge {
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid;flex-shrink:0;
+}
+.lc-fac-bench   { color:#88b8ff;background:#0e2030;border-color:#88b8ff40; }
+.lc-fac-brazier { color:#ffaa78;background:#281000;border-color:#ffaa7840; }
+.lc-fac-counter { color:#78d898;background:#0a2018;border-color:#78d89840; }
+[data-theme="light"] .lc-fac-bench   { color:#4070c8;background:#e8f2ff;border-color:#b8d0ff; }
+[data-theme="light"] .lc-fac-brazier { color:#c06030;background:#fff0e8;border-color:#f8b888; }
+[data-theme="light"] .lc-fac-counter { color:#2a9858;background:#eafaf0;border-color:#90e0b0; }

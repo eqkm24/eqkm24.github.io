@@ -321,3 +321,87 @@ function renderLifecat() {
     </div>`;
   }).join('');
 }
+
+/* ══ 통합 검색 (전 카테고리 동시) ══ */
+const CAT_LABEL = { mining:'채광', fishing:'낚시', farming:'농사', enhance:'강화재료', cooking:'요리' };
+
+function renderLifecatSearch() {
+  const q = (document.getElementById('lc-search')?.value || '').trim().toLowerCase();
+  const tabs = document.getElementById('lc-tabs-row');
+  const cnt  = document.getElementById('lc-search-count');
+  const grid = document.getElementById('lc-grid');
+  if (!grid) return;
+
+  if (!q) {
+    // 검색어 없으면 탭 표시 + 현재 카테고리 렌더
+    if (tabs) tabs.style.display = '';
+    if (cnt)  cnt.textContent = '';
+    renderLifecat();
+    return;
+  }
+
+  // 검색 중: 탭 숨김
+  if (tabs) tabs.style.display = 'none';
+
+  // 전 카테고리 검색
+  const allCats = ['mining','fishing','farming','enhance','cooking'];
+  const hits = [];
+  allCats.forEach(cat => {
+    const items = LC_DATA[cat] || [];
+    items.forEach(it => {
+      if (it.name.toLowerCase().includes(q) || it.mats.some(([m]) => m.toLowerCase().includes(q))) {
+        hits.push({ ...it, _cat: cat });
+      }
+    });
+  });
+
+  if (cnt) cnt.textContent = hits.length ? `${hits.length}개 결과 — 전체 카테고리 검색 중` : '';
+
+  if (!hits.length) {
+    grid.innerHTML = '<div class="lc-empty">검색 결과가 없어요.</div>';
+    return;
+  }
+
+  grid.innerHTML = hits.map(it => {
+    const gl  = GRADE_MAP[it.grade] || '';
+    const gc  = GRADE_CLASS[it.grade] || 'lc-grade-n';
+    const fac = FAC_LABEL[it.fac] || { label: it.fac, icon:'🏭' };
+    const facLabel  = typeof fac === 'string' ? fac : `${fac.icon||''} ${fac.label||fac}`.trim();
+    const facCls    = FAC_CLASS[it.fac] || '';
+    const hasProb   = it.prob && it.prob !== '100%';
+    const catBadge  = `<span style="font-size:9.5px;color:var(--muted);background:var(--s3);border:1px solid var(--b2);padding:1px 7px;border-radius:20px;">${CAT_LABEL[it._cat]||it._cat}</span>`;
+
+    const matsHtml = it.mats.map(([name, qty]) => {
+      // 검색어 하이라이트
+      const hl = name.toLowerCase().includes(q)
+        ? name.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'), '<mark style="background:rgba(160,144,240,.25);border-radius:2px;padding:0 1px;">$1</mark>')
+        : name;
+      return `<span class="lc-mat-tag">${hl} <span class="lc-mat-qty">×${qty}</span></span>`;
+    }).join('');
+
+    // 아이템명 하이라이트
+    const hlName = it.name.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),
+      '<mark style="background:rgba(160,144,240,.25);border-radius:2px;padding:0 1px;">$1</mark>');
+
+    return `
+    <div class="lc-card">
+      <div class="lc-card-hd">
+        <div class="lc-card-img">${it.emoji||'📦'}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px;flex-wrap:wrap;">
+            ${catBadge}
+            <span class="lc-fac-badge ${facCls}">${facLabel}</span>
+            <span class="lc-card-time">⏱ ${it.time}</span>
+          </div>
+          <div class="lc-card-name">${hlName}</div>
+        </div>
+      </div>
+      <div class="lc-mats-hd2">필요 재료</div>
+      <div class="lc-mats-list">${matsHtml}</div>
+      <div style="margin-top:8px;">
+        <span class="lc-grade ${gc}">${gl}</span>
+        ${hasProb ? `<span class="lc-prob-tag">${it.prob}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}

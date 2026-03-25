@@ -303,3 +303,8 @@
   .quick-grid { grid-template-columns:repeat(2,1fr); }
   .main-wrap { padding:0 14px 60px; }
 }
+
+/* main-wrap 모바일 패딩 */
+@media(max-width:640px) {
+  .main-wrap { padding: 0 14px 60px; }
+}

@@ -318,19 +318,23 @@
     <div class="ph-sub">숙련도별 제작 레시피 · 허름한 작업대 / 허름한 화로</div>
   </div>
 
-  <div class="lc-tabs">
+  <!-- 통합 검색 (입력 시 전 카테고리 동시 검색) -->
+  <div style="margin-bottom:16px;">
+    <div style="position:relative;">
+      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">🔍</span>
+      <input id="lc-search" class="lc-search-input"
+        placeholder="제작품 또는 재료 이름으로 검색... (전 카테고리 동시 검색)"
+        oninput="renderLifecatSearch()">
+    </div>
+    <div id="lc-search-count" style="font-size:11px;color:var(--muted);margin-top:6px;padding-left:4px;min-height:16px;"></div>
+  </div>
+
+  <!-- 카테고리 탭 (검색 중엔 숨김) -->
+  <div id="lc-tabs-row" class="lc-tabs">
     <button class="lc-tab lc-on" data-lc="mining"   onclick="switchLifecat('mining')">⛏ 채광</button>
     <button class="lc-tab"       data-lc="fishing"  onclick="switchLifecat('fishing')">🎣 낚시</button>
     <button class="lc-tab"       data-lc="farming"  onclick="switchLifecat('farming')">🌾 농사</button>
     <button class="lc-tab"       data-lc="enhance"  onclick="switchLifecat('enhance')">⚙ 강화재료</button>
-  </div>
-
-  <div style="margin-bottom:20px;">
-    <div style="position:relative;">
-      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">🔍</span>
-      <input id="lc-search" class="lc-search-input" placeholder="제작품 또는 재료 이름으로 검색..."
-        oninput="renderLifecat()">
-    </div>
   </div>
 
   <div class="lc-grid" id="lc-grid"></div>
@@ -499,6 +503,7 @@
 </div>
 </div>
 </div>
+<!-- /pages-root -->
 
 <!-- ═══ 통합 검색 오버레이 ═══ -->
 <div class="gs-overlay" id="gs-overlay" onclick="if(event.target.id==='gs-overlay')closeGlobalSearch()">
@@ -566,23 +571,7 @@ function showPlaygroundWip(btn) {
   pop._timer = setTimeout(() => pop.style.display = 'none', 2000);
 }
 
-/* nav pill active 상태 관리 */
-const _PILL_MAP = {
-  member:'village', zone:'village', tribute:'village', notice:'village',
-  life:'life', recipe:'recipe',
-};
-const _origGo2 = go;
-function go(tab) {
-  _origGo2(tab);
-  // 모든 pill active 해제
-  document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('pill-on'));
-  const key = _PILL_MAP[tab];
-  if (key === 'recipe') {
-    document.getElementById('pill-recipe')?.classList.add('pill-on');
-  } else if (key === 'life') {
-    document.getElementById('pill-life')?.classList.add('pill-on');
-  }
-}
+/* nav pill active 상태 관리는 app.js go()에서 처리 */
 </script>
 </body>
 </html>

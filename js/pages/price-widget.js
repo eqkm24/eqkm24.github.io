@@ -63,7 +63,7 @@ function _priceWidgetRow(item, isRise) {
     tries++;
     if (window.PT) {
       // PT가 처음 채워질 때 한 번 렌더, 이후는 price.js 쪽 구독에서 갱신됨
-      renderPriceWidget();
+      if (typeof renderPriceTop3 === 'function') renderPriceTop3();
       clearInterval(check);
     }
     if (tries > 60) clearInterval(check); // 6초 후 포기

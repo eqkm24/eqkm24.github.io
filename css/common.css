@@ -137,6 +137,24 @@ body {
   color:var(--sub);transition:all .15s;white-space:nowrap;
 }
 .nav-dd-btn:hover,.nav-dd-btn.dd-active{color:var(--text);background:var(--s2);border-color:var(--b1);}
+/* ── nav-pill (카테고리 버튼) ── */
+.nav-pill {
+  padding: 7px 18px; border-radius: 20px;
+  font-size: 12.5px; font-weight: 700;
+  font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
+  background: transparent; border: 1px solid transparent;
+  color: var(--sub); transition: all .15s; white-space: nowrap;
+}
+.nav-pill:hover { color: var(--text); background: var(--s2); border-color: var(--b1); }
+.nav-pill.dd-active,
+.nav-pill.pill-on { color: var(--text); background: var(--s2); border-color: var(--b2); }
+.nav-pill.t-recipe.pill-on { background: var(--accent-bg); color: var(--accent); border-color: #ccc4f8; }
+.nav-pill.t-life.pill-on   { background: #0a2018; color: #78d898; border-color: #184030; }
+[data-theme="light"] .nav-pill.t-life.pill-on { background: #eafaf0; color: #2a9858; border-color: #90e0b0; }
+
+/* nav-center (가운데 정렬 탭 컨테이너) */
+.nav-center { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: center; }
+
 .nav-dd-menu{
   display:none;position:absolute;top:calc(100% + 8px);left:0;
   background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);

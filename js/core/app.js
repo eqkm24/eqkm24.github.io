@@ -15,16 +15,6 @@ const FARM_DB = {
 };
 const ttip = document.getElementById('triad-tip');
 let ttHideTimer;
-  const triad = e.target.closest('[data-triad]');
-  const farm  = e.target.closest('[data-farm]');
-  const row   = triad || farm;
-  const triad = e.target.closest('[data-triad]');
-  const farm  = e.target.closest('[data-farm]');
-  const row   = triad || farm;
-  const existing = row.querySelector('.mobile-info');
-  const html = triad ? buildTriadTip(row.dataset.triad) : buildFarmTip(row.dataset.farm);
-  const lastTd = row.querySelector('td:last-child');
-  const infoRow = document.createElement('tr');
 const SKILL_DB = {
   /* ── 농사 (별의 보주) ── */
   '개간의서약':   { type:'패시브', desc:'경작지 및 화분통 갯수가 증가합니다. 최대 레벨 달성 시 화분통 768개까지 확장 가능합니다.' },

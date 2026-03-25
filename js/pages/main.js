@@ -175,6 +175,8 @@ function renderCharacterCard(info) {
     </div>`;
 
   try { localStorage.setItem('stella_char_info', JSON.stringify(info)); } catch(e){}
+  // 손재주 등 스탯을 전역 노출 (제련 계산기에서 참조)
+  window._charInfo = info;
 }
 
 function clearCharCard() {
@@ -210,40 +212,62 @@ function renderPriceTop3() {
   if (!root) return;
 
   if (!window.PT || !window.PT.food || !window.PT.food.data?.length) {
-    root.innerHTML = `<div class="top3-empty">시세 데이터가 없습니다.<br><span style="font-size:11px;color:var(--muted);">변동 시세 페이지에서 먼저 등록해주세요</span></div>`;
+    root.innerHTML = `<div class="top3-empty" style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">
+      시세 데이터가 없습니다.<br>
+      <span style="font-size:11px;">변동 시세 페이지에서 먼저 등록해주세요</span>
+    </div>`;
     return;
   }
 
   const items = window.PT.food.data;
-  // 원가 대비 현재가 비율 계산
   const withRatio = items.map(item => {
     const name  = item.name || item.n || '';
     const price = item.price || item.p || 0;
-    const base  = FOOD_BASE_PRICE[name] || price;
-    const ratio = base ? ((price - base) / base * 100) : 0;
-    return { name, price, base, ratio };
+    const base  = (typeof FOOD_BASE_PRICE !== 'undefined' && FOOD_BASE_PRICE[name]) || price;
+    const diff  = price - base;
+    const ratio = base ? (diff / base * 100) : 0;
+    return { name, price, base, diff, ratio };
   }).filter(i => i.name && i.price);
 
   withRatio.sort((a, b) => b.ratio - a.ratio);
   const top3 = withRatio.slice(0, 3);
 
   if (!top3.length) {
-    root.innerHTML = `<div class="top3-empty">데이터가 부족합니다.</div>`;
+    root.innerHTML = `<div class="top3-empty" style="padding:20px;text-align:center;color:var(--muted);">데이터가 부족합니다.</div>`;
     return;
   }
 
-  const RANK_ICON = ['🥇', '🥈', '🥉'];
-  root.innerHTML = top3.map((item, i) => {
-    const sign  = item.ratio >= 0 ? '+' : '';
-    const color = item.ratio > 0 ? '#4ade80' : item.ratio < 0 ? '#f87171' : 'var(--muted)';
+  const RANK = ['🥇','🥈','🥉'];
+  const RANK_COLOR = ['#ffd700','#c0c0c0','#cd7f32'];
+
+  root.innerHTML = `<div class="top3-cards">${top3.map((item, i) => {
+    const up   = item.ratio > 0;
+    const eq   = item.ratio === 0;
+    const sign = up ? '+' : '';
+    const rColor = up ? '#4ade80' : eq ? 'var(--muted)' : '#f87171';
+    const dColor = up ? '#4ade80' : eq ? 'var(--muted)' : '#f87171';
+    const arrow  = up ? '▲' : eq ? '─' : '▼';
+
+    // 음식 이미지 (FOOD_IMG 맵이 있으면 사용, 없으면 이모지)
+    const foodImgs = (typeof FOOD_IMGS !== 'undefined') ? FOOD_IMGS : {};
+    const imgKey = Object.keys(foodImgs).find(k => item.name.includes(k) || k.includes(item.name));
+    const imgHtml = imgKey
+      ? `<img src="${foodImgs[imgKey]}" alt="${item.name}" style="width:40px;height:40px;object-fit:contain;image-rendering:pixelated;">`
+      : `<span style="font-size:28px;">🍱</span>`;
+
     return `
-    <div class="top3-row" onclick="go('price')">
-      <span class="top3-rank">${RANK_ICON[i]}</span>
-      <span class="top3-name">${item.name}</span>
-      <span class="top3-price">${item.price.toLocaleString()}셀</span>
-      <span class="top3-ratio" style="color:${color};">${sign}${item.ratio.toFixed(1)}%</span>
+    <div class="top3-card" onclick="go('price')" style="border-top:3px solid ${RANK_COLOR[i]};">
+      <div class="top3-card-rank" style="color:${RANK_COLOR[i]};">${RANK[i]}</div>
+      <div class="top3-card-img">${imgHtml}</div>
+      <div class="top3-card-name">${item.name}</div>
+      <div class="top3-card-price">${item.price.toLocaleString()}<span style="font-size:10px;color:var(--muted);margin-left:2px;">셀</span></div>
+      <div class="top3-card-diff" style="color:${dColor};">
+        <span>${arrow}</span>
+        <span>${sign}${Math.abs(item.diff).toLocaleString()}셀</span>
+      </div>
+      <div class="top3-card-ratio" style="color:${rColor};">${sign}${item.ratio.toFixed(1)}%</div>
     </div>`;
-  }).join('');
+  }).join('')}</div>`;
 }
 
 /* ────────────────────────────────────────

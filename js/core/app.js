@@ -80,9 +80,9 @@ function go(tab) {
 
   // nav pill active 상태
   document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('pill-on'));
-  const PILL_MAP = { member:'village',zone:'village',tribute:'village',notice:'village', life:'life', recipe:'recipe' };
+  const PILL_MAP = { member:'village',zone:'village',tribute:'village', life:'life', recipe:'recipe' };
   // 마을 pill active 처리
-  const villagePages = ['member','zone','tribute','notice'];
+  const villagePages = ['member','zone','tribute'];
   const villagePill = document.getElementById('pill-village');
   if (villagePill) {
     if (villagePages.includes(tab)) {
@@ -94,7 +94,7 @@ function go(tab) {
   const pillKey = PILL_MAP[tab];
   if (pillKey === 'recipe') document.getElementById('pill-recipe')?.classList.add('pill-on');
   else if (pillKey === 'life') document.getElementById('pill-life')?.classList.add('pill-on');
-  if (tab === 'recipe') { const s=document.getElementById('lc-search');if(s)s.value=''; const t=document.getElementById('lc-tabs-row');if(t)t.style.display=''; renderLifecat(); }
+  if (tab === 'recipe') { const s=document.getElementById('lc-search');if(s)s.value=''; if(typeof switchRecipeCat==='function') switchRecipeCat(window._curRecipeCat||'bench'); else if(typeof renderLifecat==='function') renderLifecat(); }
   if (tab === 'skill') {
     // pg-skill 없음 → life 페이지 스킬 탭으로
     tab = 'life';
@@ -121,7 +121,7 @@ function go(tab) {
   }
   if (tab === 'zone' && !window._zoneInit) { window._zoneInit=true; rebuildZone(); }
   if (tab === 'tribute') renderTribute();
-  if (tab === 'notice') { renderNotices(); _updateNoticeAdminBtn && _updateNoticeAdminBtn(); }
+  // notice tab removed
   if (tab === 'price') {
     _applyPriceSecState();
     Object.keys(_priceSecOpen).forEach(cat=>{ if(_priceSecOpen[cat]) _buildPricePanel(cat); });

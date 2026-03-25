@@ -111,6 +111,9 @@ function submitPin() {
 
 /* ── 앱 부팅 ── */
 function _bootApp() {
+  // 고정 관리자 02qB — 관리자 로그인 버튼은 관리자만 노출
+  const adminBtn = document.getElementById('admin-login-btn');
+  if (adminBtn && window._isAdmin) adminBtn.style.display = '';
   if (typeof initApp === 'function') initApp();
   else document.addEventListener('DOMContentLoaded', () => { if(typeof initApp==='function') initApp(); });
   setTimeout(() => { if(typeof updateAdminUI==='function') updateAdminUI(); }, 150);

@@ -1,6 +1,7 @@
 /* ═══ 마을원 명단 ═══ */
 
 let members = [];
+window.members = members;
 function saveMembers(){
   window._fbSet('stella_members', members.length ? members : []);
 }
@@ -9,6 +10,7 @@ function _initMembersSync(){
   if(!window._fbOn){setTimeout(_initMembersSync,100);return;}
   window._fbOn('stella_members', val => {
     members = val && Array.isArray(val) ? val : (val ? Object.values(val) : []);
+    window.members = members;
     renderMembers();
     updateDashboard();
   });

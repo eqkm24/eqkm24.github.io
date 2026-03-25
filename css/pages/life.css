@@ -349,3 +349,48 @@
   .life-calc-fields { grid-template-columns:1fr; }
   .calc-result-grid { grid-template-columns:1fr 1fr; }
 }
+
+/* ─── 제련 확률 계산기 ─── */
+.smelt-prob-card {
+  background:var(--s2);border:1px solid var(--b2);border-radius:12px;
+  padding:16px;margin-bottom:4px;
+}
+.smelt-prob-hd {
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+}
+.smelt-prob-title { font-size:13px;font-weight:900;color:var(--text); }
+.smelt-dex-badge {
+  font-size:11px;font-weight:700;color:var(--accent);
+  background:rgba(160,144,240,.15);border:1px solid rgba(160,144,240,.3);
+  padding:3px 10px;border-radius:20px;
+}
+.smelt-prob-desc {
+  font-size:11px;color:var(--muted);margin-bottom:12px;line-height:1.6;
+}
+.smelt-prob-bars { display:flex;flex-direction:column;gap:8px; }
+.smelt-prob-row  { display:flex;align-items:center;gap:8px; }
+.smelt-star      { font-size:11px;font-weight:800;flex-shrink:0;width:52px;text-align:right; }
+.smelt-star-plain  { color:var(--muted); }
+.smelt-star-silver { color:#c0c0c0; }
+.smelt-star-gold   { color:#ffd700; }
+.smelt-bar-wrap  { flex:1;background:var(--s3);border-radius:4px;height:10px;overflow:hidden; }
+.smelt-bar       { height:100%;border-radius:4px;transition:width .4s; }
+.smelt-bar-plain  { background:var(--muted); }
+.smelt-bar-silver { background:linear-gradient(90deg,#a8a8b8,#e8e8f0); }
+.smelt-bar-gold   { background:linear-gradient(90deg,#c8a020,#ffd700); }
+.smelt-pct       { font-size:11px;font-weight:800;font-family:'JetBrains Mono',monospace;
+  color:var(--sub);flex-shrink:0;width:46px;text-align:right; }
+.smelt-dex-hint  {
+  margin-top:10px;font-size:10.5px;color:var(--muted);
+  background:var(--s3);border-radius:8px;padding:8px 12px;
+  border:1px dashed var(--b2);
+}
+
+/* ─── recipe.html 탭 ─── */
+.rc-cat-btn { transition:background .2s,border-color .2s; }
+.rc-cat-btn.rc-on {
+  background:var(--accent) !important;
+  color:#fff !important;
+  border-color:var(--accent) !important;
+}
+

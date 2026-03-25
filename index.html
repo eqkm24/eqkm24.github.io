@@ -39,7 +39,6 @@
         <button class="nav-tab t-member"  onclick="go('member');closeDD()">👥 마을원 명단</button>
         <button class="nav-tab t-zone"    onclick="go('zone');closeDD()">🗺 마을 구역</button>
         <button class="nav-tab t-tribute" onclick="go('tribute');closeDD()">⭐ 조공 포인트</button>
-        <button class="nav-tab t-notice"  onclick="go('notice');closeDD()">📣 공지사항</button>
       </div>
     </div>
 
@@ -63,15 +62,14 @@
 
   <!-- 우측 유틸 -->
   <div class="nav-utils">
-    <button class="nav-icon-btn gs-open-btn" onclick="openGlobalSearch()" title="통합 검색 (Ctrl+K)">
-      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-      <span class="nav-kbd">K</span>
-    </button>
     <button class="nav-icon-btn" onclick="toggleSideMemo()" title="메모장">📋</button>
     <button class="nav-icon-btn" onclick="toggleSideTimer()" title="타이머">⏱️</button>
     <button class="nav-icon-btn" onclick="toggleTheme()" title="테마 전환"><span id="theme-icon">☀️</span></button>
-    <button class="nav-admin-btn" onclick="openAdminLogin()">관리자</button>
-    <button class="nav-logout-btn" onclick="doLogout()" title="잠금">🔒</button>
+    <div class="nav-admin-fixed" title="고정 관리자">
+      <img src="https://mc-heads.net/avatar/02qB/20" style="width:20px;height:20px;border-radius:4px;image-rendering:pixelated;" onerror="this.style.display='none'">
+      <span>02qB</span>
+    </div>
+    <button class="nav-admin-btn" onclick="openAdminLogin()" id="admin-login-btn" style="display:none;">관리자</button>
   </div>
 </nav>
 
@@ -232,25 +230,12 @@
           <span class="m-card-title">🍳 요리 변동 시세 TOP 3</span>
           <button class="m-card-more" onclick="go('price')">전체보기 →</button>
         </div>
-        <div class="m-card-body" style="padding:0;">
-          <div style="padding:10px 16px 6px;font-size:10px;color:var(--muted);">원가 대비 상승률 기준</div>
+        <div class="m-card-body" style="padding:10px 12px;">
           <div id="main-price-top3">
             <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
           </div>
         </div>
       </div>
-
-      <!-- 공지사항 위젯 -->
-      <div class="m-card">
-        <div class="m-card-hd">
-          <span class="m-card-title">📣 공지사항</span>
-          <button class="m-card-more" onclick="requireVillageAccess('dd-village',()=>go('notice'))">전체보기 →</button>
-        </div>
-        <div class="m-card-body" style="padding:0;">
-          <div id="main-notice-widget">
-            <div style="padding:20px;text-align:center;color:var(--muted);font-size:12px;">로딩 중...</div>
-          </div>
-        </div>
       </div>
 
       <!-- 웹 업데이트 노트 -->
@@ -480,13 +465,6 @@
   </div>
   <div id="tb-modal-root"></div>
 </div></div>
-<div class="page" id="pg-notice">
-<div class="wrap">
-  <div class="ph">
-    <div class="ph-title">📣 공지사항 <span style="color:#88b8ff;">/ 패치노트</span></div>
-    <div class="ph-sub">마을 공지, 업데이트, 이벤트 안내</div>
-  </div>
-
   <div class="notice-filter-bar">
     <button class="notice-filter-btn nf-on" onclick="filterNotice('all',this)">전체</button>
     <button class="notice-filter-btn" onclick="filterNotice('notice',this)">📌 공지</button>
@@ -532,7 +510,6 @@
 <script src="js/pages/zone.js"></script>
 <script src="js/pages/tribute.js"></script>
 <script src="js/pages/timer.js"></script>
-<script src="js/pages/notice.js"></script>
 <script src="js/pages/search.js"></script>
 <script src="js/pages/price-widget.js"></script>
 <script src="js/pages/life.js"></script>
@@ -544,14 +521,6 @@ async function doLogout(){
 }
 
 /* 공지 필터 */
-function filterNotice(type, btn) {
-  document.querySelectorAll('.notice-filter-btn').forEach(b => b.classList.remove('nf-on'));
-  btn.classList.add('nf-on');
-  window._noticeFilter = type;
-  const sel = document.getElementById('notice-filter');
-  if (sel) sel.value = type;
-  renderNotices();
-}
 
 /* notice 관리자 버튼 노출 */
 function _updateNoticeAdminBtn() {

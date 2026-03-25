@@ -12,14 +12,14 @@ const LIFE_JOBS = [
 ];
 
 let _lifeJob    = 'mining';  // 현재 직업
-let _lifeSubtab = 'recipe';  // 'recipe' | 'skill'
+let _lifeSubtab = 'skill';  // 'skill' | 'smelt' | 'calc' | ...
 
 /* ════════════════════════════
    진입점 — 직업 / 서브탭 전환
 ════════════════════════════ */
 function switchLifeJob(key, el) {
   _lifeJob = key;
-  _lifeSubtab = key === 'cooking' ? 'skill' : 'recipe';
+  _lifeSubtab = 'skill';
   document.querySelectorAll('.lj-btn').forEach(b => b.classList.remove('lj-on'));
   if (el) el.classList.add('lj-on');
   else {
@@ -51,19 +51,16 @@ function _renderLifeSubtabs() {
   // 직업별 서브탭 정의
   const TAB_MAP = {
     mining:  [
-      { key:'recipe', label:'🛠 제작 & 조합법' },
       { key:'skill',  label:'⚡ 스킬 정보' },
       { key:'smelt',  label:'🔩 제련' },
     ],
     fishing: [
-      { key:'recipe', label:'🛠 제작 & 조합법' },
       { key:'skill',  label:'⚡ 스킬 정보' },
       { key:'calc',   label:'📊 효율 계산기' },
       { key:'sim',    label:'🎮 낚시 시뮬레이터' },
       { key:'price',  label:'💰 물고기 시세' },
     ],
     farming: [
-      { key:'recipe', label:'🛠 제작 & 조합법' },
       { key:'skill',  label:'⚡ 스킬 정보' },
       { key:'price',  label:'💰 작물 시세' },
     ],
@@ -92,12 +89,7 @@ function _renderLifeContent() {
   if (!root) return;
 
   switch (_lifeSubtab) {
-    case 'recipe':
-      root.innerHTML = _buildRecipePanel(_lifeJob);
-      _renderRecipeGrid(_lifeJob);
-      const si = document.getElementById('life-recipe-search');
-      if (si) si.addEventListener('input', () => _renderRecipeGrid(_lifeJob));
-      break;
+    // recipe tab removed — use dedicated /제작 page
     case 'skill':
       root.innerHTML = _buildSkillPanel(_lifeJob);
       break;
@@ -133,69 +125,12 @@ const FAC_LABEL2 = {
   mine_craft: { label:'채광 제작 시설',   icon:'🪨', cls:'lc-fac-brazier' },
 };
 
-const GRADE_MAP2  = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
-const GRADE_CLS2  = { n:'lc-grade-n', a:'lc-grade-a', r:'lc-grade-r', h:'lc-grade-h' };
 
-function _buildRecipePanel(job) {
-  return `
-  <div style="margin-bottom:20px;">
-    <div style="position:relative;">
-      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">🔍</span>
-      <input id="life-recipe-search" class="lc-search-input"
-        placeholder="제작품 또는 재료 이름으로 검색..."
-        oninput="_renderRecipeGrid('${job}')">
-    </div>
-  </div>
-  <div class="lc-grid" id="life-recipe-grid"></div>`;
-}
 
-function _renderRecipeGrid(job) {
-  const grid = document.getElementById('life-recipe-grid');
-  if (!grid) return;
 
-  const q = (document.getElementById('life-recipe-search')?.value || '').trim().toLowerCase();
-  const raw = LC_DATA[job] || [];
-  const items = q ? raw.filter(it =>
-    it.name.toLowerCase().includes(q) ||
-    it.mats.some(([m]) => m.toLowerCase().includes(q))
-  ) : raw;
+/* _buildRecipePanel removed */
 
-  if (!items.length) {
-    grid.innerHTML = `<div class="lc-empty">${q ? '검색 결과가 없어요.' : '레시피 데이터가 없습니다.'}</div>`;
-    return;
-  }
-
-  grid.innerHTML = items.map(it => {
-    const gl = GRADE_MAP2[it.grade] || '';
-    const gc = GRADE_CLS2[it.grade] || 'lc-grade-n';
-    const fac = FAC_LABEL2[it.fac] || { label: it.fac, icon:'🏭', cls:'' };
-    const matsHtml = it.mats.map(([name, qty]) =>
-      `<span class="lc-mat-tag">${name} <span class="lc-mat-qty">×${qty}</span></span>`
-    ).join('');
-
-    return `
-    <div class="lc-card lc-card-new">
-      <div class="lc-card-hd">
-        <div class="lc-card-img">${(()=>{
-          const imgs = typeof LC_IMGS !== 'undefined' ? LC_IMGS : {};
-          const k = Object.keys(imgs).find(k => it.name.includes(k) || k.includes(it.name));
-          return k ? `<img src="${imgs[k]}" alt="${it.name}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">` : (it.emoji||'📦');
-        })()}</div>
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap;">
-            <span class="lc-fac-badge ${fac.cls}">${fac.icon} ${fac.label}</span>
-            <span class="lc-card-time">⏱ ${it.time}</span>
-          </div>
-          <div class="lc-card-name">${it.name}</div>
-          <span class="lc-grade ${gc}">${gl}</span>
-          ${it.prob && it.prob !== '100%' ? `<span class="lc-prob-badge">${it.prob}</span>` : ''}
-        </div>
-      </div>
-      <div class="lc-mats-hd2">필요 재료</div>
-      <div class="lc-mats-list">${matsHtml}</div>
-    </div>`;
-  }).join('');
-}
+/* _renderRecipeGrid removed */
 
 /* ══════════════════════════════════
    스킬 정보 패널
@@ -206,40 +141,45 @@ const SKILL_DATA = {
     skills: [
       {
         name:'단련된 곡괭이', type:'P', tier:'Lv.1',
+        img:'',
         desc:'채광 시 데미지가 레벨에 비례하여 일정 비율(%) 증가합니다.',
         prereq:'-', excl:'-',
         cols:['레벨','데미지 증가'],
-        rows:[['1','5%'],['5','25%'],['10','50%'],['15','75%'],['20','100%']],
+        rows:[['1', '5%'], ['2', '10%'], ['3', '15%'], ['4', '20%'], ['5', '25%'], ['6', '30%'], ['7', '35%'], ['8', '40%'], ['9', '45%'], ['10', '50%'], ['11', '55%'], ['12', '60%'], ['13', '65%'], ['14', '70%'], ['15', '75%'], ['16', '80%'], ['17', '85%'], ['18', '90%'], ['19', '95%'], ['20', '100%']],
       },
       {
         name:'광맥 감각', type:'P', tier:'Lv.1',
+        img:'',
         desc:'채광 시 광물이 추가로 드롭될 확률이 생깁니다.',
         prereq:'-', excl:'-',
         cols:['레벨','추가 드롭 확률'],
-        rows:[['1','1%'],['5','5%'],['10','10%'],['15','15%'],['20','20%']],
+        rows:[['1', '1%'], ['2', '2%'], ['3', '3%'], ['4', '4%'], ['5', '5%'], ['6', '6%'], ['7', '7%'], ['8', '8%'], ['9', '9%'], ['10', '10%'], ['11', '11%'], ['12', '12%'], ['13', '13%'], ['14', '14%'], ['15', '15%'], ['16', '16%'], ['17', '17%'], ['18', '18%'], ['19', '19%'], ['20', '20%']],
       },
       {
         name:'광맥 흐름', type:'P', tier:'Lv.1',
+        img:'',
         desc:'채광 딜레이가 레벨에 비례하여 감소해 더 빠르게 채광할 수 있습니다.',
         prereq:'-', excl:'-',
         cols:['레벨','딜레이 감소'],
-        rows:[['1','5%'],['5','25%'],['10','50%'],['15','75%'],['20','100%']],
+        rows:[['1', '5%'], ['2', '10%'], ['3', '15%'], ['4', '20%'], ['5', '25%'], ['6', '30%'], ['7', '35%'], ['8', '40%'], ['9', '45%'], ['10', '50%'], ['11', '55%'], ['12', '60%'], ['13', '65%'], ['14', '70%'], ['15', '75%'], ['16', '80%'], ['17', '85%'], ['18', '90%'], ['19', '95%'], ['20', '100%']],
       },
       {
         name:'폭발적인 채광', type:'A', tier:'Lv.20',
+        img:'',
         desc:'스킬 사용 시 채광 진행 시간 동안 성급함(Haste)과 야간 투시 효과를 획득합니다.',
         act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
         prereq:'-', excl:'광맥 탐지',
         cols:['레벨','지속 시간','쿨타임'],
-        rows:[['20','15초','60초'],['25','20초','55초'],['30','30초','45초']],
+        rows:[['20', '15초', '60초'], ['21', '15초', '60초'], ['22', '15초', '60초'], ['23', '15초', '60초'], ['24', '15초', '60초'], ['25', '20초', '55초'], ['26', '20초', '55초'], ['27', '20초', '55초'], ['28', '20초', '55초'], ['29', '20초', '55초'], ['30', '25초', '50초']],
       },
       {
         name:'광맥 탐지', type:'A', tier:'Lv.20',
+        img:'',
         desc:'주변 범위를 타원형으로 벽 너머까지 투시해 광물을 탐지하고 채광할 수 있습니다.',
         act:'우클릭 (손에 보주 착용)', req:'마나 소모',
         prereq:'-', excl:'폭발적인 채광',
         cols:['레벨','탐지 범위','쿨타임'],
-        rows:[['20','반경 5블록','120초'],['25','반경 7블록','100초'],['30','반경 10블록','80초']],
+        rows:[['20', '반경 5블록', '120초'], ['25', '반경 7블록', '100초'], ['30', '반경 10블록', '80초']],
       },
     ],
   },
@@ -249,40 +189,45 @@ const SKILL_DATA = {
     skills: [
       {
         name:'보물 감지', type:'P', tier:'Lv.1',
+        img:'',
         desc:'바다 보물을 건질 확률이 레벨당 기본 확률 대비 1.0%씩 증가합니다.',
         prereq:'-', excl:'-',
         cols:['레벨','보물 확률 증가'],
-        rows:[['1','+1%'],['5','+5%'],['10','+10%'],['20','+20%']],
+        rows:[['1', '+1%'], ['2', '+2%'], ['3', '+3%'], ['4', '+4%'], ['5', '+5%'], ['6', '+6%'], ['7', '+7%'], ['8', '+8%'], ['9', '+9%'], ['10', '+10%'], ['11', '+11%'], ['12', '+12%'], ['13', '+13%'], ['14', '+14%'], ['15', '+15%'], ['16', '+16%'], ['17', '+17%'], ['18', '+18%'], ['19', '+19%'], ['20', '+20%']],
       },
       {
         name:'소문난 미끼', type:'P', tier:'Lv.1',
+        img:'',
         desc:'낚시 성공 시 일정 확률로 발동해 동일한 물고기를 1마리 추가로 낚아 올립니다.',
         prereq:'-', excl:'-',
         cols:['레벨','추가 낚시 확률'],
-        rows:[['1','2%'],['5','10%'],['10','20%'],['20','40%']],
+        rows:[['1', '2%'], ['2', '4%'], ['3', '6%'], ['4', '8%'], ['5', '10%'], ['6', '12%'], ['7', '14%'], ['8', '16%'], ['9', '18%'], ['10', '20%'], ['11', '22%'], ['12', '24%'], ['13', '26%'], ['14', '28%'], ['15', '30%'], ['16', '32%'], ['17', '34%'], ['18', '36%'], ['19', '38%'], ['20', '40%']],
       },
       {
         name:'낚싯줄 장력', type:'P', tier:'Lv.1',
+        img:'',
         desc:'낚시 성공 시 일반 등급 비율이 감소해 고급·희귀 등급 물고기를 더 자주 낚을 수 있습니다.',
         prereq:'-', excl:'-',
         cols:['레벨','일반 등급 감소','고급↑ 증가'],
-        rows:[['1','-1%','+1%'],['10','-10%','+10%'],['20','-20%','+20%']],
+        rows:[['1', '-1%', '+1%'], ['2', '-2%', '+2%'], ['3', '-3%', '+3%'], ['4', '-4%', '+4%'], ['5', '-5%', '+5%'], ['6', '-6%', '+6%'], ['7', '-7%', '+7%'], ['8', '-8%', '+8%'], ['9', '-9%', '+9%'], ['10', '-10%', '+10%'], ['11', '-11%', '+11%'], ['12', '-12%', '+12%'], ['13', '-13%', '+13%'], ['14', '-14%', '+14%'], ['15', '-15%', '+15%'], ['16', '-16%', '+16%'], ['17', '-17%', '+17%'], ['18', '-18%', '+18%'], ['19', '-19%', '+19%'], ['20', '-20%', '+20%']],
       },
       {
         name:'떼낚시', type:'A', tier:'Lv.20',
+        img:'',
         desc:'스킬 사용 시 40초 동안 낚시를 완료하는 데 걸리는 시간이 감소합니다.',
         act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
         prereq:'-', excl:'쌍걸이',
         cols:['레벨','시간 감소','쿨타임'],
-        rows:[['20','20%','90초'],['25','30%','75초'],['30','40%','60초']],
+        rows:[['20', '20%', '90초'], ['25', '30%', '75초'], ['30', '40%', '60초']],
       },
       {
         name:'쌍걸이', type:'A', tier:'Lv.20',
+        img:'',
         desc:'스킬 사용 시 40초 동안 낚시 성공 시 일정 확률로 낚시가 2회 진행됩니다.',
         act:'우클릭 (손에 보주 착용)', req:'마나 소모',
         prereq:'-', excl:'떼낚시',
         cols:['레벨','2회 낚시 확률','쿨타임'],
-        rows:[['20','25%','90초'],['25','35%','75초'],['30','50%','60초']],
+        rows:[['20', '25%', '90초'], ['25', '35%', '75초'], ['30', '50%', '60초']],
       },
     ],
   },
@@ -292,40 +237,45 @@ const SKILL_DATA = {
     skills: [
       {
         name:'개간의 서약', type:'P', tier:'Lv.1',
-        desc:'경작지 및 화분통 갯수가 증가합니다. 최대 레벨 달성 시 화분통 768개까지 확장 가능합니다.',
+        img:'',
+        desc:'경작지 및 화분통 개수가 증가합니다. 최대 레벨 달성 시 화분통 768개까지 확장 가능합니다.',
         prereq:'-', excl:'-',
-        cols:['레벨','화분통 최대'],
-        rows:[['1','48개'],['5','96개'],['10','192개'],['15','384개'],['20','768개']],
+        cols:['레벨','화분통 추가 개수'],
+        rows:[['1', '+3개'], ['2', '+6개'], ['3', '+9개'], ['4', '+12개'], ['5', '+15개'], ['6', '+18개'], ['7', '+21개'], ['8', '+24개'], ['9', '+27개'], ['10', '+30개'], ['11', '+33개'], ['12', '+36개'], ['13', '+39개'], ['14', '+42개'], ['15', '+45개'], ['16', '+48개'], ['17', '+51개'], ['18', '+54개'], ['19', '+57개'], ['20', '+60개']],
       },
       {
         name:'풍년의 축복', type:'P', tier:'Lv.1',
+        img:'',
         desc:'3등급·2등급 작물 확률을 낮추고 1등급 확률을 높입니다. 황금 작물 드롭률도 증가합니다.',
         prereq:'-', excl:'-',
-        cols:['레벨','1등급 확률 증가','황금 작물'],
-        rows:[['1','+1%','+0.1%'],['10','+10%','+1%'],['20','+20%','+2%']],
+        cols:['레벨','1등급 확률 증가','황금 작물 드롭'],
+        rows:[['1', '+1%', '+0.5%'], ['2', '+2%', '+1.0%'], ['3', '+3%', '+1.5%'], ['4', '+4%', '+2.0%'], ['5', '+5%', '+2.5%'], ['6', '+6%', '+3.0%'], ['7', '+7%', '+3.5%'], ['8', '+8%', '+4.0%'], ['9', '+9%', '+4.5%'], ['10', '+10%', '+5.0%'], ['11', '+11%', '+5.5%'], ['12', '+12%', '+6.0%'], ['13', '+13%', '+6.5%'], ['14', '+14%', '+7.0%'], ['15', '+15%', '+7.5%'], ['16', '+16%', '+8.0%'], ['17', '+17%', '+8.5%'], ['18', '+18%', '+9.0%'], ['19', '+19%', '+9.5%'], ['20', '+20%', '+10.0%']],
       },
       {
         name:'비옥한 토양', type:'P', tier:'Lv.1',
+        img:'',
         desc:'작물 수확 시 한 번에 여러 개가 드롭될 확률이 증가합니다.',
         prereq:'-', excl:'-',
         cols:['레벨','다중 드롭 확률'],
-        rows:[['1','2%'],['5','10%'],['10','20%'],['20','40%']],
+        rows:[['1', '2%'], ['2', '4%'], ['3', '6%'], ['4', '8%'], ['5', '10%'], ['6', '12%'], ['7', '14%'], ['8', '16%'], ['9', '18%'], ['10', '20%'], ['11', '22%'], ['12', '24%'], ['13', '26%'], ['14', '28%'], ['15', '30%'], ['16', '32%'], ['17', '34%'], ['18', '36%'], ['19', '38%'], ['20', '40%']],
       },
       {
-        name:'수확의 손길', type:'A', tier:'Lv.20',
+        name:'수확의 손길', type:'A', tier:'Lv.1',
+        img:'',
         desc:'스킬 사용 시 1×3 형태 범위로 작물을 한 번에 재배·수확할 수 있습니다.',
-        act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
-        prereq:'-', excl:'되뿌리기',
+        act:'우클릭 (손에 보주 착용)', req:'마나 소모',
+        prereq:'-', excl:'-',
         cols:['레벨','범위','쿨타임'],
-        rows:[['20','1×3','30초'],['25','1×5','25초'],['30','3×3','20초']],
+        rows:[['1', '1×3', '30초'], ['5', '1×5', '25초'], ['10', '2×5', '20초'], ['15', '2×7', '15초'], ['20', '3×7', '10초']],
       },
       {
-        name:'되뿌리기', type:'A', tier:'Lv.20',
+        name:'되뿌리기', type:'A', tier:'Lv.1',
+        img:'',
         desc:'스킬 사용 중 작물 수확 시, 10초 후 인벤토리에 동일 씨앗이 있으면 해당 위치에 자동 재파종됩니다.',
-        act:'우클릭 (손에 보주 착용 + 왼손에 씨앗)', req:'마나 소모',
-        prereq:'-', excl:'수확의 손길',
-        cols:['레벨','자동 파종 시간','쿨타임'],
-        rows:[['20','10초 후','45초'],['25','7초 후','35초'],['30','5초 후','25초']],
+        act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
+        prereq:'-', excl:'-',
+        cols:['레벨','재파종 딜레이','지속 시간'],
+        rows:[['1', '10초', '30초'], ['5', '8초', '40초'], ['10', '6초', '50초'], ['15', '4초', '60초'], ['20', '2초', '90초']],
       },
     ],
   },
@@ -335,40 +285,45 @@ const SKILL_DATA = {
     skills: [
       {
         name:'손질 달인', type:'P', tier:'Lv.1',
+        img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3Gxzf5zFhoLGuWI7guzO%252FAdobe%2520Express%2520-%2520file%2520%2811%29.png%3Falt%3Dmedia%26token%3D6a0f15ff-6f10-46bb-b36f-29f03558fbfb&width=300&dpr=1&quality=100&sign=cd041f33&sv=2',
         desc:'요리를 만드는 시간이 레벨에 비례하여 감소합니다.',
         prereq:'-', excl:'-',
         cols:['레벨','제작 시간 감소'],
-        rows:[['1','5%'],['5','25%'],['10','50%'],['20','100%']],
+        rows:[['1', '3%'], ['2', '6%'], ['3', '9%'], ['4', '12%'], ['5', '15%'], ['6', '18%'], ['7', '21%'], ['8', '24%'], ['9', '27%'], ['10', '30%'], ['11', '33%'], ['12', '36%'], ['13', '39%'], ['14', '42%'], ['15', '45%'], ['16', '48%'], ['17', '51%'], ['18', '54%'], ['19', '57%'], ['20', '60%']],
       },
       {
         name:'맛의 균형', type:'P', tier:'Lv.1',
+        img:'',
         desc:'음식의 기본 효과 유지시간이 레벨에 비례하여 증가합니다.',
         prereq:'-', excl:'-',
-        cols:['레벨','효과 지속 증가'],
-        rows:[['1','+5%'],['5','+25%'],['10','+50%'],['20','+100%']],
+        cols:['레벨','효과 시간 증가'],
+        rows:[['1', '+5초'], ['2', '+10초'], ['3', '+15초'], ['4', '+20초'], ['5', '+25초'], ['6', '+30초'], ['7', '+35초'], ['8', '+40초'], ['9', '+45초'], ['10', '+50초'], ['11', '+55초'], ['12', '+60초'], ['13', '+65초'], ['14', '+70초'], ['15', '+75초'], ['16', '+80초'], ['17', '+85초'], ['18', '+90초'], ['19', '+95초'], ['20', '+100초']],
       },
       {
         name:'미식가', type:'P', tier:'Lv.1',
+        img:'',
         desc:'높은 등급의 요리가 완성될 확률이 증가합니다.',
         prereq:'-', excl:'-',
-        cols:['레벨','고급↑ 확률 증가'],
-        rows:[['1','+2%'],['5','+10%'],['10','+20%'],['20','+40%']],
-      },
-      {
-        name:'연회 준비', type:'A', tier:'Lv.20',
-        desc:'스킬 사용 시 40초 동안 일정 확률로 요리가 1회 추가 완성됩니다.',
-        act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
-        prereq:'-', excl:'즉시 완성',
-        cols:['레벨','추가 완성 확률','쿨타임'],
-        rows:[['20','20%','90초'],['25','30%','75초'],['30','40%','60초']],
+        cols:['레벨','등급 상향 확률'],
+        rows:[['1', '1%'], ['2', '2%'], ['3', '3%'], ['4', '4%'], ['5', '5%'], ['6', '6%'], ['7', '7%'], ['8', '8%'], ['9', '9%'], ['10', '10%'], ['11', '11%'], ['12', '12%'], ['13', '13%'], ['14', '14%'], ['15', '15%'], ['16', '16%'], ['17', '17%'], ['18', '18%'], ['19', '19%'], ['20', '20%']],
       },
       {
         name:'즉시 완성', type:'A', tier:'Lv.20',
+        img:'',
         desc:'스킬 사용 시 10초 동안 일정 확률로 요리가 즉시 완료됩니다.',
         act:'우클릭 (손에 보주 착용)', req:'마나 소모',
-        prereq:'-', excl:'연회 준비',
+        prereq:'-', excl:'-',
         cols:['레벨','즉시 완성 확률','쿨타임'],
-        rows:[['20','15%','120초'],['25','25%','100초'],['30','40%','80초']],
+        rows:[['20', '20%', '90초'], ['25', '30%', '75초'], ['30', '50%', '60초']],
+      },
+      {
+        name:'연회 준비', type:'A', tier:'Lv.20',
+        img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FbQRi4yTMFADeQyzQmpl8%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520144349-Photoroom.png%3Falt%3Dmedia%26token%3Da40c97e0-b2c2-4e2b-9a0b-a7cc03b9b97c&width=300&dpr=1&quality=100&sign=7f240076&sv=2',
+        desc:'스킬 사용 시 40초 동안 일정 확률로 요리가 1회 추가 완성됩니다. (최대 1회)',
+        act:'좌클릭 (손에 보주 착용)', req:'마나 소모',
+        prereq:'-', excl:'-',
+        cols:['레벨','추가 완성 확률','쿨타임'],
+        rows:[['20', '25%', '90초'], ['25', '35%', '75초'], ['30', '50%', '60초']],
       },
     ],
   },
@@ -401,10 +356,15 @@ function _buildSkillPanel(job) {
         </table>
       </div>`;
 
+    const skImgHtml = sk.img
+      ? `<img src="${sk.img}" alt="${sk.name}" style="width:36px;height:36px;object-fit:contain;border-radius:6px;image-rendering:pixelated;flex-shrink:0;">`
+      : '';
+
     return `
     <div class="life-sk-card" id="lsk-${job}-${idx}" style="--sk-color:${color}">
       <div class="life-sk-card-hd" onclick="toggleLifeSk('${job}',${idx})">
         <div class="life-sk-type-dot ${isActive ? 'lsk-active' : 'lsk-passive'}">${isActive ? 'A' : 'P'}</div>
+        ${skImgHtml}
         <div style="flex:1;min-width:0;">
           <div class="life-sk-name">${sk.name}</div>
           <div class="life-sk-desc">${sk.desc}</div>
@@ -457,27 +417,97 @@ function initLifePage() {
   _renderLifeContent();
 }
 
-/* ── recipe.js의 renderLifecat와 브릿지 (기존 nav 드롭다운 호환) ── */
-function switchLifecat(cat) {
-  // 생활 페이지로 이동하면서 해당 직업으로 전환
-  const keyMap = { mining:'mining', fishing:'fishing', farming:'farming', enhance:'cooking' };
-  const job = keyMap[cat] || cat;
-  _lifeJob = job;
-  _lifeSubtab = 'recipe';
-  const btn = document.querySelector(`.lj-btn[data-job="${job}"]`);
-  switchLifeJob(job, btn);
-}
+/* recipe bridge removed */
 
 /* ══════════════════════════════════════════════════
    채광 - 제련 패널
 ══════════════════════════════════════════════════ */
 function _buildSmeltPanel() {
+  // 손재주 수치 — 메인 /생활 정보에서 파싱한 값
+  const dex = (window._charInfo?.stats?.['손재주']) || 0;
+
   const SMELT_DATA = [
-    { ore:'일반 미스릴 원석',     result:'미스릴 주괴',     qty:3, fuel:4, time:'30초', grade:'n' },
-    { ore:'일반 아르젠타이트 원석', result:'아르젠타이트 주괴', qty:3, fuel:4, time:'30초', grade:'a' },
-    { ore:'일반 벨리움 원석',     result:'벨리움 주괴',     qty:3, fuel:4, time:'30초', grade:'r' },
+    { ore:'일반 미스릴 원석',       result:'미스릴 주괴',       qty:3, fuel:4, time:'30초', grade:'n',
+      img:'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FwL3rbhSjv7NYJb737NlO%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163657-Photoroom.png%3Falt%3Dmedia%26token%3D7fe08f92-b032-4be3-98bd-a5cb5ca9bd14&width=300&dpr=1&quality=100&sign=a977aa53&sv=2',
+    },
+    { ore:'일반 아르젠타이트 원석', result:'아르젠타이트 주괴', qty:3, fuel:4, time:'30초', grade:'a', img:'' },
+    { ore:'일반 벨리움 원석',       result:'벨리움 주괴',       qty:3, fuel:4, time:'30초', grade:'r', img:'' },
   ];
-  const GRADE_COLOR = { n:'var(--r-n)', a:'var(--r-a)', r:'var(--r-r)', h:'var(--r-h)' };
+
+  // 확률 계산: 기본 150/30/15, 손재주 1당 은별 +1, 금별 +1.5 (무별 150 고정)
+  function calcProb(dexVal) {
+    const plain  = 150;
+    const silver = 30  + dexVal * 1;
+    const gold   = 15  + dexVal * 1.5;
+    const total  = plain + silver + gold;
+    return {
+      plain:  (plain  / total * 100).toFixed(1),
+      silver: (silver / total * 100).toFixed(1),
+      gold:   (gold   / total * 100).toFixed(1),
+      plain_n:  plain, silver_n: silver, gold_n: gold, total,
+    };
+  }
+
+  const prob = calcProb(dex);
+
+  const probCard = `
+  <div class="smelt-prob-card">
+    <div class="smelt-prob-hd">
+      <span class="smelt-prob-title">✨ 별 등급 출현 확률</span>
+      <span class="smelt-dex-badge">손재주 <strong>${dex}</strong></span>
+    </div>
+    <div class="smelt-prob-desc">
+      손재주 1당: 은별 기준치 +1 / 금별 기준치 +1.5<br>
+      <span style="color:var(--muted);font-size:10px;">무별 ${prob.plain_n} / 은별 ${prob.silver_n.toFixed(1)} / 금별 ${prob.gold_n.toFixed(1)} (총합 ${prob.total.toFixed(1)})</span>
+    </div>
+    <div class="smelt-prob-bars">
+      <div class="smelt-prob-row">
+        <span class="smelt-star smelt-star-plain">무별 ★</span>
+        <div class="smelt-bar-wrap"><div class="smelt-bar smelt-bar-plain" style="width:${prob.plain}%"></div></div>
+        <span class="smelt-pct">${prob.plain}%</span>
+      </div>
+      <div class="smelt-prob-row">
+        <span class="smelt-star smelt-star-silver">은별 ★</span>
+        <div class="smelt-bar-wrap"><div class="smelt-bar smelt-bar-silver" style="width:${Math.min(prob.silver,100)}%"></div></div>
+        <span class="smelt-pct">${prob.silver}%</span>
+      </div>
+      <div class="smelt-prob-row">
+        <span class="smelt-star smelt-star-gold">금별 ★</span>
+        <div class="smelt-bar-wrap"><div class="smelt-bar smelt-bar-gold" style="width:${Math.min(prob.gold,100)}%"></div></div>
+        <span class="smelt-pct">${prob.gold}%</span>
+      </div>
+    </div>
+    ${dex === 0 ? `<div class="smelt-dex-hint">💡 메인 페이지에서 <strong>/생활 정보</strong>를 붙여넣으면 내 손재주 수치가 자동으로 반영됩니다.</div>` : ''}
+  </div>`;
+
+  const cardsHtml = SMELT_DATA.map(d => {
+    const gc = {n:'lc-grade-n',a:'lc-grade-a',r:'lc-grade-r'}[d.grade];
+    const gl = {n:'일반',a:'고급',r:'희귀'}[d.grade];
+    const imgHtml = d.img
+      ? `<img src="${d.img}" alt="${d.result}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;">`
+      : '🪨';
+    return `
+    <div class="lc-card">
+      <div class="lc-card-hd">
+        <div class="lc-card-img">${imgHtml}</div>
+        <div class="lc-card-meta">
+          <div class="lc-card-type">
+            <span class="lc-grade ${gc}">${gl}</span>
+            <span class="lc-card-time">⏱ ${d.time}</span>
+          </div>
+          <div class="lc-card-name">${d.result}</div>
+        </div>
+      </div>
+      <div class="lc-mats-hd">
+        <span class="lc-mats-label">필요 재료</span>
+        <span class="lc-facility lc-fac-brazier">🔥 허름한 화로</span>
+      </div>
+      <div class="lc-mats-list">
+        <span class="lc-mat-tag">${d.ore} <span class="lc-mat-qty">×${d.qty}</span></span>
+        <span class="lc-mat-tag">마그마 블록 <span class="lc-mat-qty">×${d.fuel}</span></span>
+      </div>
+    </div>`;
+  }).join('');
 
   return `
   <div class="smelt-wrap">
@@ -485,29 +515,8 @@ function _buildSmeltPanel() {
       <span class="smelt-fac">🔥 허름한 화로</span>
       <span style="font-size:11px;color:var(--muted);">연료: 마그마 블록 ×N</span>
     </div>
-    <div class="lc-grid">
-      ${SMELT_DATA.map(d => `
-      <div class="lc-card">
-        <div class="lc-card-hd">
-          <div class="lc-card-img">🪨</div>
-          <div class="lc-card-meta">
-            <div class="lc-card-type">
-              <span class="lc-grade ${d.grade === 'n' ? 'lc-grade-n' : d.grade === 'a' ? 'lc-grade-a' : 'lc-grade-r'}">${{n:'일반',a:'고급',r:'희귀'}[d.grade]}</span>
-              <span class="lc-card-time">⏱ ${d.time}</span>
-            </div>
-            <div class="lc-card-name">${d.result}</div>
-          </div>
-        </div>
-        <div class="lc-mats-hd">
-          <span class="lc-mats-label">필요 재료</span>
-          <span class="lc-facility lc-fac-brazier">🔥 허름한 화로</span>
-        </div>
-        <div class="lc-mats-list">
-          <span class="lc-mat-tag">${d.ore} <span class="lc-mat-qty">×${d.qty}</span></span>
-          <span class="lc-mat-tag">마그마 블록 <span class="lc-mat-qty">×${d.fuel}</span></span>
-        </div>
-      </div>`).join('')}
-    </div>
+    ${probCard}
+    <div class="lc-grid" style="margin-top:16px;">${cardsHtml}</div>
   </div>`;
 }
 

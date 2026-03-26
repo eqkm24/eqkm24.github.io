@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="css/common.css">
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/pages/recipe.css">
-<link rel="stylesheet" href="css/pages/enhance.css">h
+<link rel="stylesheet" href="css/pages/enhance.css">
 <link rel="stylesheet" href="css/pages/price.css">
 <link rel="stylesheet" href="css/pages/skill.css">
 <link rel="stylesheet" href="css/pages/member.css">
@@ -399,9 +399,10 @@
       <div class="exp-field"><label>판매 시점</label><input id="exp-sell" type="datetime-local" onchange="calcExpiry()"></div>
     </div>
     <div class="exp-result" id="exp-result" style="grid-template-columns:repeat(4,1fr);">
-      <div class="exp-card"><div class="exp-card-time">유통기한 이내</div><div class="exp-card-rate" style="color:#4ade80;">감가 없음</div><div class="exp-card-val" id="exp-v0" style="color:#4ade80;">100 셀</div></div>
+      <div class="exp-card"><div class="exp-card-time">유통기한 이내</div><div class="exp-card-rate" style="color:#4ade80;">감가 없음</div><div class="exp-card-val" id="exp-v0" style="color:#4ade80;">100 셀</div></div></div></div>
 
-<div class="page" id="pg-member">
+
+</div></div><div class="page" id="pg-member">
 <div class="wrap">
   <div class="ph">
     <div class="ph-title">👥 마을원 <span style="color:#38bdf8;">명단</span></div>
@@ -460,21 +461,6 @@
     </div>
   </div>
   <div id="tb-modal-root"></div>
-</div></div>
-  <div class="notice-filter-bar">
-    <button class="notice-filter-btn nf-on" onclick="filterNotice('all',this)">전체</button>
-    <button class="notice-filter-btn" onclick="filterNotice('notice',this)">📌 공지</button>
-    <button class="notice-filter-btn" onclick="filterNotice('update',this)">🔄 업데이트</button>
-    <button class="notice-filter-btn" onclick="filterNotice('event',this)">🎉 이벤트</button>
-    <button class="notice-filter-btn" onclick="filterNotice('fix',this)">🔧 수정</button>
-    <span style="flex:1;"></span>
-    <span id="notice-admin-btn"></span>
-  </div>
-
-  <div id="notice-list">
-    <div style="text-align:center;padding:60px;color:var(--muted);font-size:13px;">로딩 중...</div>
-  </div>
-</div>
 </div>
 </div>
 <!-- /pages-root -->

@@ -1,153 +1,188 @@
 /* ═══ 변동 시세 ═══ */
 
 const PRICE_CATS = {
-  food: { label:'🍳 요리',   key:'stella_price_food', maxChange:'+10% / -20%' },
-  crop: { label:'🌾 농작물', key:'stella_price_crop', maxChange:'+10% / -15%' },
-  fish: { label:'🐟 물고기', key:'stella_price_fish', maxChange:'+10% / -15%' },
+  food: { label:'🍳 요리',   key:'stella_price_food' },
+  crop: { label:'🌾 농작물', key:'stella_price_crop'  },
+  fish: { label:'🐟 물고기', key:'stella_price_fish'  },
 };
 
-let _curPriceCat  = 'food';
-let _priceListeners = {};
+const GRADE_ORDER = { '커먼':0, '언커먼':1, '레어':2, '에픽':3, '전설':4 };
+const GRADE_TAG   = { '커먼':'tag-blue', '언커먼':'tag-teal', '레어':'tag-purple', '에픽':'tag-amber', '전설':'tag-red' };
+
+let _curPriceCat = 'food';
 
 function initPrice() {
   switchPriceCat('food', document.querySelector('.price-cat'));
 }
 
 function switchPriceCat(cat, el) {
-  // 기존 리스너 해제
-  if (_priceListeners[_curPriceCat]) {
-    window.$db.off(PRICE_CATS[_curPriceCat].key);
-    _priceListeners[_curPriceCat] = false;
-  }
-
   _curPriceCat = cat;
   document.querySelectorAll('.price-cat').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
-  else {
-    const btn = document.querySelector(`[data-cat="${cat}"]`);
-    if (btn) btn.classList.add('active');
-  }
-
+  else document.querySelector(`[data-cat="${cat}"]`)?.classList.add('active');
   _loadPriceData(cat);
 }
 
 function _loadPriceData(cat) {
-  const cfg  = PRICE_CATS[cat];
   const root = document.getElementById('price-table-area');
   if (!root) return;
   root.innerHTML = `<div class="empty"><div class="spinner"></div></div>`;
 
-  _priceListeners[cat] = true;
-  window.$db.on(cfg.key, val => {
+  window.$db.on(PRICE_CATS[cat].key, val => {
     if (_curPriceCat !== cat) return;
-    _renderPriceTable(val, cat);
+    _renderPriceTable(val);
   });
 }
 
-function _renderPriceTable(val, cat) {
+function _renderPriceTable(val) {
   const root = document.getElementById('price-table-area');
   if (!root) return;
 
+  // 저장 시각 표시
   const savedAt = document.getElementById('price-saved-at');
   if (savedAt && val?.savedAt) {
     const d = new Date(val.savedAt);
-    savedAt.textContent = `마지막 저장: ${d.toLocaleDateString('ko-KR')} ${d.toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'})}`;
+    savedAt.textContent = `마지막 저장: ${d.toLocaleDateString('ko-KR')} ${d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})}`;
   }
 
   if (!val?.items?.length) {
     root.innerHTML = `<div class="empty">
       <div class="empty-icon">📊</div>
       시세 데이터가 없습니다.<br>
-      <span style="font-size:12px;color:var(--hint);">위 붙여넣기 창에 디스코드 시세를 붙여넣어 저장해주세요.</span>
+      <span style="font-size:12px;color:var(--hint);">위 붙여넣기 창에 디스코드 시세 메시지를 붙여넣어 저장해주세요.</span>
     </div>`;
     return;
   }
 
-  const items = val.items;
+  const items    = [...val.items].sort((a,b) => (b.diff||0) - (a.diff||0));
+  const rising   = items.filter(i => (i.diff||0) > 0);
+  const falling  = items.filter(i => (i.diff||0) < 0);
+  const steady   = items.filter(i => (i.diff||0) === 0);
 
-  root.innerHTML = `
-    <div class="card">
-      <table class="price-table">
-        <thead>
-          <tr>
-            <th>아이템</th>
-            <th>현재가 (셀)</th>
-            <th>등급</th>
-            <th>변동</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${items.map(item => {
-            const name  = item.name || item.n || '';
-            const price = item.price || item.p || 0;
-            const grade = item.grade || item.g || '';
-            const diff  = item.diff  || item.d || 0;
-            const pct   = item.pct   || '';
-            const up    = diff > 0;
-            const eq    = diff === 0;
+  const renderSection = (title, icon, list) => {
+    if (!list.length) return '';
+    return `
+      <div style="margin-bottom:24px;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1.5px;
+          color:var(--muted);text-transform:uppercase;margin-bottom:10px;">
+          ${icon} ${title} (${list.length}개)
+        </div>
+        <div class="card">
+          <table class="price-table">
+            <thead>
+              <tr>
+                <th>등급</th>
+                <th>아이템</th>
+                <th style="text-align:right;">원가</th>
+                <th style="text-align:right;">현재 변동가</th>
+                <th style="text-align:right;">변동폭</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${list.map(item => {
+                const up   = (item.diff||0) > 0;
+                const eq   = (item.diff||0) === 0;
+                const sign = up ? '+' : '';
+                const cls  = up ? 'price-change-up' : eq ? '' : 'price-change-down';
+                const gradeCls = GRADE_TAG[item.grade] || 'tag-blue';
+                return `
+                <tr>
+                  <td><span class="tag ${gradeCls}">${item.grade||''}</span></td>
+                  <td style="font-weight:700;color:var(--text);">${item.name}</td>
+                  <td style="text-align:right;font-family:var(--font-mono);color:var(--muted);">${(item.base||0).toLocaleString()}</td>
+                  <td style="text-align:right;font-family:var(--font-mono);font-weight:700;">${(item.price||0).toLocaleString()}</td>
+                  <td style="text-align:right;" class="${cls}">${sign}${(item.diff||0).toLocaleString()}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+  };
 
-            return `
-            <tr>
-              <td style="font-weight:700;color:var(--text);">${name}</td>
-              <td style="font-family:var(--font-mono);font-weight:700;">${price.toLocaleString()}</td>
-              <td>${grade ? `<span class="tag tag-blue">${grade}</span>` : '—'}</td>
-              <td class="${up ? 'price-change-up' : eq ? '' : 'price-change-down'}">
-                ${diff !== 0 ? `${up?'+':''}${diff.toLocaleString()} ${pct ? `(${pct})` : ''}` : '—'}
-              </td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table>
-    </div>`;
+  root.innerHTML =
+    renderSection('상승 아이템', '📈', rising) +
+    renderSection('하락 아이템', '📉', falling) +
+    renderSection('변동 없음',   '➡️', steady);
 }
 
-/* ── 붙여넣기 파싱 ── */
+/* ══════════════════════════════
+   파싱 — 디스코드 메시지 형식
+   예:
+   # 요리사 상점의 변동 가격이 갱신되었습니다.
+   📈 상승 아이템
+   - [커먼] 가스파초
+     - `원가`: 57
+     - `현재 변동가`: 63
+     - `원가 대비 변동폭`: +6
+══════════════════════════════ */
 async function parsePriceInput() {
   const text = document.getElementById('price-paste')?.value?.trim();
   if (!text) { alert('시세 내용을 붙여넣어 주세요.'); return; }
 
   const items = _parsePriceText(text);
-  if (!items.length) { alert('파싱할 수 있는 시세 데이터가 없습니다.\n\n디스코드 /시세 명령어 결과를 그대로 붙여넣어 주세요.'); return; }
+  if (!items.length) {
+    alert('파싱할 수 있는 시세 데이터가 없어요.\n\n디스코드 변동 가격 메시지를 그대로 붙여넣어 주세요.');
+    return;
+  }
 
-  const cfg = PRICE_CATS[_curPriceCat];
   try {
-    // 시세는 모든 사용자가 저장 가능 — firebase 직접 접근
     if (typeof firebase === 'undefined') throw new Error('Firebase 연결 안 됨');
-    await firebase.database().ref(cfg.key).set({ items, savedAt: new Date().toISOString() });
+    await firebase.database().ref(PRICE_CATS[_curPriceCat].key).set({
+      items,
+      savedAt: new Date().toISOString(),
+    });
     document.getElementById('price-paste').value = '';
-    alert(`✅ ${items.length}개 항목이 저장되었습니다.`);
+    alert(`✅ ${items.length}개 항목이 저장됐어요.`);
   } catch(e) {
     alert('저장 실패: ' + e.message);
   }
 }
 
 function _parsePriceText(text) {
-  const items = [];
-  const lines = text.split('\n');
+  const items  = [];
+  const lines  = text.split('\n');
+  let cur      = null;   // 현재 파싱 중인 아이템
 
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
+  const flush = () => {
+    if (cur?.name) items.push(cur);
+    cur = null;
+  };
 
-    // 패턴 1: "아이템명 : 1,234셀 (+123셀, +10.0%)"
-    const m1 = trimmed.match(/^(.+?)\s*[:：]\s*([\d,]+)\s*셀?\s*(?:\(([+-][\d,]+)\s*셀?,?\s*([+-][\d.]+%?)?\))?/);
-    if (m1) {
-      const name  = m1[1].trim();
-      const price = parseInt(m1[2].replace(/,/g,''));
-      const diff  = m1[3] ? parseInt(m1[3].replace(/,/g,'')) : 0;
-      const pct   = m1[4] || '';
-      if (name && price) items.push({ name, price, diff, pct });
+  for (let i = 0; i < lines.length; i++) {
+    const raw  = lines[i];
+    const line = raw.trim();
+    if (!line) continue;
+
+    // ── 아이템 헤더: "- [커먼] 가스파초" ──
+    const itemM = line.match(/^-\s*\[([^\]]+)\]\s*(.+)$/);
+    if (itemM) {
+      flush();
+      cur = {
+        grade: itemM[1].trim(),
+        name:  itemM[2].trim(),
+        base:  0,
+        price: 0,
+        diff:  0,
+      };
       continue;
     }
 
-    // 패턴 2: "아이템명 1234" (단순 숫자)
-    const m2 = trimmed.match(/^(.+?)\s+([\d,]+)$/);
-    if (m2) {
-      const name  = m2[1].trim();
-      const price = parseInt(m2[2].replace(/,/g,''));
-      if (name && price > 0) items.push({ name, price, diff: 0, pct: '' });
-    }
+    if (!cur) continue;
+
+    // ── 원가 ──
+    const baseM = line.match(/`?원가`?\s*[：:]\s*([\d,]+)/);
+    if (baseM) { cur.base = parseInt(baseM[1].replace(/,/g,'')); continue; }
+
+    // ── 현재 변동가 ──
+    const priceM = line.match(/`?현재\s*변동가`?\s*[：:]\s*([\d,]+)/);
+    if (priceM) { cur.price = parseInt(priceM[1].replace(/,/g,'')); continue; }
+
+    // ── 원가 대비 변동폭 ──
+    const diffM = line.match(/`?원가\s*대비\s*변동폭`?\s*[：:]\s*([+-]?\d+)/);
+    if (diffM) { cur.diff = parseInt(diffM[1]); continue; }
   }
+  flush();
 
   return items;
 }

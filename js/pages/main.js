@@ -212,150 +212,160 @@ function _initVisitor() {
 }
 
 function parseCharInfo(text) {
-  const root = document.getElementById('char-stats');
+  var root = document.getElementById('char-stats');
   if (!root) return;
-  if (!text?.trim()) {
-    root.innerHTML = '';
-    _showCharPaste(true);
-    return;
-  }
+  if (!text || !text.trim()) { root.innerHTML = ''; _showCharPaste(true); return; }
 
-  const lines  = text.split('\n');
-  let section  = '';
-  const stats  = {};
-  const profs  = {};  
-  const skills = {};
-  let fame = '', fameNum = 0, famePct = 0;
-  let statPts = '', skillPts = '';
+  var lines   = text.split('\n');
+  var section = '';
+  var stats   = {};
+  var profs   = {};
+  var skills  = {};
+  var tmpSkills = {};
+  var fame = '', famePct = 0, statPts = '', skillPts = '';
 
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line) continue;
+  lines.forEach(function(raw) {
+    var line = raw.trim();
+    if (!line) return;
 
-    if (line.includes('[스탯 정보]'))  { section = 'stat';  continue; }
-    if (line.includes('[숙련도]'))     { section = 'prof';  continue; }
-    if (line.includes('[스킬]'))       { section = 'skill'; continue; }
-    if (line.includes('[임시'))        { section = 'skip';  continue; }
-    if (section === 'skip') continue;
+    if (line.includes('[스탯 정보]'))  { section = 'stat';     return; }
+    if (line.includes('[숙련도]'))     { section = 'prof';     return; }
+    if (line.includes('[스킬]'))       { section = 'skill';    return; }
+    if (line.includes('[임시 스탯]'))  { section = 'skip';     return; }
+    if (line.includes('[임시 스킬]'))  { section = 'tmpskill'; return; }
+    if (section === 'skip') return;
 
-    
-    const fameM = line.match(/^명성\s*[:：]\s*(\d+)\s*\(.*?([\d.]+)%\)/);
-    if (fameM) { fame = fameM[1]; famePct = parseFloat(fameM[2]); continue; }
+    var fameM = line.match(/^명성\s*[:：]\s*(\d+)\s*\(.*?([\d.]+)%\)/);
+    if (fameM) { fame = fameM[1]; famePct = parseFloat(fameM[2]); return; }
 
-    const spM  = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
-    if (spM)  { statPts  = spM[1];  continue; }
-    const skpM = line.match(/^스킬\s*포인트\s*[:：]\s*(\d+)/);
-    if (skpM) { skillPts = skpM[1]; continue; }
+    var spM = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
+    if (spM) { statPts = spM[1]; return; }
 
-    if (!line.startsWith('ㆍ')) continue;
-    const body = line.slice(1).trim();
+    var skpM = line.match(/^스킬\s*포인트\s*[:：]\s*(\d+)/);
+    if (skpM) { skillPts = skpM[1]; return; }
+
+    if (section === 'tmpskill') {
+      var tm = line.match(/ㆍ(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
+      if (tm) tmpSkills[tm[1].trim()] = parseInt(tm[2]);
+      return;
+    }
+
+    if (!line.startsWith('ㆍ')) return;
+    var body = line.slice(1).trim();
 
     if (section === 'stat') {
-      
-      const m = body.match(/^(.+?)\s*\(.*?total\s*[:=]\s*([\d.]+)/);
+      var m = body.match(/^(.+?)\s*\(.*?total\s*[:=]\s*([\d.]+)/);
       if (m) stats[m[1].trim()] = parseFloat(m[2]);
     }
-
     if (section === 'prof') {
-      
-      const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)[^)]*,\s*([\d.]+)%/);
-      if (m) profs[m[1].trim()] = { lv: parseInt(m[2]), pct: parseFloat(m[3]) };
+      var m2 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)[^)]*,\s*([\d.]+)%/);
+      if (m2) profs[m2[1].trim()] = { lv: parseInt(m2[2]), pct: parseFloat(m2[3]) };
       else {
-        const m2 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
-        if (m2) profs[m2[1].trim()] = { lv: parseInt(m2[2]), pct: 0 };
+        var m3 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
+        if (m3) profs[m3[1].trim()] = { lv: parseInt(m3[2]), pct: 0 };
       }
     }
-
     if (section === 'skill') {
-      const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
-      if (m) skills[m[1].trim()] = parseInt(m[2]);
+      var m4 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
+      if (m4) skills[m4[1].trim()] = parseInt(m4[2]);
     }
-  }
+  });
 
-  window._charStats = { ...stats };
+  window._charStats = Object.assign({}, stats);
   try { localStorage.setItem('stella_char_info', JSON.stringify({ text, stats, profs, skills, fame, famePct })); } catch(e) {}
 
-  
   _showCharPaste(false);
 
-  const fmt = v => typeof v === 'number'
-    ? (Number.isInteger(v) ? v : (v % 1 === 0 ? v : parseFloat(v.toFixed(2))))
-    : v;
+  var fmt = function(v) {
+    if (typeof v !== 'number') return v;
+    return Number.isInteger(v) ? v : parseFloat(v.toFixed(2));
+  };
 
-  
-  
-  const BASE_STATS  = ['행운','노련함','손재주','감각','인내력','카리스마'];
-  
-  const JOB_STATS   = ['요리 등급업 확률','음식 효과연장','조리 단축',
-                        '일반 작물 감소비율','경작지당 화분통 설치 개수','경작지 점유 수'];
-  const baseEntries = BASE_STATS.map(k => stats[k] != null ? [k, stats[k]] : null).filter(Boolean);
-  const jobEntries  = JOB_STATS.map(k => stats[k] != null ? [k, stats[k]] : null).filter(Boolean);
-  const usedKeys    = new Set([...BASE_STATS, ...JOB_STATS]);
-  const etcEntries  = Object.entries(stats).filter(([k]) => !usedKeys.has(k));
+  var BASE_STATS = ['행운','노련함','손재주','감각','인내력','카리스마'];
+  var JOB_STATS  = ['요리 등급업 확률','음식 효과연장','조리 단축',
+                    '일반 작물 감소비율','경작지당 화분통 설치 개수','경작지 점유 수',
+                    '벌목 속도 증가','벌목 데미지 증가'];
+  var usedKeys = BASE_STATS.concat(JOB_STATS);
 
-  
-  const profEntries = Object.entries(profs).filter(([,v]) => v.lv > 0);
-  const JOB_COLOR   = { 채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
-                         요리:'var(--red)',   대장술:'var(--purple)', 생존:'var(--teal)',
-                         연금술:'var(--teal)', 벌목:'var(--green)' };
+  var baseEntries = BASE_STATS.map(function(k) { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
+  var jobEntries  = JOB_STATS.map(function(k)  { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
+  var etcEntries  = Object.entries(stats).filter(function(e) { return usedKeys.indexOf(e[0]) < 0; });
 
-  const sec = (title, color, html) => html ? `
-    <div style="margin-top:14px;">
-      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;
-        color:${color};text-transform:uppercase;
-        margin-bottom:8px;padding-bottom:4px;
-        border-bottom:1px solid var(--b1);">${title}</div>
-      ${html}
-    </div>` : '';
+  var profEntries = Object.entries(profs).filter(function(e) { return e[1].lv > 0; });
+  var JOB_COLOR = {
+    채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
+    요리:'var(--red)', 대장술:'var(--purple)', 생존:'var(--teal)',
+    연금술:'var(--teal)', 벌목:'var(--green)'
+  };
 
-  const statGrid = entries => entries.length ? `
-    <div class="char-stats">
-      ${entries.map(([k,v]) => `
-        <div class="char-stat-row">
-          <span class="char-stat-key">${k}</span>
-          <span class="char-stat-val" style="color:var(--purple);font-size:13px;font-weight:900;">+${fmt(v)}</span>
-        </div>`).join('')}
-    </div>` : '';
+  var mergedSkills = Object.assign({}, skills);
+  Object.entries(tmpSkills).forEach(function(e) {
+    var name = e[0], lv = e[1];
+    if (mergedSkills[name] != null) {
+      mergedSkills[name] = mergedSkills[name] + ' <span style="color:var(--teal);font-size:10px;">(+' + lv + ' 임시)</span>';
+    }
+  });
 
-  const profBars = profEntries.length ? profEntries.map(([name, {lv, pct}]) => {
-    const color = JOB_COLOR[name] || 'var(--purple)';
-    return `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-      <span style="font-size:12px;font-weight:700;color:var(--sub);width:52px;flex-shrink:0;">${name}</span>
-      <span style="font-size:11px;font-weight:700;color:${color};width:36px;flex-shrink:0;">Lv.${lv}</span>
-      <div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;border-radius:3px;background:${color};width:${pct}%;transition:width .5s;"></div>
-      </div>
-      <span style="font-size:10px;color:var(--muted);width:38px;text-align:right;flex-shrink:0;">${pct}%</span>
-    </div>`; }).join('') : '';
+  var sec = function(title, color, html) {
+    if (!html) return '';
+    return '<div style="margin-top:14px;">' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:1.2px;' +
+      'color:' + color + ';text-transform:uppercase;' +
+      'margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--b1);">' + title + '</div>' +
+      html + '</div>';
+  };
 
-  const skillTags = Object.entries(skills).length ? `
-    <div style="display:flex;flex-wrap:wrap;gap:6px;">
-      ${Object.entries(skills).map(([k,v]) => `
-        <span class="tag tag-amber">${k} Lv.${v}</span>`).join('')}
-    </div>` : '';
+  var statGrid = function(entries) {
+    if (!entries.length) return '';
+    return '<div class="char-stats">' +
+      entries.map(function(e) {
+        return '<div class="char-stat-row">' +
+          '<span class="char-stat-key">' + e[0] + '</span>' +
+          '<span class="char-stat-val" style="color:var(--purple);font-size:13px;font-weight:900;">+' + fmt(e[1]) + '</span>' +
+          '</div>';
+      }).join('') +
+      '</div>';
+  };
 
-  
-  const fameHtml = fame ? `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-      <span style="font-size:12px;font-weight:700;color:var(--sub);">명성</span>
-      <span style="font-size:13px;font-weight:900;color:var(--purple);">Lv.${fame}</span>
-      <div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">
-        <div style="height:100%;border-radius:3px;background:var(--purple);width:${famePct}%;"></div>
-      </div>
-      <span style="font-size:10px;color:var(--muted);">${famePct}%</span>
-    </div>
-    ${statPts !== '' ? `<div style="font-size:11px;color:var(--muted);">스탯 포인트 ${statPts} · 스킬 포인트 ${skillPts||0}</div>` : ''}` : '';
+  var profBars = profEntries.length ? profEntries.map(function(e) {
+    var name = e[0], lv = e[1].lv, pct = e[1].pct;
+    var color = JOB_COLOR[name] || 'var(--purple)';
+    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
+      '<span style="font-size:12px;font-weight:700;color:var(--sub);width:52px;flex-shrink:0;">' + name + '</span>' +
+      '<span style="font-size:11px;font-weight:700;color:' + color + ';width:36px;flex-shrink:0;">Lv.' + lv + '</span>' +
+      '<div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">' +
+        '<div style="height:100%;border-radius:3px;background:' + color + ';width:' + pct + '%;transition:width .5s;"></div>' +
+      '</div>' +
+      '<span style="font-size:10px;color:var(--muted);width:38px;text-align:right;flex-shrink:0;">' + pct + '%</span>' +
+      '</div>';
+  }).join('') : '';
+
+  var skillTags = Object.entries(mergedSkills).length ?
+    '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
+    Object.entries(mergedSkills).map(function(e) {
+      return '<span class="tag tag-amber">' + e[0] + ' Lv.' + e[1] + '</span>';
+    }).join('') + '</div>' : '';
+
+  var fameHtml = fame ?
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">' +
+    '<span style="font-size:12px;font-weight:700;color:var(--sub);">명성</span>' +
+    '<span style="font-size:13px;font-weight:900;color:var(--purple);">Lv.' + fame + '</span>' +
+    '<div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">' +
+      '<div style="height:100%;border-radius:3px;background:var(--purple);width:' + famePct + '%;"></div>' +
+    '</div>' +
+    '<span style="font-size:10px;color:var(--muted);">' + famePct + '%</span>' +
+    '</div>' +
+    (statPts !== '' ? '<div style="font-size:11px;color:var(--muted);">스탯 포인트 ' + statPts + ' · 스킬 포인트 ' + (skillPts||0) + '</div>' : '')
+    : '';
 
   root.innerHTML =
-    (fameHtml ? `<div style="margin-bottom:4px;">${fameHtml}</div>` : '') +
-    sec('기본 스탯',   'var(--purple)', statGrid(baseEntries)) +
-    sec('직업 스탯',   'var(--teal)',   statGrid(jobEntries)) +
-    (etcEntries.length ? sec('기타',    'var(--muted)',  statGrid(etcEntries)) : '') +
-    sec('숙련도',      'var(--amber)',  profBars) +
-    sec('보유 스킬',   'var(--green)',  skillTags);
+    (fameHtml ? '<div style="margin-bottom:4px;">' + fameHtml + '</div>' : '') +
+    sec('기본 스탯',  'var(--purple)', statGrid(baseEntries)) +
+    sec('숙련도',     'var(--teal)',   profBars) +
+    sec('직업 스탯',  'var(--amber)',  statGrid(jobEntries)) +
+    (etcEntries.length ? sec('기타', 'var(--muted)', statGrid(etcEntries)) : '') +
+    sec('보유 스킬',  'var(--green)',  skillTags);
 }
-
 function _showCharPaste(show) {
   const ta  = document.getElementById('char-paste');
   const btn = document.getElementById('char-paste-toggle');

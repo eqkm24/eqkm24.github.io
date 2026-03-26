@@ -1,7 +1,6 @@
-/* ═══ 조공 포인트 ═══ */
 let _tributeData = {};
 let _tributeLog  = [];
-const TRIBUTE_GOAL = 6000;
+var TRIBUTE_GOAL = 6000;
 
 function initTribute() {
   if (isAdmin()) {

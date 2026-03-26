@@ -1,14 +1,7 @@
-/* ═══ 변동 시세 ═══ */
-
-const PRICE_CATS = {
+var PRICE_CATS = {
   food: { label:'🍳 요리',   key:'stella_price_food' },
   crop: { label:'🌾 농작물', key:'stella_price_crop'  },
   fish: { label:'🐟 물고기', key:'stella_price_fish'  },
-};
-
-const GRADE_TAG = {
-  '커먼':'tag-blue', '언커먼':'tag-teal',
-  '레어':'tag-purple', '에픽':'tag-amber', '전설':'tag-red',
 };
 
 let _curPriceCat  = 'food';
@@ -19,7 +12,7 @@ function initPrice() {
 }
 
 function switchPriceCat(cat, el) {
-  // 이전 리스너 해제
+  
   if (_priceRef) { _priceRef.off(); _priceRef = null; }
 
   _curPriceCat = cat;

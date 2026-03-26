@@ -1,38 +1,27 @@
-/* ═══════════════════════════════════════════════════════
-   스텔라 마을 위키 v3 — 인증 시스템
-
-   - 사이트 PIN : DB sha256 해시 비교 (하드코딩 없음)
-   - 마을 입장  : 닉네임이 마을원 명단에 있는지 확인
-   - 관리자     : DB sha256 해시 → 토큰 발급 → 24시간
-═══════════════════════════════════════════════════════ */
-
-/* ── 전역 앱 상태 ── */
 window._stella = {
   isAdmin:    false,
   adminToken: null,
   villageOk:  false,
 };
 
-const SITE_PIN_KEY   = 'stella_pin_ok';
-const ADMIN_TOKEN_KEY = 'stella_admin_token';
+var SITE_PIN_KEY   = 'stella_pin_ok';
+var ADMIN_TOKEN_KEY = 'stella_admin_token';
 
-/* ── SHA-256 ── */
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
 
-/* ── 초기화 ── */
 (function init() {
-  // 관리자 토큰 — 메모리에만 유지 (새로고침/창 닫기 시 자동 로그아웃)
-  // sessionStorage 복원 제거 → 페이지 로드 시 항상 로그아웃 상태
+  
+  
 
-  // 마을 입장 세션 복원
+  
   if (sessionStorage.getItem('stella_village_ok') === 'true') {
     window._stella.villageOk = true;
   }
 
-  // Firebase 준비 → 앱 시작
+  
   function tryBoot(tries) {
     if (window._fbReady) { _bootApp(); return; }
     if (tries > 60) { console.warn('[stella] Firebase 연결 실패 — 오프라인 모드'); _bootApp(); return; }
@@ -50,9 +39,6 @@ function _bootApp() {
   renderPinGate();
 }
 
-/* ══════════════════════════════
-   사이트 PIN 게이트
-══════════════════════════════ */
 function isSiteAuth() {
   return localStorage.getItem(SITE_PIN_KEY) === 'true';
 }
@@ -108,13 +94,13 @@ async function pinSubmit() {
   try {
     const storedHash = await window.$db.get('stella_config/site_pin_hash');
 
-    // 최초 설정 전 — 기본값 허용
+    
     if (!storedHash && pin === '1234') { _pinSuccess(); return; }
 
     const inputHash = await sha256(pin);
     if (inputHash === storedHash) { _pinSuccess(); return; }
 
-    // 틀림
+    
     if (msg) msg.textContent = '비밀번호가 틀렸습니다.';
     document.querySelectorAll('.pin-dig').forEach(el => {
       el.value = '';
@@ -123,7 +109,7 @@ async function pinSubmit() {
     });
     document.getElementById('p0')?.focus();
   } catch(e) {
-    // 오프라인 — 기본 PIN
+    
     if (pin === '1234') { _pinSuccess(); return; }
     if (msg) msg.textContent = '연결 오류. 다시 시도해주세요.';
   }
@@ -142,13 +128,10 @@ function _pinSuccess() {
 }
 
 function _afterPinOk() {
-  // 앱 초기화 (router.js의 initApp 호출)
+  
   if (typeof initApp === 'function') initApp();
 }
 
-/* ══════════════════════════════
-   마을 입장 인증 (닉네임)
-══════════════════════════════ */
 function requireVillage(callback) {
   if (window._stella.villageOk) { callback(); return; }
   showVillageModal(callback);
@@ -201,9 +184,6 @@ async function submitVillageNick() {
   if (window._villageCallback) { window._villageCallback(); window._villageCallback = null; }
 }
 
-/* ══════════════════════════════
-   관리자 로그인
-══════════════════════════════ */
 function openAdminLogin() {
   if (window._stella.isAdmin) {
     if (typeof renderAdminPage === 'function') renderAdminPage();
@@ -251,7 +231,7 @@ async function submitAdminPin() {
       }
     }
 
-    // 토큰 발급
+    
     const token = Array.from(crypto.getRandomValues(new Uint8Array(24)))
       .map(b => b.toString(16).padStart(2,'0')).join('');
     const expiry = Date.now() + 24 * 60 * 60 * 1000;
@@ -260,7 +240,7 @@ async function submitAdminPin() {
 
     window._stella.adminToken = token;
     window._stella.isAdmin    = true;
-    // 토큰은 메모리(window._stella.adminToken)에만 저장 — 새로고침 시 자동 로그아웃
+    
 
     document.getElementById('admin-modal')?.remove();
     if (typeof onAdminLogin === 'function') onAdminLogin();
@@ -276,21 +256,20 @@ function doLogout() {
   }
   window._stella.adminToken = null;
   window._stella.isAdmin    = false;
-  sessionStorage.removeItem(ADMIN_TOKEN_KEY); // 혹시 남아있을 경우 대비
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY); 
   if (typeof onAdminLogout === 'function') onAdminLogout();
 }
 
 function isAdmin() { return !!window._stella.isAdmin; }
 
-/* ── 창/탭 닫기 시 관리자 세션 자동 삭제 ── */
 window.addEventListener('beforeunload', () => {
   const token = window._stella?.adminToken;
   if (!token || typeof firebase === 'undefined') return;
-  // sendBeacon 방식으로 비동기 삭제 (페이지 언로드 중에도 동작)
+  
   try {
     const db  = firebase.database();
     const url = db.ref(`_admin_sessions/${token}`).toString() + '.json';
-    // DELETE 요청 (Firebase REST API)
+    
     navigator.sendBeacon
       ? navigator.sendBeacon(url + '?method=DELETE', '')
       : fetch(url, { method: 'DELETE', keepalive: true }).catch(() => {});

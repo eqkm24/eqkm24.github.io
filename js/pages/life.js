@@ -1,13 +1,11 @@
-/* ═══ 생활 스킬 페이지 ═══ */
-
-const LIFE_JOBS = {
+var LIFE_JOBS = {
   mining:  { label:'채광', icon:'⛏', color:'var(--amber)', bouju:'태양의 보주' },
   fishing: { label:'낚시', icon:'🎣', color:'var(--blue)',  bouju:'바다의 보주' },
   farming: { label:'농사', icon:'🌾', color:'var(--green)', bouju:'별의 보주'   },
   cooking: { label:'요리', icon:'🍳', color:'var(--red)',   bouju:'대지의 보주' },
 };
 
-const SKILL_DATA = {
+var SKILL_DATA = {
   mining: {
     skills: [
       { name:'단련된 곡괭이', type:'P', tier:'Lv.1',
@@ -114,19 +112,15 @@ const SKILL_DATA = {
   },
 };
 
-const SMELT_DATA = [
+var SMELT_DATA = [
   { name:'미스릴 주괴',     ore:'일반 미스릴 원석',      qty:3, fuel:4, time:'30초', grade:'n' },
   { name:'아르젠타이트 주괴', ore:'일반 아르젠타이트 원석', qty:3, fuel:4, time:'30초', grade:'a' },
   { name:'벨리움 주괴',     ore:'일반 벨리움 원석',      qty:3, fuel:4, time:'30초', grade:'r' },
 ];
 
-const GRADE_LABEL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
-const GRADE_TAG   = { n:'tag-blue', a:'tag-teal', r:'tag-purple', h:'tag-amber' };
-
 let _curJob    = 'mining';
 let _curSubtab = 'skill';
 
-/* ── 초기화 ── */
 function initLife(job) {
   _curJob    = job || 'mining';
   _curSubtab = 'skill';
@@ -148,7 +142,6 @@ function _setJobActive(job) {
     t.classList.toggle('active', t.dataset.job === job));
 }
 
-/* ── 서브탭 ── */
 function _renderSubtabs() {
   const wrap = document.getElementById('life-sub-tabs');
   if (!wrap) return;
@@ -168,14 +161,13 @@ function switchLifeSubtab(tab, el) {
   _renderContent();
 }
 
-/* ── 콘텐츠 렌더링 ── */
 function _renderContent() {
   const root = document.getElementById('life-content');
   if (!root) return;
   const job  = LIFE_JOBS[_curJob];
   if (!job) return;
 
-  // 헤더 업데이트
+  
   const label = document.getElementById('life-label');
   const title = document.getElementById('life-title');
   const sub   = document.getElementById('life-sub');
@@ -190,7 +182,6 @@ function _renderContent() {
   }
 }
 
-/* ── 스킬 패널 ── */
 function _buildSkillPanel(jobKey) {
   const data = SKILL_DATA[jobKey];
   if (!data) return '<div class="empty">데이터가 없습니다.</div>';
@@ -246,7 +237,6 @@ function toggleSkill(job, idx) {
   if (card) card.classList.toggle('open');
 }
 
-/* ── 제련 패널 ── */
 function _buildSmeltPanel() {
   const dex  = parseInt(window._charStats?.['손재주'] || '0') || 0;
   const prob = _calcSmeltProb(dex);

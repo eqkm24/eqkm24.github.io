@@ -1,4 +1,3 @@
-/* ═══ 마을 구역 ═══ */
 let _zoneData = {};
 
 function initZone() {

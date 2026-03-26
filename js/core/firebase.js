@@ -1,10 +1,3 @@
-/* ═══════════════════════════════════════════════════════
-   스텔라 마을 위키 v3 — Firebase 초기화
-
-   ✅ API Key는 읽기 전용 권한만 허용
-   ✅ DB Rules에서 모든 클라이언트 쓰기 차단
-   ✅ 쓰기는 관리자 토큰 검증 후에만 허용
-═══════════════════════════════════════════════════════ */
 (function waitFirebase() {
   if (typeof firebase === 'undefined') {
     setTimeout(waitFirebase, 50);
@@ -24,13 +17,13 @@
   if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
   const db = firebase.database();
 
-  /* ── 읽기 헬퍼 ── */
+  
   window.$db = {
     on:  (path, cb)  => db.ref(path).on('value', s => cb(s.exists() ? s.val() : null)),
     get: (path)      => db.ref(path).once('value').then(s => s.exists() ? s.val() : null),
     off: (path)      => db.ref(path).off(),
 
-    /* 쓰기 — 관리자 토큰 검증 후에만 실행 */
+    
     set:    async (path, val) => { await _guard(); return db.ref(path).set(val); },
     update: async (path, val) => { await _guard(); return db.ref(path).update(val); },
     push:   async (path, val) => { await _guard(); return db.ref(path).push(val); },
@@ -49,7 +42,7 @@
     }
   }
 
-  /* Firebase 준비 완료 */
+  
   window._fbReady = true;
   document.dispatchEvent(new Event('firebase-ready'));
 })();

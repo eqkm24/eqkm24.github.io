@@ -1,5 +1,3 @@
-/* ═══ 메인 페이지 ═══ */
-
 function initMain() {
   _showPopupIfNeeded();
   _loadMainStats();
@@ -13,7 +11,6 @@ function initMain() {
   }
 }
 
-/* ── 시작 팝업 ── */
 function _showPopupIfNeeded() {
   const key     = 'stella_popup_skip';
   const skipped = localStorage.getItem(key);
@@ -32,7 +29,6 @@ function closeMainPopup() {
   setTimeout(() => popup.style.display = 'none', 200);
 }
 
-/* ── 제작 레시피 통합 검색 ── */
 function searchRecipeMain(q) {
   const root = document.getElementById('main-recipe-results');
   if (!root) return;
@@ -40,7 +36,7 @@ function searchRecipeMain(q) {
 
   if (!q) { root.innerHTML = ''; return; }
 
-  // RECIPE_DATA가 recipe.js에 있으므로 전역 참조
+  
   if (typeof RECIPE_DATA === 'undefined') {
     root.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px;">제작 데이터를 불러오는 중...</div>`;
     return;
@@ -90,7 +86,6 @@ function searchRecipeMain(q) {
     </div>`;
 }
 
-/* ── 스탯 ── */
 function _loadMainStats() {
   window.$db.on('stella_members', val => {
     const members = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
@@ -113,8 +108,7 @@ function _loadMainStats() {
   });
 }
 
-/* ── TOP3 ── */
-const FOOD_BASE = {};  // 원가 데이터 (비어있으면 등락률 생략)
+var FOOD_BASE = {};  
 
 function _loadTop3() {
   window.$db.on('stella_price_food', val => {
@@ -160,7 +154,6 @@ function _loadTop3() {
   });
 }
 
-/* ── 업데이트 노트 ── */
 function _loadNotes() {
   window.$db.on('stella_update_notes', val => {
     const root = document.getElementById('main-notes');
@@ -195,9 +188,8 @@ function _loadNotes() {
   });
 }
 
-/* ── 방문자 카운터 ── */
 function _initVisitor() {
-  // 방문자 카운터는 firebase 직접 접근 (Admin SDK 불필요, DB Rules에서 허용)
+  
   if (typeof firebase === 'undefined' || !window._fbReady) return;
   const db    = firebase.database();
   const uid   = localStorage.getItem('stella_uid') || crypto.randomUUID();
@@ -219,7 +211,6 @@ function _initVisitor() {
   });
 }
 
-/* ── 캐릭터 스펙 ── */
 function parseCharInfo(text) {
   const root = document.getElementById('char-stats');
   if (!root) return;
@@ -232,7 +223,7 @@ function parseCharInfo(text) {
   const lines  = text.split('\n');
   let section  = '';
   const stats  = {};
-  const profs  = {};  // { 요리: { lv:26, pct:90.87 } }
+  const profs  = {};  
   const skills = {};
   let fame = '', fameNum = 0, famePct = 0;
   let statPts = '', skillPts = '';
@@ -247,7 +238,7 @@ function parseCharInfo(text) {
     if (line.includes('[임시'))        { section = 'skip';  continue; }
     if (section === 'skip') continue;
 
-    // 명성: 24 (72,996.8 / 347,400, 21.01%)
+    
     const fameM = line.match(/^명성\s*[:：]\s*(\d+)\s*\(.*?([\d.]+)%\)/);
     if (fameM) { fame = fameM[1]; famePct = parseFloat(fameM[2]); continue; }
 
@@ -260,13 +251,13 @@ function parseCharInfo(text) {
     const body = line.slice(1).trim();
 
     if (section === 'stat') {
-      // ㆍ손재주 (base:30 / temp:68.02 / equip:0 / total:98.02)
+      
       const m = body.match(/^(.+?)\s*\(.*?total\s*[:=]\s*([\d.]+)/);
       if (m) stats[m[1].trim()] = parseFloat(m[2]);
     }
 
     if (section === 'prof') {
-      // ㆍ요리 (Lv:26 / 276,605.2 / 304,400, 90.87%)
+      
       const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)[^)]*,\s*([\d.]+)%/);
       if (m) profs[m[1].trim()] = { lv: parseInt(m[2]), pct: parseFloat(m[3]) };
       else {
@@ -284,17 +275,17 @@ function parseCharInfo(text) {
   window._charStats = { ...stats };
   try { localStorage.setItem('stella_char_info', JSON.stringify({ text, stats, profs, skills, fame, famePct })); } catch(e) {}
 
-  // ── 파싱 성공 시 textarea 숨기고 결과 표시 ──
+  
   _showCharPaste(false);
 
   const fmt = v => typeof v === 'number'
     ? (Number.isInteger(v) ? v : (v % 1 === 0 ? v : parseFloat(v.toFixed(2))))
     : v;
 
-  // ── 스탯 분류 ──
-  // 기본 스탯 (별도 행)
+  
+  
   const BASE_STATS  = ['행운','노련함','손재주','감각','인내력','카리스마'];
-  // 직업 특화 스탯
+  
   const JOB_STATS   = ['요리 등급업 확률','음식 효과연장','조리 단축',
                         '일반 작물 감소비율','경작지당 화분통 설치 개수','경작지 점유 수'];
   const baseEntries = BASE_STATS.map(k => stats[k] != null ? [k, stats[k]] : null).filter(Boolean);
@@ -302,7 +293,7 @@ function parseCharInfo(text) {
   const usedKeys    = new Set([...BASE_STATS, ...JOB_STATS]);
   const etcEntries  = Object.entries(stats).filter(([k]) => !usedKeys.has(k));
 
-  // 숙련도 바
+  
   const profEntries = Object.entries(profs).filter(([,v]) => v.lv > 0);
   const JOB_COLOR   = { 채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
                          요리:'var(--red)',   대장술:'var(--purple)', 생존:'var(--teal)',
@@ -344,7 +335,7 @@ function parseCharInfo(text) {
         <span class="tag tag-amber">${k} Lv.${v}</span>`).join('')}
     </div>` : '';
 
-  // 명성 바
+  
   const fameHtml = fame ? `
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
       <span style="font-size:12px;font-weight:700;color:var(--sub);">명성</span>
@@ -394,8 +385,6 @@ function clearCharCard() {
   localStorage.removeItem('stella_char_info');
 }
 
-
-/* ── 업데이트 노트 작성 모달 ── */
 function openNoteModal() {
   const m = document.createElement('div');
   m.className = 'modal-bg';

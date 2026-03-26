@@ -1,5 +1,3 @@
-/* ═══ 마을원 명단 ═══ */
-
 let _memberData = [];
 
 function initMember() {
@@ -39,7 +37,7 @@ function renderMembers() {
     return;
   }
 
-  // 직업별 색상
+  
   const JOB_COLOR = {
     채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
     요리:'var(--red)', 기타:'var(--muted)',

@@ -1,11 +1,4 @@
-/* ═══════════════════════════════════════════════════════
-   스텔라 마을 위키 v3 — 라우터
-
-   각 페이지는 pages/ 폴더의 독립 HTML 파일
-   go(page) 호출 → fetch → #view에 삽입 → 페이지 init
-═══════════════════════════════════════════════════════ */
-
-const ROUTES = {
+var ROUTES = {
   main:    { file: 'pages/main.html',    init: 'initMain',    label: '메인',   nav: null },
   member:  { file: 'pages/member.html',  init: 'initMember',  label: '명단',   nav: 'village', village: true },
   zone:    { file: 'pages/zone.html',    init: 'initZone',    label: '구역',   nav: 'village', village: true },
@@ -16,9 +9,8 @@ const ROUTES = {
 };
 
 let _curPage  = null;
-let _pageCache = {};  // 로드한 HTML 캐시
+let _pageCache = {};  
 
-/* ── 앱 진입점 ── */
 function initApp() {
   _buildNav();
   _applyInitTheme();
@@ -26,7 +18,6 @@ function initApp() {
   go('main');
 }
 
-/* ── 네비 빌드 ── */
 function _buildNav() {
   const nav = document.getElementById('topnav');
   if (!nav) return;
@@ -85,7 +76,7 @@ function _buildNav() {
         onclick="openAdminLogin()" title="관리자 로그인">👑</button>
     </div>`;
 
-  // 드롭다운 외부 클릭 닫기
+  
   document.addEventListener('click', e => {
     if (!e.target.closest('.nav-dd')) _closeAllDd();
   });
@@ -110,14 +101,13 @@ function _setNavActive(navKey) {
   }
 }
 
-/* ── 페이지 이동 ── */
 async function go(page, param) {
   _closeAllDd();
 
   const route = ROUTES[page];
   if (!route) return;
 
-  // 마을 페이지 — 닉네임 인증 필요
+  
   if (route.village && !window._stella.villageOk) {
     requireVillage(() => go(page, param));
     return;
@@ -129,7 +119,7 @@ async function go(page, param) {
   const view = document.getElementById('view');
   if (!view) return;
 
-  // HTML 로드 (캐시 활용)
+  
   if (!_pageCache[page]) {
     view.innerHTML = `<div class="wrap"><div class="empty"><div class="spinner"></div></div></div>`;
     try {
@@ -144,12 +134,12 @@ async function go(page, param) {
 
   view.innerHTML = _pageCache[page];
 
-  // 페이지 init 함수 호출
+  
   if (typeof window[route.init] === 'function') {
     window[route.init](param);
   }
 
-  // 스크롤 상단
+  
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -158,7 +148,6 @@ function goVillage(page) {
   requireVillage(() => go(page));
 }
 
-/* ── 전역 데이터 로드 (마을원 명단 — 닉네임 인증에 필요) ── */
 function _loadGlobalData() {
   if (!window.$db) return;
   window.$db.on('stella_members', val => {
@@ -168,7 +157,6 @@ function _loadGlobalData() {
   });
 }
 
-/* ── 테마 토글 ── */
 function toggleTheme() {
   const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
   const next = cur === 'dark' ? 'light' : 'dark';
@@ -185,7 +173,6 @@ function _applyInitTheme() {
   if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
 }
 
-/* ── 관리자 로그인 후 콜백 ── */
 function onAdminLogin() {
   const btn = document.getElementById('admin-nav-btn');
   if (btn) {
@@ -205,7 +192,6 @@ function onAdminLogout() {
   if (_curPage) go(_curPage);
 }
 
-/* ── 초기 테마 적용 ── */
 (function() {
   const theme = localStorage.getItem('stella_theme') || 'dark';
   document.documentElement.setAttribute('data-theme', theme);

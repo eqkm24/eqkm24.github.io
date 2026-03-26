@@ -1,13 +1,114 @@
-/* ═══ 제작 레시피 ═══ */
+var _curCat = 'bench';
 
-const FAC_INFO = {
-  bench:   { label:'🔧 편백나무 작업대', cap:'최대 3개 설치', cls:'tag-blue'   },
-  brazier: { label:'🔥 허름한 화로',     cap:'최대 3개 설치', cls:'tag-red'    },
-  counter: { label:'🥣 허름한 조리대',   cap:'최대 6개 설치', cls:'tag-purple' },
+var RECIPE_DATA = {
+  bench: {
+    label: '🔧 편백나무 작업대',
+    cap: '최대 3개 설치',
+    sections: [
+      {
+        title: '강화 (스크롤·보주)',
+        items: [
+          { name:'일반 별빛 스크롤', grade:'n', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(일반)',8],['일반 달빛 촉매제',1]] },
+          { name:'고급 별빛 스크롤', grade:'a', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(고급)',8],['고급 달빛 촉매제',1]] },
+          { name:'희귀 별빛 스크롤', grade:'r', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(희귀)',8],['희귀 달빛 촉매제',1]] },
+          { name:'영웅 별의 보주',   grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
+          { name:'영웅 바다의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
+          { name:'영웅 태양의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
+          { name:'영웅 대지의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
+        ]
+      },
+      {
+        title: '가구·설비',
+        items: [
+          { name:'허름한 화로',    grade:'n', time:'300초', prob:'100%', mats:[['심층암',15],['용광로',1],['모닥불',1],['마그마 블록',2]] },
+          { name:'허름한 조리대', grade:'n', time:'300초', prob:'100%', mats:[['편백나무 원목',10],['철 창살',5],['가마솥',1],['모닥불',1]] },
+          { name:'평범한 화분통', grade:'n', time:'60초',  prob:'100%', mats:[['편백나무 원목',2],['퇴비통',1],['흙',3]] },
+          { name:'깔끔한 화분통', grade:'a', time:'60초',  prob:'100%', mats:[['편백나무 원목',5],['평범한 화분통',1],['회백토',3]] },
+          { name:'허수아비',      grade:'n', time:'60초',  prob:'100%', mats:[['대나무 블록',10],['가죽 모자',1],['가죽 조끼',1],['가죽 바지',1],['가죽 장화',1],['갑옷 거치대',1]] },
+          { name:'비닐하우스',    grade:'n', time:'60초',  prob:'100%', mats:[['유리',16],['차광 유리',1]] },
+        ]
+      },
+      {
+        title: '농사 도구',
+        items: [
+          { name:'구리 물뿌리개',         grade:'n', time:'180초', prob:'100%', mats:[['물 양동이',1],['구리 블록',5],['철 블록',3]] },
+          { name:'철 물뿌리개',           grade:'a', time:'180초', prob:'90%',  mats:[['구리 물뿌리개',1],['미스릴 주괴',3],['철 블록',5]] },
+          { name:'금 물뿌리개',           grade:'r', time:'180초', prob:'70%',  mats:[['철 물뿌리개',1],['아르젠타이트 주괴',3],['금 블록',5]] },
+          { name:'트라이어드 물뿌리개',   grade:'h', time:'180초', prob:'30%',  mats:[['금 물뿌리개',1],['벨리움 주괴',4]] },
+          { name:'철제 스프링클러',       grade:'a', time:'180초', prob:'100%', mats:[['물 양동이',1],['미스릴 주괴',3],['철 블록',5]] },
+          { name:'금 스프링클러',         grade:'r', time:'180초', prob:'80%',  mats:[['철제 스프링클러',1],['아르젠타이트 주괴',3],['금 블록',5]] },
+          { name:'트라이어드 스프링클러', grade:'h', time:'180초', prob:'60%',  mats:[['금 스프링클러',1],['벨리움 주괴',4]] },
+        ]
+      },
+      {
+        title: '낚시 도구',
+        items: [
+          { name:'지렁이 미끼',  grade:'n', time:'5초', prob:'100%', mats:[['일반↑ 말린 농작물',10],['일반↑ 말린 물고기',10]] },
+          { name:'어분 미끼',    grade:'a', time:'5초', prob:'100%', mats:[['고급↑ 말린 농작물',10],['고급↑ 말린 물고기',10]] },
+          { name:'루어 미끼',    grade:'r', time:'5초', prob:'100%', mats:[['희귀↑ 말린 농작물',20],['희귀↑ 말린 물고기',10]] },
+          { name:'평범한 떡밥', grade:'n', time:'5초', prob:'100%', mats:[['지렁이 미끼',1],['일반↑ 말린 농작물',1],['일반↑ 말린 물고기',1]] },
+          { name:'잘만든 떡밥', grade:'a', time:'5초', prob:'100%', mats:[['어분 미끼',1],['고급↑ 말린 농작물',1],['고급↑ 말린 물고기',1]] },
+          { name:'무지개 떡밥', grade:'r', time:'5초', prob:'100%', mats:[['루어 미끼',1],['희귀↑ 말린 농작물',2],['희귀↑ 말린 물고기',1]] },
+        ]
+      },
+      {
+        title: '장비',
+        items: [
+          { name:'트라이어드 투구',  grade:'h', time:'300초', prob:'100%', mats:[['네더라이트 투구',1],['미스릴 주괴',2],['아르젠타이트 주괴',2],['벨리움 주괴',2]] },
+          { name:'트라이어드 흉갑',  grade:'h', time:'300초', prob:'100%', mats:[['네더라이트 흉갑',1],['미스릴 주괴',2],['아르젠타이트 주괴',2],['벨리움 주괴',2]] },
+          { name:'트라이어드 레깅스',grade:'h', time:'300초', prob:'100%', mats:[['네더라이트 레깅스',1],['미스릴 주괴',2],['아르젠타이트 주괴',2],['벨리움 주괴',2]] },
+          { name:'트라이어드 부츠',  grade:'h', time:'300초', prob:'100%', mats:[['네더라이트 부츠',1],['미스릴 주괴',2],['아르젠타이트 주괴',2],['벨리움 주괴',2]] },
+          { name:'겉날개',           grade:'h', time:'300초', prob:'50%',  mats:[['드래곤의 왼쪽 날개',1],['드래곤의 오른쪽 날개',1],['가스트의 눈물',2]] },
+        ]
+      },
+    ]
+  },
+  brazier: {
+    label: '🔥 허름한 화로',
+    cap: '최대 3개 설치',
+    sections: [
+      {
+        title: '제련 목록',
+        items: [
+          { name:'말린 농작물',       grade:'n', time:'5초',  prob:'100%', mats:[['농작물',10],['마그마 블록',5]] },
+          { name:'말린 물고기',       grade:'n', time:'5초',  prob:'100%', mats:[['물고기',10],['마그마 블록',5]] },
+          { name:'미스릴 주괴',       grade:'n', time:'15초', prob:'100%', mats:[['일반 미스릴 원석',3],['마그마 블록',4]] },
+          { name:'아르젠타이트 주괴', grade:'a', time:'15초', prob:'100%', mats:[['일반 아르젠타이트 원석',3],['마그마 블록',4]] },
+          { name:'벨리움 주괴',       grade:'r', time:'15초', prob:'100%', mats:[['일반 벨리움 원석',3],['마그마 블록',4]] },
+        ]
+      }
+    ]
+  },
+  counter: {
+    label: '🥣 허름한 조리대',
+    cap: '최대 6개 설치',
+    sections: [
+      {
+        title: '요리 목록',
+        items: [
+          { name:'쌈밥',           grade:'n', time:'30초', prob:'80%', mats:[['잡어',1],['상추',2],['옥수수',2]] },
+          { name:'옥수수 전',      grade:'n', time:'30초', prob:'80%', mats:[['정어리',1],['상추',2],['옥수수',2]] },
+          { name:'전골',           grade:'n', time:'30초', prob:'80%', mats:[['메기',1],['양배추',2],['무',2]] },
+          { name:'무조림',         grade:'n', time:'30초', prob:'80%', mats:[['잉어',1],['양배추',2],['무',2]] },
+          { name:'가스파초',       grade:'n', time:'30초', prob:'80%', mats:[['잡어',1],['무',2],['옥수수',2]] },
+          { name:'옥수수 착즙 주스',grade:'n', time:'15초', prob:'90%', mats:[['옥수수',1],['상추',1]] },
+          { name:'무 착즙 주스',   grade:'n', time:'15초', prob:'90%', mats:[['무',2],['양배추',2]] },
+          { name:'부야베스',       grade:'a', time:'40초', prob:'80%', mats:[['적색통돔',1],['아귀',1],['토마토',3],['석류',3]] },
+          { name:'치오피노',       grade:'a', time:'40초', prob:'80%', mats:[['다랑어',1],['랍스터',1],['토마토',3],['파인애플',3]] },
+          { name:'파에야',         grade:'a', time:'40초', prob:'80%', mats:[['농어',1],['숭어',1],['옥수수',3],['토마토',3]] },
+          { name:'세비체',         grade:'a', time:'40초', prob:'80%', mats:[['블루탱',1],['흰동가리',1],['레몬',3],['딸기',3]] },
+          { name:'페페스',         grade:'a', time:'40초', prob:'80%', mats:[['개복치',1],['줄돔',1],['습지개구리',1],['바나나',3],['토마토',3]] },
+          { name:'해산물 그릴 플래터', grade:'a', time:'40초', prob:'80%', mats:[['만타 가오리',1],['문어',1],['파인애플',3],['오렌지',3]] },
+          { name:'데리야끼',       grade:'a', time:'40초', prob:'80%', mats:[['연어',1],['철갑상어',1],['오렌지',3],['파인애플',3]] },
+          { name:'에스카베체',     grade:'a', time:'40초', prob:'80%', mats:[['강꼬치고기',1],['금붕어',1],['석류',3],['레몬',3]] },
+          { name:'양장피',         grade:'a', time:'40초', prob:'80%', mats:[['푸른 해파리',1],['뱀장어',1],['양배추',3],['무',3]] },
+        ]
+      }
+    ]
+  }
 };
 
-// 루나위키 이미지 URL (gitbook CDN)
-const LC_IMGS = {
+var LC_IMGS = {
   '일반 별빛 스크롤': 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FwL3rbhSjv7NYJb737NlO%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163657-Photoroom.png%3Falt%3Dmedia%26token%3D7fe08f92-b032-4be3-98bd-a5cb5ca9bd14&width=300&dpr=1&quality=100&sign=a977aa53&sv=2',
   '고급 별빛 스크롤': 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FEYtKwsA1EvQijSwxLb42%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163708-Photoroom.png%3Falt%3Dmedia%26token%3D9d6e9c67-ac84-4d0e-8c27-09cae24f640f&width=300&dpr=1&quality=100&sign=3112074a&sv=2',
   '희귀 별빛 스크롤': 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F53rzAM2dRepNSchVUqBy%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163704-Photoroom.png%3Falt%3Dmedia%26token%3D1f7eb272-83fd-435d-b9ae-7c3f8bc15417&width=300&dpr=1&quality=100&sign=72f81876&sv=2',
@@ -33,127 +134,91 @@ const LC_IMGS = {
   '루어 미끼':        'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FctubIuodLB3H0zl3Rm8q%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164814-Photoroom.png%3Falt%3Dmedia%26token%3D56fcb767-7fd9-4b4c-8581-86c6c6858aa7&width=300&dpr=1&quality=100&sign=464fef75&sv=2',
 };
 
-const RECIPE_DATA = {
-  bench: [
-    { name:'일반 별빛 스크롤', grade:'n', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(일반)',8],['일반 달빛 촉매제',1]] },
-    { name:'고급 별빛 스크롤', grade:'a', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(고급)',8],['고급 달빛 촉매제',1]] },
-    { name:'희귀 별빛 스크롤', grade:'r', time:'300초', prob:'100%', mats:[['별빛 스크롤 조각(희귀)',8],['희귀 달빛 촉매제',1]] },
-    { name:'영웅 별의 보주',   grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
-    { name:'영웅 바다의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
-    { name:'영웅 태양의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
-    { name:'영웅 대지의 보주', grade:'h', time:'300초', prob:'60%',  mats:[['희귀 별의 조각',8],['희귀 별가루',1]] },
-    { name:'허름한 화로',      grade:'n', time:'300초', prob:'100%', mats:[['심층암',15],['용광로',1],['모닥불',1],['마그마 블록',2]] },
-    { name:'허름한 조리대',    grade:'n', time:'300초', prob:'100%', mats:[['편백나무 원목',10],['철 창살',5],['가마솥',1],['모닥불',1]] },
-    { name:'평범한 화분통',    grade:'n', time:'60초',  prob:'100%', mats:[['편백나무 원목',2],['퇴비통',1],['흙',3]] },
-    { name:'깔끔한 화분통',    grade:'a', time:'60초',  prob:'100%', mats:[['편백나무 원목',5],['평범한 화분통',1],['회백토',3]] },
-    { name:'허수아비',         grade:'n', time:'60초',  prob:'100%', mats:[['대나무 블록',10],['가죽 모자',1],['가죽 조끼',1],['가죽 바지',1],['가죽 장화',1],['갑옷 거치대',1]] },
-    { name:'비닐하우스',       grade:'n', time:'60초',  prob:'100%', mats:[['유리',16],['차광 유리',1]] },
-    { name:'구리 물뿌리개',    grade:'n', time:'180초', prob:'100%', mats:[['물 양동이',1],['구리 블록',5],['철 블록',3]] },
-    { name:'철 물뿌리개',      grade:'a', time:'180초', prob:'90%',  mats:[['구리 물뿌리개',1],['미스릴 주괴',3],['철 블록',5]] },
-    { name:'금 물뿌리개',      grade:'r', time:'180초', prob:'70%',  mats:[['철 물뿌리개',1],['아르젠타이트 주괴',3],['금 블록',5]] },
-    { name:'트라이어드 물뿌리개', grade:'h', time:'180초', prob:'30%', mats:[['금 물뿌리개',1],['벨리움 주괴',4]] },
-    { name:'철제 스프링클러',  grade:'a', time:'180초', prob:'100%', mats:[['물 양동이',1],['미스릴 주괴',3],['철 블록',5]] },
-    { name:'금 스프링클러',    grade:'r', time:'180초', prob:'80%',  mats:[['철제 스프링클러',1],['아르젠타이트 주괴',3],['금 블록',5]] },
-    { name:'트라이어드 스프링클러', grade:'h', time:'180초', prob:'60%', mats:[['금 스프링클러',1],['벨리움 주괴',4]] },
-    { name:'지렁이 미끼',      grade:'n', time:'5초',   prob:'100%', mats:[['일반↑ 말린 농작물',10],['일반↑ 말린 물고기',10]] },
-    { name:'어분 미끼',        grade:'a', time:'5초',   prob:'100%', mats:[['고급↑ 말린 농작물',10],['고급↑ 말린 물고기',10]] },
-    { name:'루어 미끼',        grade:'r', time:'5초',   prob:'100%', mats:[['희귀↑ 말린 농작물',20],['희귀↑ 말린 물고기',10]] },
-  ],
-  brazier: [
-    { name:'말린 농작물',       grade:'n', time:'30초', prob:'100%', mats:[['농작물',10],['마그마 블록',5]] },
-    { name:'말린 물고기',       grade:'n', time:'30초', prob:'100%', mats:[['물고기',10],['마그마 블록',5]] },
-    { name:'미스릴 주괴',       grade:'n', time:'30초', prob:'100%', mats:[['일반 미스릴 원석',3],['마그마 블록',4]] },
-    { name:'아르젠타이트 주괴', grade:'a', time:'30초', prob:'100%', mats:[['일반 아르젠타이트 원석',3],['마그마 블록',4]] },
-    { name:'벨리움 주괴',       grade:'r', time:'30초', prob:'100%', mats:[['일반 벨리움 원석',3],['마그마 블록',4]] },
-  ],
-  counter: [
-    { name:'요리 (커먼)',  grade:'n', time:'가변', prob:'가변', mats:[['레시피 재료','적량']] },
-    { name:'요리 (언커먼)',grade:'a', time:'가변', prob:'가변', mats:[['레시피 재료','적량']] },
-    { name:'요리 (레어)', grade:'r', time:'가변', prob:'가변', mats:[['레시피 재료','적량']] },
-  ],
-};
-
-const GRADE_LABEL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
-const GRADE_TAG   = { n:'tag-blue', a:'tag-teal', r:'tag-purple', h:'tag-amber' };
-
-let _curCat = 'bench';
-
 function initRecipe() {
-  // DOM이 완전히 로드된 후 실행
-  requestAnimationFrame(() => {
-    const firstTab = document.querySelector('[data-cat="bench"]');
-    switchRecipeCat('bench', firstTab);
+  requestAnimationFrame(function() {
+    var firstBtn = document.querySelector('[data-cat="bench"]');
+    switchRecipeCat('bench', firstBtn);
   });
 }
 
 function switchRecipeCat(cat, el) {
   _curCat = cat;
-  document.querySelectorAll('.recipe-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.recipe-tab').forEach(function(t) { t.classList.remove('active'); });
   if (el) el.classList.add('active');
-  else document.querySelector(`[data-cat="${cat}"]`)?.classList.add('active');
 
-  const fac = FAC_INFO[cat] || {};
-  const cap = document.getElementById('recipe-cap');
-  if (cap) cap.textContent = `${fac.label} — ${fac.cap}`;
+  var data = RECIPE_DATA[cat];
+  if (!data) return;
 
-  const search = document.getElementById('recipe-search');
+  var cap = document.getElementById('recipe-cap');
+  if (cap) cap.textContent = data.label + ' — ' + data.cap;
+
+  var search = document.getElementById('recipe-search');
   if (search) search.value = '';
+
   renderRecipe();
 }
 
 function renderRecipe() {
-  const grid = document.getElementById('recipe-grid');
+  var grid = document.getElementById('recipe-grid');
   if (!grid) return;
 
-  const q     = (document.getElementById('recipe-search')?.value || '').toLowerCase().trim();
-  const items = RECIPE_DATA[_curCat] || [];
-  const fac   = FAC_INFO[_curCat] || {};
+  var q    = (document.getElementById('recipe-search')?.value || '').toLowerCase().trim();
+  var data = RECIPE_DATA[_curCat];
+  if (!data) return;
 
-  const filtered = q
-    ? items.filter(it =>
-        it.name.toLowerCase().includes(q) ||
-        it.mats.some(([m]) => String(m).toLowerCase().includes(q)))
-    : items;
+  var html = '';
 
-  if (!filtered.length) {
-    grid.innerHTML = `<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">🔍</div>검색 결과가 없어요.</div>`;
-    return;
+  data.sections.forEach(function(sec) {
+    var items = sec.items;
+    if (q) {
+      items = items.filter(function(it) {
+        return it.name.toLowerCase().includes(q) ||
+               it.mats.some(function(m) { return String(m[0]).toLowerCase().includes(q); });
+      });
+    }
+    if (!items.length) return;
+
+    html += '<div style="grid-column:1/-1;margin-top:8px;margin-bottom:2px;">' +
+            '<span style="font-size:11px;font-weight:700;letter-spacing:1.2px;' +
+            'color:var(--muted);text-transform:uppercase;">' + sec.title + '</span></div>';
+
+    items.forEach(function(it) {
+      var imgUrl  = LC_IMGS[it.name] || '';
+      var imgHtml = imgUrl
+        ? '<img src="' + imgUrl + '" alt="' + it.name + '" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;" loading="lazy">'
+        : '<span style="font-size:20px;">📦</span>';
+
+      var gradeLbl = { n:'일반', a:'고급', r:'희귀', h:'영웅' }[it.grade] || '';
+      var gradeTag = { n:'tag-blue', a:'tag-teal', r:'tag-purple', h:'tag-amber' }[it.grade] || 'tag-blue';
+      var probBadge = (it.prob !== '100%')
+        ? '<span class="tag tag-amber">' + it.prob + '</span>' : '';
+
+      var matsHtml = it.mats.map(function(m) {
+        return '<span class="mat-tag">' + m[0] + ' <span class="mat-qty">×' + m[1] + '</span></span>';
+      }).join('');
+
+      html +=
+        '<div class="recipe-card">' +
+          '<div class="recipe-card-hd">' +
+            '<div class="recipe-img">' + imgHtml + '</div>' +
+            '<div style="flex:1;min-width:0;">' +
+              '<div class="recipe-name">' + it.name + '</div>' +
+              '<div class="recipe-meta">' +
+                '<span class="tag ' + gradeTag + '">' + gradeLbl + '</span>' +
+                '<span class="tag" style="color:var(--muted);background:var(--bg-3);">⏱ ' + it.time + '</span>' +
+                probBadge +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="recipe-mats">' + matsHtml + '</div>' +
+        '</div>';
+    });
+  });
+
+  if (!html) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">' +
+      '<div class="empty-icon">🔍</div>검색 결과가 없어요.</div>';
+  } else {
+    grid.innerHTML = html;
   }
-
-  const facTag = `<span class="tag ${fac.cls}">${fac.label}</span>`;
-
-  grid.innerHTML = filtered.map(it => {
-    // 이름에서 이미지 찾기 (부분 매칭)
-    const imgKey = Object.keys(LC_IMGS).find(k =>
-      it.name.includes(k) || k.includes(it.name.replace(/^(일반|고급|희귀|영웅)\s*/,''))
-    );
-    const imgSrc = LC_IMGS[imgKey] || LC_IMGS[it.name] || '';
-    const imgHtml = imgSrc
-      ? `<img src="${imgSrc}" alt="${it.name}" style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;" loading="lazy">`
-      : `<span style="font-size:22px;">📦</span>`;
-
-    const probBadge = it.prob !== '100%' && it.prob !== '가변'
-      ? `<span class="tag tag-amber">${it.prob}</span>` : '';
-
-    const matsHtml = it.mats.map(([name, qty]) =>
-      `<span class="mat-tag">${name} <span class="mat-qty">×${qty}</span></span>`
-    ).join('');
-
-    return `
-    <div class="recipe-card">
-      <div class="recipe-card-hd">
-        <div class="recipe-img">${imgHtml}</div>
-        <div style="flex:1;min-width:0;">
-          <div class="recipe-name">${it.name}</div>
-          <div class="recipe-meta">
-            <span class="tag ${GRADE_TAG[it.grade]}">${GRADE_LABEL[it.grade]}</span>
-            <span class="tag" style="color:var(--muted);background:var(--bg-3);">⏱ ${it.time}</span>
-            ${probBadge}
-            ${facTag}
-          </div>
-        </div>
-      </div>
-      <div class="recipe-mats">${matsHtml}</div>
-    </div>`;
-  }).join('');
 }

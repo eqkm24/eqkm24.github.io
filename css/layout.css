@@ -1,15 +1,9 @@
-/* ═══════════════════════════════════════════
-   스텔라 마을 위키 v3 — 레이아웃 & 네비
-═══════════════════════════════════════════ */
-
-/* ── 앱 래퍼 ── */
 #app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* ── 탑 네비 ── */
 .topnav {
   position: fixed;
   top: 0; left: 0; right: 0;
@@ -25,7 +19,6 @@
   -webkit-backdrop-filter: blur(16px);
 }
 
-/* 로고 */
 .nav-logo {
   display: flex;
   align-items: center;
@@ -48,7 +41,6 @@
   letter-spacing: -0.3px;
 }
 
-/* 탭 */
 .nav-tabs {
   display: flex;
   align-items: center;
@@ -76,7 +68,6 @@
   font-weight: 700;
 }
 
-/* 드롭다운 */
 .nav-dd {
   position: relative;
 }
@@ -115,7 +106,6 @@
 }
 .nav-dd-item-icon { font-size: 14px; }
 
-/* 우측 유틸 */
 .nav-utils {
   display: flex;
   align-items: center;
@@ -139,7 +129,6 @@
   color: var(--sub);
 }
 
-/* PIN 게이트 */
 #pin-gate {
   position: fixed;
   inset: 0;
@@ -220,16 +209,13 @@
   40%,80%  { transform: translateX(8px); }
 }
 
-/* 마을 입장 모달 */
 .village-modal { max-width: 360px; }
 
-/* ── 페이지 래퍼 ── */
 #view {
   margin-top: var(--nav-h);
   flex: 1;
 }
 
-/* ── 콘텐츠 래퍼 ── */
 .wrap {
   max-width: 1160px;
   margin: 0 auto;
@@ -237,7 +223,6 @@
 }
 .wrap-sm { max-width: 800px; }
 
-/* ── 반응형 ── */
 @media (max-width: 768px) {
   .topnav { padding: 0 16px; }
   .nav-logo-text { display: none; }

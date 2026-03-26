@@ -1,18 +1,24 @@
-<div class="page" id="pg-zone">
 <div class="wrap">
-  <div class="ph">
-    <div class="ph-title">🗺️ 마을 <span style="color:#4ade80;">구역</span></div>
-    <div class="ph-sub">청크 기반 마을 땅 점유 현황 — 셀 클릭으로 소유자 설정</div>
+  <div class="page-hd">
+    <div class="page-hd-label">스텔라 마을</div>
+    <h1 class="page-hd-title">마을 <em>구역</em></h1>
+    <p class="page-hd-sub">청크 기반 마을 땅 점유 현황 — 셀 클릭으로 소유자 설정</p>
   </div>
-  <div class="search-bar"><input class="search-input" id="zn-search" placeholder="소유자 검색..." oninput="highlightZone()"></div>
-  <div class="zn-tools">
-    <span style="font-size:11px;color:var(--sub);">그리드 크기:</span>
-    <input class="tm-set-input" id="zn-cols" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
-    <span style="font-size:11px;color:var(--muted);">×</span>
-    <input class="tm-set-input" id="zn-rows" type="number" value="16" min="4" max="32" onchange="rebuildZone()">
-    <button class="mb-btn" id="zn-reset-btn" style="display:none;" onclick="resetZone()">초기화</button>
+  <div class="zone-controls">
+    <input class="input" id="zn-search" type="text" placeholder="🔍 소유자 검색..."
+      oninput="highlightZone()" style="max-width:200px;">
+    <label style="font-size:12px;color:var(--muted);">가로</label>
+    <input class="input" id="zn-cols" type="number" value="16" min="4" max="32"
+      onchange="rebuildZone()" style="width:60px;">
+    <label style="font-size:12px;color:var(--muted);">세로</label>
+    <input class="input" id="zn-rows" type="number" value="16" min="4" max="32"
+      onchange="rebuildZone()" style="width:60px;">
+    <div id="zn-stat" style="font-size:12px;color:var(--muted);margin-left:auto;"></div>
+    <button class="btn btn-danger btn-sm" id="zn-reset-btn" onclick="resetZone()" style="display:none;">초기화</button>
   </div>
-  <div class="zn-stat" id="zn-stat"></div>
-  <div class="zn-legend" id="zn-legend"></div>
-  <div class="zn-map" id="zn-map"></div>
-</div></div>
+  <div class="zone-map-wrap">
+    <div class="zone-map" id="zn-map"></div>
+  </div>
+  <div class="zone-legend" id="zn-legend"></div>
+  <div id="zn-modal-root"></div>
+</div>

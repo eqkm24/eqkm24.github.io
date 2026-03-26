@@ -1,45 +1,31 @@
-<div class="page" id="pg-recipe">
 <div class="wrap">
-
-  <div class="ph">
-    <div class="ph-title">🛠 <span style="color:var(--counter);">제작</span></div>
-    <div class="ph-sub">편백나무 작업대 · 허름한 화로 · 허름한 조리대</div>
+  <div class="page-hd">
+    <div class="page-hd-label">제작 레시피</div>
+    <h1 class="page-hd-title">제작 <em>레시피</em></h1>
+    <p class="page-hd-sub">편백나무 작업대 · 허름한 화로 · 허름한 조리대</p>
   </div>
 
   <!-- 제작대 탭 -->
-  <div class="lc-tabs" style="margin-bottom:16px;">
-    <button class="lc-tab rc-cat-btn rc-on" data-cat="bench"
-      onclick="switchRecipeCat('bench')" style="display:flex;align-items:center;gap:6px;">
-      <span>🔧</span><span>편백나무 작업대</span>
-    </button>
-    <button class="lc-tab rc-cat-btn" data-cat="brazier"
-      onclick="switchRecipeCat('brazier')" style="display:flex;align-items:center;gap:6px;">
-      <span>🔥</span><span>허름한 화로</span>
-    </button>
-    <button class="lc-tab rc-cat-btn" data-cat="counter"
-      onclick="switchRecipeCat('counter')" style="display:flex;align-items:center;gap:6px;">
-      <span>🥣</span><span>허름한 조리대</span>
-    </button>
+  <div class="recipe-tabs">
+    <div class="recipe-tab active" data-cat="bench"
+      onclick="switchRecipeCat('bench',this)">🔧 편백나무 작업대</div>
+    <div class="recipe-tab" data-cat="brazier"
+      onclick="switchRecipeCat('brazier',this)">🔥 허름한 화로</div>
+    <div class="recipe-tab" data-cat="counter"
+      onclick="switchRecipeCat('counter',this)">🥣 허름한 조리대</div>
   </div>
 
   <!-- 설치 제한 안내 -->
-  <div id="rc-cap-info" style="font-size:11px;color:var(--muted);margin-bottom:14px;padding:8px 14px;
-    background:var(--s2);border-radius:8px;border:1px solid var(--b1);">
-    <span id="rc-cap-text">🔧 편백나무 작업대 — 최대 3개 설치 가능</span>
-  </div>
+  <div class="recipe-cap-info" id="recipe-cap"></div>
 
   <!-- 검색 -->
-  <div style="margin-bottom:20px;">
-    <div style="position:relative;">
-      <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--muted);">🔍</span>
-      <input id="lc-search" class="lc-search-input"
-        placeholder="제작품 또는 재료 이름으로 검색..."
-        oninput="renderLifecat()">
-    </div>
+  <div style="margin-bottom:16px;position:relative;">
+    <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);">🔍</span>
+    <input class="input" id="recipe-search" type="text"
+      placeholder="제작품 또는 재료 검색..."
+      oninput="renderRecipe()"
+      style="padding-left:36px;">
   </div>
 
-  <!-- 카드 그리드 -->
-  <div class="lc-grid" id="lc-grid"></div>
-
-</div>
+  <div class="recipe-grid" id="recipe-grid"></div>
 </div>

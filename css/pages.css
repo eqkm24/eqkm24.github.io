@@ -1,0 +1,690 @@
+/* ═══════════════════════════════════════════
+   스텔라 마을 위키 v3 — 페이지별 CSS
+═══════════════════════════════════════════ */
+
+/* ══════════════════════════
+   메인 페이지
+══════════════════════════ */
+.main-wrap {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* 히어로 */
+.hero { margin-bottom: 28px; }
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: rgba(200,180,248,0.55);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--purple);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--purple);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text);
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.hero-title em { font-style: normal; color: var(--purple); }
+.hero-sub {
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* 스탯 바 */
+.stat-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.stat-card:hover {
+  border-color: var(--b2);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.stat-lbl {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+/* 퀵 그리드 */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.quick-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 16px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.quick-btn:hover {
+  background: var(--purple-glow);
+  border-color: rgba(200,180,248,0.2);
+  transform: translateY(-2px);
+}
+.quick-icon { font-size: 22px; margin-bottom: 8px; }
+.quick-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #d0cce8;
+  margin-bottom: 3px;
+}
+.quick-sub {
+  font-size: 10px;
+  color: var(--hint);
+  font-weight: 300;
+}
+
+/* 사이드바 */
+.main-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+/* TOP3 */
+.top3-list { display: flex; flex-direction: column; gap: 10px; }
+.top3-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.top3-rank { font-size: 18px; width: 26px; text-align: center; flex-shrink: 0; }
+.top3-info { flex: 1; min-width: 0; }
+.top3-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.top3-price {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* 업데이트 노트 */
+.note-list { display: flex; flex-direction: column; gap: 10px; }
+.note-row { display: flex; gap: 10px; align-items: flex-start; }
+.note-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.note-text { font-size: 12px; color: var(--sub); line-height: 1.5; }
+.note-date { font-size: 10px; color: var(--hint); margin-top: 2px; }
+
+/* 캐릭터 스펙 */
+.char-paste {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  padding: 12px 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  color: var(--text);
+  font-size: 12px;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color var(--fast);
+  margin-bottom: 12px;
+}
+.char-paste:focus { border-color: rgba(200,180,248,0.3); }
+.char-paste::placeholder { color: var(--hint); font-family: var(--font-body); font-size: 13px; }
+
+/* 스탯 그리드 */
+.char-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.char-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--bg-card);
+  border-radius: var(--radius-s);
+}
+.char-stat-key { font-size: 11px; color: var(--muted); }
+.char-stat-val { font-size: 12px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+
+/* 푸터 */
+.main-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-top: 1px solid var(--b1);
+  font-size: 11px;
+  color: var(--hint);
+}
+
+/* ══════════════════════════
+   마을 — 명단
+══════════════════════════ */
+.member-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.member-count { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.member-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all var(--fast) var(--ease);
+  cursor: pointer;
+}
+.member-card:hover {
+  border-color: var(--b2);
+  background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+.member-avatar {
+  width: 38px; height: 38px;
+  border-radius: var(--radius-s);
+  image-rendering: pixelated;
+  background: var(--bg-3);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.member-avatar img { width: 100%; height: 100%; }
+.member-info { flex: 1; min-width: 0; }
+.member-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.member-mc {
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ══════════════════════════
+   마을 — 구역
+══════════════════════════ */
+.zone-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.zone-map-wrap {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.zone-map {
+  display: grid;
+  gap: 3px;
+  width: fit-content;
+}
+.zone-cell {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  border: 1px solid var(--b1);
+  background: var(--bg-card);
+  cursor: pointer;
+  transition: all .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: transparent;
+}
+.zone-cell:hover { border-color: var(--b3); filter: brightness(1.2); }
+.zone-cell.owned { border-color: transparent; color: rgba(0,0,0,0.5); }
+.zone-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.zone-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--sub);
+}
+.zone-legend-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+}
+
+/* ══════════════════════════
+   마을 — 조공
+══════════════════════════ */
+.tribute-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.tribute-list { display: flex; flex-direction: column; gap: 8px; }
+.tribute-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  transition: all var(--fast) var(--ease);
+}
+.tribute-row:hover { border-color: var(--b2); }
+.tribute-rank {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  width: 28px;
+  text-align: center;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.tribute-rank.r1 { color: var(--amber); }
+.tribute-rank.r2 { color: var(--sub); }
+.tribute-rank.r3 { color: #cd7f32; }
+.tribute-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tribute-bar-wrap {
+  flex: 2;
+  height: 6px;
+  background: var(--b1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.tribute-bar {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--purple);
+  transition: width .5s var(--ease);
+}
+.tribute-pts {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--sub);
+  flex-shrink: 0;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* ══════════════════════════
+   생활 — 스킬
+══════════════════════════ */
+.life-job-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--b1);
+  padding-bottom: 0;
+}
+.life-job-tab {
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--fast) var(--ease);
+}
+.life-job-tab:hover { color: var(--sub); }
+.life-job-tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+.life-sub-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.life-sub-tab {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: var(--radius-s);
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  transition: all var(--fast) var(--ease);
+}
+.life-sub-tab.active {
+  background: var(--purple-dim);
+  border-color: rgba(200,180,248,0.25);
+  color: var(--purple);
+}
+
+/* 스킬 카드 */
+.skill-list { display: flex; flex-direction: column; gap: 10px; }
+.skill-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  transition: border-color var(--fast);
+}
+.skill-card:hover { border-color: var(--b2); }
+.skill-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.skill-type {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.skill-type-p { background: var(--teal-dim); color: var(--teal); }
+.skill-type-a { background: var(--purple-dim); color: var(--purple); }
+.skill-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+}
+.skill-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.skill-tier { font-size: 11px; color: var(--hint); }
+.skill-arrow {
+  font-size: 12px;
+  color: var(--hint);
+  transition: transform var(--fast);
+}
+.skill-card.open .skill-arrow { transform: rotate(180deg); }
+.skill-table-wrap {
+  display: none;
+  padding: 0 16px 14px;
+}
+.skill-card.open .skill-table-wrap { display: block; }
+.skill-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.skill-table th {
+  padding: 7px 10px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--hint);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--b1);
+}
+.skill-table td {
+  padding: 7px 10px;
+  color: var(--sub);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.skill-table tr:last-child td { border-bottom: none; }
+.skill-table tr:hover td { background: var(--bg-hover); }
+
+/* 제련 계산기 */
+.smelt-prob {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.smelt-prob-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.smelt-prob-title { font-size: 13px; font-weight: 700; color: var(--sub); }
+.smelt-dex-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--purple);
+  background: var(--purple-dim);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.smelt-bars { display: flex; flex-direction: column; gap: 10px; }
+.smelt-bar-row { display: flex; align-items: center; gap: 10px; }
+.smelt-star { font-size: 11px; font-weight: 700; width: 56px; text-align: right; flex-shrink: 0; }
+.smelt-bar-bg { flex: 1; height: 8px; background: var(--b1); border-radius: 4px; overflow: hidden; }
+.smelt-bar-fill { height: 100%; border-radius: 4px; transition: width .5s var(--ease); }
+.smelt-bar-plain  .smelt-bar-fill { background: var(--muted); }
+.smelt-bar-silver .smelt-bar-fill { background: linear-gradient(90deg,#a0a8b8,#d8dce8); }
+.smelt-bar-gold   .smelt-bar-fill { background: linear-gradient(90deg,#c8980a,#f6b76b); }
+.smelt-pct { font-size: 12px; font-weight: 700; font-family: var(--font-mono); color: var(--sub); width: 44px; text-align: right; }
+.smelt-hint {
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--hint);
+  background: var(--bg-3);
+  padding: 8px 12px;
+  border-radius: var(--radius-s);
+  border: 1px dashed var(--b1);
+}
+
+/* ══════════════════════════
+   제작 레시피
+══════════════════════════ */
+.recipe-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.recipe-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-m);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.recipe-tab:hover { border-color: var(--b2); color: var(--sub); }
+.recipe-tab.active {
+  background: var(--purple-dim);
+  border-color: rgba(200,180,248,0.3);
+  color: var(--purple);
+}
+.recipe-cap-info {
+  font-size: 11px;
+  color: var(--muted);
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-s);
+  padding: 8px 14px;
+  margin-bottom: 16px;
+}
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 10px;
+}
+.recipe-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 14px 16px;
+  transition: all var(--fast) var(--ease);
+}
+.recipe-card:hover { border-color: var(--b2); transform: translateY(-1px); }
+.recipe-card-hd { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.recipe-img {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-s);
+  background: var(--bg-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  image-rendering: pixelated;
+  overflow: hidden;
+}
+.recipe-img img { width: 100%; height: 100%; object-fit: contain; }
+.recipe-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.recipe-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.recipe-mats { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.mat-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: var(--bg-3);
+  border-radius: 5px;
+  font-size: 11px;
+  color: var(--sub);
+}
+.mat-qty { color: var(--amber); font-family: var(--font-mono); }
+
+/* ══════════════════════════
+   변동 시세
+══════════════════════════ */
+.price-cats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--b1);
+  padding-bottom: 0;
+}
+.price-cat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--fast) var(--ease);
+}
+.price-cat:hover { color: var(--sub); }
+.price-cat.active { color: var(--purple); border-bottom-color: var(--purple); }
+
+.price-paste-area {
+  min-height: 100px;
+  resize: vertical;
+}
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.price-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--hint);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--b1);
+}
+.price-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: var(--sub);
+}
+.price-table tr:last-child td { border-bottom: none; }
+.price-table tr:hover td { background: var(--bg-hover); }
+.price-change-up   { color: var(--green); font-weight: 700; }
+.price-change-down { color: var(--red); font-weight: 700; }
+.price-saved-at { font-size: 11px; color: var(--hint); margin-bottom: 12px; }
+
+/* ══════════════════════════
+   공통 — 반응형
+══════════════════════════ */
+@media (max-width: 900px) {
+  .main-wrap { grid-template-columns: 1fr; }
+  .main-sidebar { order: -1; }
+  .stat-bar { grid-template-columns: repeat(3, 1fr); }
+  .quick-grid { grid-template-columns: repeat(2, 1fr); }
+  .member-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .stat-bar { grid-template-columns: 1fr 1fr; }
+  .tribute-summary { grid-template-columns: 1fr 1fr; }
+  .tribute-bar-wrap { display: none; }
+  .recipe-grid { grid-template-columns: 1fr; }
+}

@@ -1,24 +1,39 @@
-<div class="page" id="pg-tribute">
 <div class="wrap">
-  <div class="ph">
-    <div class="ph-title">⭐ 조공 <span style="color:#fbbf24;">포인트</span></div>
-    <div class="ph-sub">인당 6,000P 목표 · 추가 버튼으로 이름+포인트 기록</div>
+  <div class="page-hd">
+    <div class="page-hd-label">스텔라 마을</div>
+    <h1 class="page-hd-title">조공 <em>포인트</em></h1>
+    <p class="page-hd-sub">인당 6,000P 목표 · 추가 버튼으로 이름+포인트 기록</p>
   </div>
-  <div class="search-bar"><input class="search-input" id="tb-search" placeholder="마을원 검색..." oninput="renderTribute()"></div>
-  <div class="tb-summary" id="tb-summary"></div>
-  <div class="mb-toolbar">
-    <button class="mb-btn mb-btn-add" style="background:linear-gradient(135deg,#fbbf24,#d97706);" onclick="openTributeModal()">+ 조공 추가</button>
-    <button class="mb-btn" id="tb-reset-btn" style="display:none;" onclick="resetTribute()">초기화</button>
+  <div class="tribute-summary" id="tb-summary"></div>
+  <div class="member-toolbar">
+    <input class="input" id="tb-search" type="text" placeholder="🔍 마을원 검색..."
+      oninput="renderTribute()" style="max-width:280px;">
+    <button class="btn btn-primary" onclick="openTributeModal()">+ 조공 추가</button>
+    <button class="btn btn-danger btn-sm" id="tb-reset-btn" onclick="resetTribute()" style="display:none;">초기화</button>
   </div>
-  <div class="tb-list" id="tb-list"></div>
-  <div class="tb-xp-ref">
-    <div style="font-size:11px;color:var(--sub);font-weight:700;margin-bottom:6px;">📖 조공 XP 참고표</div>
-    <div class="tb-xp-grid">
-      <div class="tb-xp-card"><strong>🍒 농작물</strong><br>커먼 1xp<br>언커먼 2xp<br>레어 7xp</div>
-      <div class="tb-xp-card"><strong>🐟 물고기</strong><br>커먼 4xp<br>언커먼 9xp<br>레어 20xp</div>
-      <div class="tb-xp-card"><strong>⛏️ 광물</strong><br>석탄 0.001<br>철 0.005<br>금 1xp<br>다이아 4xp</div>
-      <div class="tb-xp-card"><strong>💎 후원</strong><br>레드 200xp<br>다크블루 500xp<br>퍼플 1000xp</div>
+  <div class="tribute-list" id="tb-list"></div>
+
+  <!-- 조공 참고표 -->
+  <div style="margin-top:32px;">
+    <div class="section-label">조공 XP 참고표</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;">
+      <div class="card" style="padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;">🍒 농작물</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">커먼 1xp<br>언커먼 2xp<br>레어 7xp</div>
+      </div>
+      <div class="card" style="padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;">🐟 물고기</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">커먼 4xp<br>언커먼 9xp<br>레어 20xp</div>
+      </div>
+      <div class="card" style="padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;">⛏ 광물</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">석탄 0.001<br>철 0.005<br>금 1xp<br>다이아 4xp</div>
+      </div>
+      <div class="card" style="padding:12px 14px;">
+        <div style="font-size:12px;font-weight:700;color:var(--sub);margin-bottom:6px;">💎 후원</div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.8;">레드 200xp<br>다크블루 500xp<br>퍼플 1000xp</div>
+      </div>
     </div>
   </div>
   <div id="tb-modal-root"></div>
-</div></div>
+</div>

@@ -1,23 +1,133 @@
-<!-- ═══ main 페이지 ═══ -->
-<div class="page on" id="pg-main">
-<div class="wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 58px);text-align:center;padding-top:0;">
-  <div style="font-size:52px;margin-bottom:8px;">✨</div>
-  <h1 style="font-size:32px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을</h1>
-  <p style="font-size:13px;color:var(--sub);margin-bottom:28px;">루나월드 · 스텔라 마을 종합 정보 허브</p>
-  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;width:100%;margin-bottom:24px;">
-    <div class="main-card" onclick="go('member')"><div class="main-icon">👥</div><div class="main-val" id="dash-members">0</div><div class="main-label">마을원</div></div>
-    <div class="main-card" onclick="go('zone')"><div class="main-icon">🗺️</div><div class="main-val" id="dash-chunks">0</div><div class="main-label">점유 청크</div></div>
-    <div class="main-card" onclick="go('tribute')"><div class="main-icon">⭐</div><div class="main-val" id="dash-tribute">0</div><div class="main-label">총 조공P</div></div>
-    <div class="main-card" onclick="go('price')"><div class="main-icon">📊</div><div class="main-val">시세</div><div class="main-label">변동 시세</div></div>
-  </div>
-  <div style="max-width:560px;width:100%;margin-bottom:20px;">
-    <div style="font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">바로가기</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;">
-      <button class="main-qbtn" onclick="go('recipe')">🛠 제작</button>
-      <button class="main-qbtn" onclick="go('enhance')">⚙ 강화</button>
-      <button class="main-qbtn" onclick="go('skill')">💀 스킬</button>
+<div class="wrap">
+  <div class="main-wrap">
+
+    <!-- 좌측 컬럼 -->
+    <div class="main-left">
+
+      <!-- 히어로 -->
+      <div class="hero">
+        <div class="hero-badge">루나월드 · 스텔라 마을</div>
+        <h1 class="hero-title">스텔라 마을<br><em>위키</em></h1>
+        <p class="hero-sub">채광부터 요리까지, 마을의 모든 정보를 한 곳에서</p>
+      </div>
+
+      <!-- 스탯 바 -->
+      <div class="stat-bar">
+        <div class="stat-card" onclick="goVillage('member')">
+          <div class="stat-val" id="stat-members" style="color:var(--purple)">—</div>
+          <div class="stat-lbl">마을원</div>
+        </div>
+        <div class="stat-card" onclick="goVillage('zone')">
+          <div class="stat-val" id="stat-chunks" style="color:var(--teal)">—</div>
+          <div class="stat-lbl">청크</div>
+        </div>
+        <div class="stat-card" onclick="goVillage('tribute')">
+          <div class="stat-val" id="stat-tribute" style="color:var(--amber)">—</div>
+          <div class="stat-lbl">조공P</div>
+        </div>
+      </div>
+
+      <!-- 캐릭터 스펙 -->
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-hd">
+          <span class="card-title">🧑‍🌾 내 캐릭터 스펙</span>
+          <button class="card-more" onclick="clearCharCard()">초기화</button>
+        </div>
+        <div class="card-body">
+          <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6;">
+            인게임에서 <code style="background:var(--bg-3);padding:1px 6px;border-radius:4px;font-family:var(--font-mono);font-size:11px;">/생활 정보</code>를 입력 후 결과를 아래에 붙여넣으세요.
+          </p>
+          <textarea class="char-paste" id="char-paste"
+            placeholder="/생활 정보 결과를 여기에 붙여넣으세요..."
+            onpaste="setTimeout(()=>parseCharInfo(this.value),0)"
+            oninput="parseCharInfo(this.value)"></textarea>
+          <div id="char-stats"></div>
+        </div>
+      </div>
+
+      <!-- 빠른 이동 -->
+      <div class="section-label">빠른 이동</div>
+      <div class="quick-grid">
+        <div class="quick-btn" onclick="go('life','mining')">
+          <div class="quick-icon">⛏</div>
+          <div class="quick-name">채광</div>
+          <div class="quick-sub">스킬 · 제련</div>
+        </div>
+        <div class="quick-btn" onclick="go('life','fishing')">
+          <div class="quick-icon">🎣</div>
+          <div class="quick-name">낚시</div>
+          <div class="quick-sub">스킬 · 효율</div>
+        </div>
+        <div class="quick-btn" onclick="go('life','farming')">
+          <div class="quick-icon">🌾</div>
+          <div class="quick-name">농사</div>
+          <div class="quick-sub">스킬 · 작물가</div>
+        </div>
+        <div class="quick-btn" onclick="go('life','cooking')">
+          <div class="quick-icon">🍳</div>
+          <div class="quick-name">요리</div>
+          <div class="quick-sub">스킬 · 수익</div>
+        </div>
+        <div class="quick-btn" onclick="go('recipe')">
+          <div class="quick-icon">🛠</div>
+          <div class="quick-name">제작</div>
+          <div class="quick-sub">조합법 사전</div>
+        </div>
+        <div class="quick-btn" onclick="go('price')">
+          <div class="quick-icon">📊</div>
+          <div class="quick-name">시세</div>
+          <div class="quick-sub">실시간 변동</div>
+        </div>
+        <div class="quick-btn" onclick="goVillage('member')">
+          <div class="quick-icon">👥</div>
+          <div class="quick-name">마을원</div>
+          <div class="quick-sub">명단 조회</div>
+        </div>
+        <div class="quick-btn" onclick="goVillage('tribute')">
+          <div class="quick-icon">⭐</div>
+          <div class="quick-name">조공</div>
+          <div class="quick-sub">포인트 현황</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 우측 사이드바 -->
+    <div class="main-sidebar">
+
+      <!-- 요리 시세 TOP3 -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">🍳 요리 변동 시세 TOP 3</span>
+          <span class="card-more" onclick="go('price')">전체보기 →</span>
+        </div>
+        <div class="card-body" id="main-top3">
+          <div class="empty" style="padding:20px;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 업데이트 노트 -->
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-title">🔄 업데이트 노트</span>
+          <span class="card-more" id="note-admin-btn" style="display:none;"
+            onclick="openNoteModal()">+ 작성</span>
+        </div>
+        <div class="card-body" id="main-notes">
+          <div class="empty" style="padding:20px;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-  <div style="font-size:10px;color:var(--muted);">v2.1.0 · 제작자 02qB · lunawiki.gitbook.io 기반</div>
-</div>
+
+  <!-- 푸터 -->
+  <div class="main-footer">
+    <span id="visitor-count" style="font-size:11px;color:var(--hint);"></span>
+    <span style="font-size:10px;color:var(--hint);">v3.0 · 스텔라 마을 위키</span>
+  </div>
+
 </div>

@@ -1,0 +1,245 @@
+/* ═══════════════════════════════════════════
+   스텔라 마을 위키 v3 — 레이아웃 & 네비
+═══════════════════════════════════════════ */
+
+/* ── 앱 래퍼 ── */
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── 탑 네비 ── */
+.topnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 0;
+  background: rgba(10,13,18,0.85);
+  border-bottom: 1px solid var(--b1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* 로고 */
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-right: 32px;
+}
+.nav-logo-dot {
+  width: 8px; height: 8px;
+  background: var(--purple);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--purple);
+}
+.nav-logo-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--purple);
+  letter-spacing: -0.3px;
+}
+
+/* 탭 */
+.nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.nav-tab {
+  padding: 6px 14px;
+  border-radius: var(--radius-s);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  white-space: nowrap;
+  position: relative;
+}
+.nav-tab:hover {
+  color: var(--sub);
+  background: var(--bg-hover);
+}
+.nav-tab.active {
+  color: var(--purple);
+  background: var(--purple-glow);
+  font-weight: 700;
+}
+
+/* 드롭다운 */
+.nav-dd {
+  position: relative;
+}
+.nav-dd-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-2);
+  border: 1px solid var(--b2);
+  border-radius: var(--radius-m);
+  padding: 6px;
+  min-width: 160px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  z-index: 100;
+}
+.nav-dd-menu.open { display: flex; animation: slideUp .15s var(--ease); }
+
+.nav-dd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--sub);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.nav-dd-item:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.nav-dd-item-icon { font-size: 14px; }
+
+/* 우측 유틸 */
+.nav-utils {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+.nav-icon-btn {
+  width: 34px; height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-s);
+  color: var(--muted);
+  font-size: 14px;
+  transition: all var(--fast) var(--ease);
+  cursor: pointer;
+}
+.nav-icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--sub);
+}
+
+/* PIN 게이트 */
+#pin-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.pin-box {
+  text-align: center;
+  width: 320px;
+}
+.pin-logo {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.pin-logo-dot {
+  width: 6px; height: 6px;
+  background: var(--purple);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--purple);
+}
+.pin-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.pin-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+.pin-digits {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.pin-dig {
+  width: 52px; height: 60px;
+  background: var(--bg-card);
+  border: 1px solid var(--b2);
+  border-radius: var(--radius-m);
+  color: var(--text);
+  font-size: 26px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  text-align: center;
+  outline: none;
+  transition: border-color var(--fast) var(--ease);
+}
+.pin-dig:focus { border-color: rgba(200,180,248,0.5); }
+.pin-dig.shake { animation: pinShake .4s var(--ease); }
+.pin-msg {
+  font-size: 12px;
+  color: var(--red);
+  min-height: 18px;
+  margin-bottom: 20px;
+}
+
+@keyframes pinShake {
+  0%,100% { transform: translateX(0); }
+  20%,60%  { transform: translateX(-8px); }
+  40%,80%  { transform: translateX(8px); }
+}
+
+/* 마을 입장 모달 */
+.village-modal { max-width: 360px; }
+
+/* ── 페이지 래퍼 ── */
+#view {
+  margin-top: var(--nav-h);
+  flex: 1;
+}
+
+/* ── 콘텐츠 래퍼 ── */
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 28px;
+}
+.wrap-sm { max-width: 800px; }
+
+/* ── 반응형 ── */
+@media (max-width: 768px) {
+  .topnav { padding: 0 16px; }
+  .nav-logo-text { display: none; }
+  .wrap { padding: 24px 16px; }
+}

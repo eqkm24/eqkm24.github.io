@@ -1,0 +1,21 @@
+<div class="wrap">
+  <div class="page-hd">
+    <div class="page-hd-label" id="life-label">채광</div>
+    <h1 class="page-hd-title" id="life-title">채광 <em>스킬</em></h1>
+    <p class="page-hd-sub" id="life-sub">숙련도별 스킬 정보 및 수치</p>
+  </div>
+
+  <!-- 직업 탭 -->
+  <div class="life-job-tabs" id="life-job-tabs">
+    <div class="life-job-tab active" data-job="mining"  onclick="switchLifeJob('mining',this)">⛏ 채광</div>
+    <div class="life-job-tab"        data-job="fishing" onclick="switchLifeJob('fishing',this)">🎣 낚시</div>
+    <div class="life-job-tab"        data-job="farming" onclick="switchLifeJob('farming',this)">🌾 농사</div>
+    <div class="life-job-tab"        data-job="cooking" onclick="switchLifeJob('cooking',this)">🍳 요리</div>
+  </div>
+
+  <!-- 서브탭 -->
+  <div class="life-sub-tabs" id="life-sub-tabs"></div>
+
+  <!-- 콘텐츠 -->
+  <div id="life-content"></div>
+</div>

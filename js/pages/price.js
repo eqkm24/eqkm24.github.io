@@ -11,41 +11,40 @@ const GRADE_TAG = {
   '레어':'tag-purple', '에픽':'tag-amber', '전설':'tag-red',
 };
 
-let _curPriceCat = 'food';
-let _priceUnsub  = null;
+let _curPriceCat  = 'food';
+let _priceRef     = null;
 
 function initPrice() {
-  switchPriceCat('food', document.querySelector('.price-cat'));
+  switchPriceCat('food', document.querySelector('[data-cat="food"]'));
 }
 
 function switchPriceCat(cat, el) {
   // 이전 리스너 해제
-  if (_priceUnsub) { _priceUnsub(); _priceUnsub = null; }
+  if (_priceRef) { _priceRef.off(); _priceRef = null; }
 
   _curPriceCat = cat;
   document.querySelectorAll('.price-cat').forEach(t => t.classList.remove('active'));
   if (el) el.classList.add('active');
   else document.querySelector(`[data-cat="${cat}"]`)?.classList.add('active');
 
-  // 로딩
   const root = document.getElementById('price-table-area');
   if (root) root.innerHTML = `<div class="empty"><div class="spinner"></div></div>`;
 
-  // DB 구독
-  const ref = firebase.database().ref(PRICE_CATS[cat].key);
-  const handler = ref.on('value', snap => {
-    if (_curPriceCat !== cat) return;
+  if (!window._fbReady || typeof firebase === 'undefined') {
+    document.addEventListener('firebase-ready', () => switchPriceCat(cat, el), { once: true });
+    return;
+  }
+
+  _priceRef = firebase.database().ref(PRICE_CATS[cat].key);
+  _priceRef.on('value', snap => {
     _renderPriceCards(snap.exists() ? snap.val() : null);
   });
-  _priceUnsub = () => ref.off('value', handler);
 }
 
-/* ── 카드 렌더링 ── */
 function _renderPriceCards(val) {
   const root = document.getElementById('price-table-area');
   if (!root) return;
 
-  // 저장 시각
   const savedAt = document.getElementById('price-saved-at');
   if (savedAt && val?.savedAt) {
     const d = new Date(val.savedAt);
@@ -69,21 +68,18 @@ function _renderPriceCards(val) {
   const falling = items.filter(i => (i.diff||0) < 0).sort((a,b) => a.diff - b.diff);
   const steady  = items.filter(i => (i.diff||0) === 0);
 
-  const renderCards = (list, isUp) => list.map(item => {
+  const card = (item) => {
     const diff     = item.diff || 0;
     const sign     = diff > 0 ? '+' : '';
     const color    = diff > 0 ? 'var(--green)' : diff < 0 ? 'var(--red)' : 'var(--muted)';
     const bgColor  = diff > 0 ? 'var(--green-dim)' : diff < 0 ? 'var(--red-dim)' : 'var(--bg-card)';
     const arrow    = diff > 0 ? '▲' : diff < 0 ? '▼' : '─';
     const gradeCls = GRADE_TAG[item.grade] || 'tag-blue';
-
-    // 변동폭 비율
-    const pct = item.base ? ((diff / item.base) * 100).toFixed(1) : null;
-
+    const pct      = item.base ? ((diff / item.base) * 100).toFixed(1) : null;
     return `
     <div class="price-card" style="border-left:3px solid ${color};">
       <div class="price-card-top">
-        <span class="tag ${gradeCls}">${item.grade || ''}</span>
+        <span class="tag ${gradeCls}">${item.grade||''}</span>
         <span class="price-card-name">${item.name}</span>
       </div>
       <div class="price-card-body">
@@ -96,15 +92,15 @@ function _renderPriceCards(val) {
           <span class="price-card-stat-val" style="font-weight:900;color:var(--text);">${(item.price||0).toLocaleString()}</span>
         </div>
         <div class="price-card-diff" style="background:${bgColor};color:${color};">
-          <span style="font-size:11px;">${arrow}</span>
+          <span>${arrow}</span>
           <span style="font-weight:900;">${sign}${Math.abs(diff).toLocaleString()}</span>
           ${pct !== null ? `<span style="font-size:10px;opacity:.8;">(${sign}${pct}%)</span>` : ''}
         </div>
       </div>
     </div>`;
-  }).join('');
+  };
 
-  const section = (title, icon, list, up) => {
+  const section = (title, icon, list) => {
     if (!list.length) return '';
     return `
       <div style="margin-bottom:28px;">
@@ -113,17 +109,16 @@ function _renderPriceCards(val) {
           <span style="font-size:13px;font-weight:700;color:var(--sub);">${title}</span>
           <span class="tag" style="background:var(--bg-card);color:var(--muted);">${list.length}개</span>
         </div>
-        <div class="price-card-grid">${renderCards(list, up)}</div>
+        <div class="price-card-grid">${list.map(card).join('')}</div>
       </div>`;
   };
 
   root.innerHTML =
-    section('상승 아이템', '📈', rising,  true)  +
-    section('하락 아이템', '📉', falling, false) +
-    (steady.length ? section('변동 없음', '➡️', steady, null) : '');
+    section('상승 아이템', '📈', rising)  +
+    section('하락 아이템', '📉', falling) +
+    (steady.length ? section('변동 없음', '➡️', steady) : '');
 }
 
-/* ── 파싱 ── */
 async function parsePriceInput() {
   const text = document.getElementById('price-paste')?.value?.trim();
   if (!text) { alert('시세 내용을 붙여넣어 주세요.'); return; }
@@ -148,15 +143,13 @@ async function parsePriceInput() {
 
 function _parsePriceText(text) {
   const items = [];
-  let cur     = null;
-
+  let cur = null;
   const flush = () => { if (cur?.name) items.push({ ...cur }); cur = null; };
 
   for (const raw of text.split('\n')) {
     const line = raw.trim();
     if (!line) continue;
 
-    // 아이템 헤더: - [커먼] 가스파초
     const hm = line.match(/^-\s*\[([^\]]+)\]\s*(.+)$/);
     if (hm) { flush(); cur = { grade: hm[1].trim(), name: hm[2].trim(), base:0, price:0, diff:0 }; continue; }
 

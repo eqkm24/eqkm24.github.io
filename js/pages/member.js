@@ -150,7 +150,7 @@ async function saveMember(mc, btn) {
     const idx = mc ? arr.findIndex(m => m.mc === mc || m.name === mc) : -1;
     const entry = { name: name || mc2, mc: mc2, job, type };
     if (idx >= 0) arr[idx] = entry; else arr.push(entry);
-    await window.$db.set('stella_members', arr);
+    await firebase.database().ref('stella_members').set(arr);
     btn.closest('.modal-bg').remove();
   } catch(e) {
     alert('저장 실패: ' + e.message);
@@ -163,7 +163,7 @@ async function deleteMember(mc, btn) {
   btn.textContent = '삭제 중...'; btn.disabled = true;
   try {
     const arr = _memberData.filter(m => m.mc !== mc && m.name !== mc);
-    await window.$db.set('stella_members', arr);
+    await firebase.database().ref('stella_members').set(arr);
     btn.closest('.modal-bg').remove();
   } catch(e) {
     alert('삭제 실패: ' + e.message);
@@ -173,6 +173,6 @@ async function deleteMember(mc, btn) {
 
 async function resetMembers() {
   if (!confirm('마을원 명단을 전체 초기화하시겠습니까?')) return;
-  try { await window.$db.set('stella_members', []); }
+  try { await firebase.database().ref('stella_members').set([]); }
   catch(e) { alert('실패: ' + e.message); }
 }

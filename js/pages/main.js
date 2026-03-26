@@ -1,6 +1,7 @@
 /* ═══ 메인 페이지 ═══ */
 
 function initMain() {
+  _showPopupIfNeeded();
   _loadMainStats();
   _loadTop3();
   _loadNotes();
@@ -10,6 +11,83 @@ function initMain() {
     const btn = document.getElementById('note-admin-btn');
     if (btn) btn.style.display = '';
   }
+}
+
+/* ── 시작 팝업 ── */
+function _showPopupIfNeeded() {
+  const key     = 'stella_popup_skip';
+  const skipped = localStorage.getItem(key);
+  if (skipped === new Date().toDateString()) return;
+  const popup = document.getElementById('main-popup');
+  if (popup) popup.style.display = 'flex';
+}
+
+function closeMainPopup() {
+  const popup = document.getElementById('main-popup');
+  if (!popup) return;
+  const noShow = document.getElementById('popup-no-show')?.checked;
+  if (noShow) localStorage.setItem('stella_popup_skip', new Date().toDateString());
+  popup.style.opacity = '0';
+  popup.style.transition = 'opacity .2s';
+  setTimeout(() => popup.style.display = 'none', 200);
+}
+
+/* ── 제작 레시피 통합 검색 ── */
+function searchRecipeMain(q) {
+  const root = document.getElementById('main-recipe-results');
+  if (!root) return;
+  q = q.trim().toLowerCase();
+
+  if (!q) { root.innerHTML = ''; return; }
+
+  // RECIPE_DATA가 recipe.js에 있으므로 전역 참조
+  if (typeof RECIPE_DATA === 'undefined') {
+    root.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:8px;">제작 데이터를 불러오는 중...</div>`;
+    return;
+  }
+
+  const results = [];
+  const allCats = Object.entries(RECIPE_DATA);
+  for (const [cat, items] of allCats) {
+    for (const item of items) {
+      const nameMatch = item.name.toLowerCase().includes(q);
+      const matMatch  = item.mats?.some(([m]) => String(m).toLowerCase().includes(q));
+      if (nameMatch || matMatch) results.push({ ...item, cat });
+    }
+  }
+
+  if (!results.length) {
+    root.innerHTML = `<div class="empty" style="padding:16px;font-size:12px;">검색 결과가 없어요.</div>`;
+    return;
+  }
+
+  const FAC_LABEL = { bench:'편백', brazier:'화로', counter:'조리대' };
+  const GRADE_TAG = { n:'tag-blue', a:'tag-teal', r:'tag-purple', h:'tag-amber' };
+  const GRADE_LBL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
+
+  root.innerHTML = `
+    <div style="font-size:11px;color:var(--muted);margin-bottom:6px;">${results.length}개 결과</div>
+    <div class="recipe-search-results">
+      ${results.map(it => `
+        <div class="recipe-card" onclick="go('recipe')" style="padding:10px 12px;cursor:pointer;">
+          <div class="recipe-card-hd" style="gap:10px;">
+            <div class="recipe-img" style="width:32px;height:32px;font-size:16px;">
+              ${LC_IMGS?.[it.name] ? `<img src="${LC_IMGS[it.name]}" style="width:100%;height:100%;object-fit:contain;" loading="lazy">` : '📦'}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px;">${it.name}</div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                <span class="tag ${GRADE_TAG[it.grade]||'tag-blue'}">${GRADE_LBL[it.grade]||''}</span>
+                <span class="tag" style="background:var(--bg-3);color:var(--muted);">${FAC_LABEL[it.cat]||it.cat}</span>
+                <span class="tag" style="background:var(--bg-3);color:var(--muted);">⏱ ${it.time}</span>
+              </div>
+            </div>
+          </div>
+          <div class="recipe-mats" style="margin-top:6px;">
+            ${(it.mats||[]).map(([n,q]) => `<span class="mat-tag">${n} <span class="mat-qty">×${q}</span></span>`).join('')}
+          </div>
+        </div>`).join('')}
+    </div>`;
 }
 
 /* ── 스탯 ── */
@@ -52,7 +130,12 @@ function _loadTop3() {
     }
 
     const items = val.items.slice(0, 3);
-    const RANK  = ['🥇','🥈','🥉'];
+    const RANK_SVG = [
+      '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(246,183,107,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#f6b76b"/></svg>',
+      '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(176,180,200,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#b0b4c8"/></svg>',
+      '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(205,127,50,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#cd7f32"/></svg>',
+    ];
+    const RANK = RANK_SVG;
 
     root.innerHTML = `<div class="top3-list">
       ${items.map((item, i) => {

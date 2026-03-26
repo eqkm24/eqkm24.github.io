@@ -79,7 +79,11 @@ const GRADE_TAG   = { n:'tag-blue', a:'tag-teal', r:'tag-purple', h:'tag-amber' 
 let _curCat = 'bench';
 
 function initRecipe() {
-  switchRecipeCat('bench', document.querySelector('.recipe-tab'));
+  // DOM이 완전히 로드된 후 실행
+  requestAnimationFrame(() => {
+    const firstTab = document.querySelector('[data-cat="bench"]');
+    switchRecipeCat('bench', firstTab);
+  });
 }
 
 function switchRecipeCat(cat, el) {

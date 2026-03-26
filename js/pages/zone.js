@@ -109,7 +109,7 @@ async function saveZoneCell(key, btn) {
     const updated = { ..._zoneData };
     if (owner) updated[key] = { owner };
     else delete updated[key];
-    await window.$db.set('stella_zone', Object.keys(updated).length ? updated : {});
+    await firebase.database().ref('stella_zone').set(Object.keys(updated).length ? updated : {});
     btn.closest('.modal-bg').remove();
   } catch(e) {
     alert('저장 실패: ' + e.message);
@@ -119,6 +119,6 @@ async function saveZoneCell(key, btn) {
 
 async function resetZone() {
   if (!confirm('구역 데이터를 초기화하시겠습니까?')) return;
-  try { await window.$db.set('stella_zone', {}); }
+  try { await firebase.database().ref('stella_zone').set({}); }
   catch(e) { alert('실패: ' + e.message); }
 }

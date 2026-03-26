@@ -115,11 +115,11 @@ async function saveTribute(btn) {
   try {
     const key = mc.replace(/[.#$\[\]]/g, '_');
     const cur = _tributeData[key]?.points || 0;
-    await window.$db.update(`stella_tribute/${key}`, { mc, name: mc, points: cur + pts });
+    await firebase.database().ref(`stella_tribute/${key}`).set({ mc, name: mc, points: cur + pts });
 
     const log = [..._tributeLog];
     log.unshift({ mc, delta: pts, total: cur + pts, note: note || '', createdAt: new Date().toISOString() });
-    await window.$db.set('stella_tribute_log', log.slice(0, 200));
+    await firebase.database().ref('stella_tribute_log').set(log.slice(0, 200));
 
     btn.closest('.modal-bg').remove();
   } catch(e) {
@@ -131,7 +131,7 @@ async function saveTribute(btn) {
 async function resetTribute() {
   if (!confirm('조공 데이터를 전체 초기화하시겠습니까?')) return;
   try {
-    await window.$db.set('stella_tribute', {});
-    await window.$db.set('stella_tribute_log', []);
+    await firebase.database().ref('stella_tribute').set({});
+    await firebase.database().ref('stella_tribute_log').set([]);
   } catch(e) { alert('실패: ' + e.message); }
 }

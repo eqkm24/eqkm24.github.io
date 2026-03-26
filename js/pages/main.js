@@ -140,52 +140,39 @@ function _initVisitor() {
 function parseCharInfo(text) {
   const root = document.getElementById('char-stats');
   if (!root) return;
-  if (!text?.trim()) { root.innerHTML = ''; return; }
+  if (!text?.trim()) {
+    root.innerHTML = '';
+    _showCharPaste(true);
+    return;
+  }
 
-  /* ── 파싱 ──
-     형식:
-     ===== 생활 정보 =====
-     명성: 24 (...)
-     [스탯 정보]
-     ㆍ손재주 (base:30 / temp:68.02 / equip:0 / total:98.02)
-     [숙련도]
-     ㆍ요리 (Lv:26 / 276,605.2 / 304,400, 90.87%)
-     [스킬]
-     ㆍ미식가 (Lv:20)
-  */
-
-  const lines   = text.split('\n');
-  let section   = '';   // 현재 섹션 (stat / proficiency / skill)
-  const stats   = {};   // 스탯 total 값
-  const profs   = {};   // 숙련도 레벨
-  const skills  = {};   // 스킬 레벨
-  let fame      = '';
-  let statPts   = '';
-  let skillPts  = '';
+  const lines  = text.split('\n');
+  let section  = '';
+  const stats  = {};
+  const profs  = {};  // { 요리: { lv:26, pct:90.87 } }
+  const skills = {};
+  let fame = '', fameNum = 0, famePct = 0;
+  let statPts = '', skillPts = '';
 
   for (const raw of lines) {
     const line = raw.trim();
     if (!line) continue;
 
-    // 섹션 헤더
-    if (line.includes('[스탯 정보]'))  { section = 'stat'; continue; }
-    if (line.includes('[숙련도]'))     { section = 'prof'; continue; }
+    if (line.includes('[스탯 정보]'))  { section = 'stat';  continue; }
+    if (line.includes('[숙련도]'))     { section = 'prof';  continue; }
     if (line.includes('[스킬]'))       { section = 'skill'; continue; }
-    if (line.includes('[임시 스탯]') || line.includes('[임시 스킬]')) { section = 'skip'; continue; }
+    if (line.includes('[임시'))        { section = 'skip';  continue; }
+    if (section === 'skip') continue;
 
-    // 명성 / 스탯포인트 / 스킬포인트
-    const fameM = line.match(/^명성\s*[:：]\s*(\d+)/);
-    if (fameM) { fame = fameM[1]; continue; }
+    // 명성: 24 (72,996.8 / 347,400, 21.01%)
+    const fameM = line.match(/^명성\s*[:：]\s*(\d+)\s*\(.*?([\d.]+)%\)/);
+    if (fameM) { fame = fameM[1]; famePct = parseFloat(fameM[2]); continue; }
 
-    const spM = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
-    if (spM) { statPts = spM[1]; continue; }
-
+    const spM  = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
+    if (spM)  { statPts  = spM[1];  continue; }
     const skpM = line.match(/^스킬\s*포인트\s*[:：]\s*(\d+)/);
     if (skpM) { skillPts = skpM[1]; continue; }
 
-    if (section === 'skip') continue;
-
-    // ㆍ로 시작하는 항목
     if (!line.startsWith('ㆍ')) continue;
     const body = line.slice(1).trim();
 
@@ -196,63 +183,110 @@ function parseCharInfo(text) {
     }
 
     if (section === 'prof') {
-      // ㆍ요리 (Lv:26 / ...)
-      const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
-      if (m) profs[m[1].trim()] = parseInt(m[2]);
+      // ㆍ요리 (Lv:26 / 276,605.2 / 304,400, 90.87%)
+      const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)[^)]*,\s*([\d.]+)%/);
+      if (m) profs[m[1].trim()] = { lv: parseInt(m[2]), pct: parseFloat(m[3]) };
+      else {
+        const m2 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
+        if (m2) profs[m2[1].trim()] = { lv: parseInt(m2[2]), pct: 0 };
+      }
     }
 
     if (section === 'skill') {
-      // ㆍ미식가 (Lv:20)
       const m = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
       if (m) skills[m[1].trim()] = parseInt(m[2]);
     }
   }
 
-  // 전역 노출 (제련 계산기에서 손재주 참조)
   window._charStats = { ...stats };
+  try { localStorage.setItem('stella_char_info', JSON.stringify({ text, stats, profs, skills, fame, famePct })); } catch(e) {}
 
-  // 저장
-  try { localStorage.setItem('stella_char_info', JSON.stringify({ text, stats, profs, skills, fame })); } catch(e) {}
+  // ── 파싱 성공 시 textarea 숨기고 결과 표시 ──
+  _showCharPaste(false);
 
-  // ── 렌더링 ──
-  const fmt = v => typeof v === 'number' ? (Number.isInteger(v) ? v : v.toFixed(2)) : v;
+  const fmt = v => typeof v === 'number'
+    ? (Number.isInteger(v) ? v : (v % 1 === 0 ? v : parseFloat(v.toFixed(2))))
+    : v;
 
-  const section_html = (title, color, entries) => {
-    if (!entries.length) return '';
-    return `
-      <div style="margin-top:14px;">
-        <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;
-          color:${color};text-transform:uppercase;
-          margin-bottom:6px;padding-bottom:4px;
-          border-bottom:1px solid var(--b1);">${title}</div>
-        <div class="char-stats">
-          ${entries.map(([k,v]) => `
-            <div class="char-stat-row">
-              <span class="char-stat-key">${k}</span>
-              <span class="char-stat-val">${fmt(v)}</span>
-            </div>`).join('')}
-        </div>
-      </div>`;
-  };
+  // ── 스탯 분류 ──
+  // 기본 스탯 (별도 행)
+  const BASE_STATS  = ['행운','노련함','손재주','감각','인내력','카리스마'];
+  // 직업 특화 스탯
+  const JOB_STATS   = ['요리 등급업 확률','음식 효과연장','조리 단축',
+                        '일반 작물 감소비율','경작지당 화분통 설치 개수','경작지 점유 수'];
+  const baseEntries = BASE_STATS.map(k => stats[k] != null ? [k, stats[k]] : null).filter(Boolean);
+  const jobEntries  = JOB_STATS.map(k => stats[k] != null ? [k, stats[k]] : null).filter(Boolean);
+  const usedKeys    = new Set([...BASE_STATS, ...JOB_STATS]);
+  const etcEntries  = Object.entries(stats).filter(([k]) => !usedKeys.has(k));
 
-  const topHtml = (fame || statPts || skillPts) ? `
-    <div class="char-stats" style="margin-bottom:4px;">
-      ${fame     ? `<div class="char-stat-row"><span class="char-stat-key">명성</span><span class="char-stat-val">${fame}</span></div>` : ''}
-      ${statPts  ? `<div class="char-stat-row"><span class="char-stat-key">스탯 포인트</span><span class="char-stat-val">${statPts}</span></div>` : ''}
-      ${skillPts ? `<div class="char-stat-row"><span class="char-stat-key">스킬 포인트</span><span class="char-stat-val">${skillPts}</span></div>` : ''}
+  // 숙련도 바
+  const profEntries = Object.entries(profs).filter(([,v]) => v.lv > 0);
+  const JOB_COLOR   = { 채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
+                         요리:'var(--red)',   대장술:'var(--purple)', 생존:'var(--teal)',
+                         연금술:'var(--teal)', 벌목:'var(--green)' };
+
+  const sec = (title, color, html) => html ? `
+    <div style="margin-top:14px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;
+        color:${color};text-transform:uppercase;
+        margin-bottom:8px;padding-bottom:4px;
+        border-bottom:1px solid var(--b1);">${title}</div>
+      ${html}
     </div>` : '';
 
-  // 스탯 — 주요 vs 기타 분리
-  const KEY_STATS = ['손재주','노련함','행운','요리 등급업 확률','음식 효과연장','조리 단축','일반 작물 감소비율','경작지당 화분통 설치 개수'];
-  const mainStats  = Object.entries(stats).filter(([k]) => KEY_STATS.includes(k));
-  const otherStats = Object.entries(stats).filter(([k]) => !KEY_STATS.includes(k));
+  const statGrid = entries => entries.length ? `
+    <div class="char-stats">
+      ${entries.map(([k,v]) => `
+        <div class="char-stat-row">
+          <span class="char-stat-key">${k}</span>
+          <span class="char-stat-val" style="color:var(--purple);font-size:13px;font-weight:900;">+${fmt(v)}</span>
+        </div>`).join('')}
+    </div>` : '';
+
+  const profBars = profEntries.length ? profEntries.map(([name, {lv, pct}]) => {
+    const color = JOB_COLOR[name] || 'var(--purple)';
+    return `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+      <span style="font-size:12px;font-weight:700;color:var(--sub);width:52px;flex-shrink:0;">${name}</span>
+      <span style="font-size:11px;font-weight:700;color:${color};width:36px;flex-shrink:0;">Lv.${lv}</span>
+      <div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;border-radius:3px;background:${color};width:${pct}%;transition:width .5s;"></div>
+      </div>
+      <span style="font-size:10px;color:var(--muted);width:38px;text-align:right;flex-shrink:0;">${pct}%</span>
+    </div>`; }).join('') : '';
+
+  const skillTags = Object.entries(skills).length ? `
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      ${Object.entries(skills).map(([k,v]) => `
+        <span class="tag tag-amber">${k} Lv.${v}</span>`).join('')}
+    </div>` : '';
+
+  // 명성 바
+  const fameHtml = fame ? `
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+      <span style="font-size:12px;font-weight:700;color:var(--sub);">명성</span>
+      <span style="font-size:13px;font-weight:900;color:var(--purple);">Lv.${fame}</span>
+      <div style="flex:1;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;">
+        <div style="height:100%;border-radius:3px;background:var(--purple);width:${famePct}%;"></div>
+      </div>
+      <span style="font-size:10px;color:var(--muted);">${famePct}%</span>
+    </div>
+    ${statPts !== '' ? `<div style="font-size:11px;color:var(--muted);">스탯 포인트 ${statPts} · 스킬 포인트 ${skillPts||0}</div>` : ''}` : '';
 
   root.innerHTML =
-    topHtml +
-    section_html('주요 스탯',  'var(--purple)', mainStats) +
-    (otherStats.length ? section_html('기타 스탯', 'var(--muted)', otherStats) : '') +
-    section_html('숙련도', 'var(--teal)',   Object.entries(profs).filter(([,v]) => v > 0)) +
-    section_html('스킬',   'var(--amber)',  Object.entries(skills));
+    (fameHtml ? `<div style="margin-bottom:4px;">${fameHtml}</div>` : '') +
+    sec('기본 스탯',   'var(--purple)', statGrid(baseEntries)) +
+    sec('직업 스탯',   'var(--teal)',   statGrid(jobEntries)) +
+    (etcEntries.length ? sec('기타',    'var(--muted)',  statGrid(etcEntries)) : '') +
+    sec('숙련도',      'var(--amber)',  profBars) +
+    sec('보유 스킬',   'var(--green)',  skillTags);
+}
+
+function _showCharPaste(show) {
+  const ta  = document.getElementById('char-paste');
+  const btn = document.getElementById('char-paste-toggle');
+  if (ta)  ta.style.display  = show ? '' : 'none';
+  if (btn) btn.style.display = show ? 'none' : '';
 }
 
 function _restoreCharCard() {
@@ -262,7 +296,7 @@ function _restoreCharCard() {
     const { text, stats } = JSON.parse(saved);
     const el = document.getElementById('char-paste');
     if (el) el.value = text;
-    window._charStats = stats;
+    window._charStats = stats || {};
     parseCharInfo(text);
   } catch(e) {}
 }
@@ -270,10 +304,13 @@ function _restoreCharCard() {
 function clearCharCard() {
   const el = document.getElementById('char-paste');
   if (el) el.value = '';
-  document.getElementById('char-stats').innerHTML = '';
+  const root = document.getElementById('char-stats');
+  if (root) root.innerHTML = '';
   window._charStats = {};
+  _showCharPaste(true);
   localStorage.removeItem('stella_char_info');
 }
+
 
 /* ── 업데이트 노트 작성 모달 ── */
 function openNoteModal() {

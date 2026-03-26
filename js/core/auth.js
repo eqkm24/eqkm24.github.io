@@ -24,12 +24,8 @@ async function sha256(str) {
 
 /* ── 초기화 ── */
 (function init() {
-  // 저장된 관리자 토큰 복원
-  const token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-  if (token) {
-    window._stella.adminToken = token;
-    window._stella.isAdmin    = true;
-  }
+  // 관리자 토큰 — 메모리에만 유지 (새로고침/창 닫기 시 자동 로그아웃)
+  // sessionStorage 복원 제거 → 페이지 로드 시 항상 로그아웃 상태
 
   // 마을 입장 세션 복원
   if (sessionStorage.getItem('stella_village_ok') === 'true') {
@@ -264,7 +260,7 @@ async function submitAdminPin() {
 
     window._stella.adminToken = token;
     window._stella.isAdmin    = true;
-    sessionStorage.setItem(ADMIN_TOKEN_KEY, token);
+    // 토큰은 메모리(window._stella.adminToken)에만 저장 — 새로고침 시 자동 로그아웃
 
     document.getElementById('admin-modal')?.remove();
     if (typeof onAdminLogin === 'function') onAdminLogin();
@@ -280,8 +276,25 @@ function doLogout() {
   }
   window._stella.adminToken = null;
   window._stella.isAdmin    = false;
-  sessionStorage.removeItem(ADMIN_TOKEN_KEY);
+  sessionStorage.removeItem(ADMIN_TOKEN_KEY); // 혹시 남아있을 경우 대비
   if (typeof onAdminLogout === 'function') onAdminLogout();
 }
 
 function isAdmin() { return !!window._stella.isAdmin; }
+
+/* ── 창/탭 닫기 시 관리자 세션 자동 삭제 ── */
+window.addEventListener('beforeunload', () => {
+  const token = window._stella?.adminToken;
+  if (!token || typeof firebase === 'undefined') return;
+  // sendBeacon 방식으로 비동기 삭제 (페이지 언로드 중에도 동작)
+  try {
+    const db  = firebase.database();
+    const url = db.ref(`_admin_sessions/${token}`).toString() + '.json';
+    // DELETE 요청 (Firebase REST API)
+    navigator.sendBeacon
+      ? navigator.sendBeacon(url + '?method=DELETE', '')
+      : fetch(url, { method: 'DELETE', keepalive: true }).catch(() => {});
+  } catch(e) {}
+  window._stella.adminToken = null;
+  window._stella.isAdmin    = false;
+});

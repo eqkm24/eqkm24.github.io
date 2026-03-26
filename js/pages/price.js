@@ -170,9 +170,9 @@ function _parsePriceText(text) {
 
     if (!cur) continue;
 
-    // ── 원가 ──
+    // ── 원가 (이전/현재/대비가 붙지 않은 순수 원가만) ──
     const baseM = line.match(/`?원가`?\s*[：:]\s*([\d,]+)/);
-    if (baseM) { cur.base = parseInt(baseM[1].replace(/,/g,'')); continue; }
+    if (baseM && !/이전|현재|대비/.test(line)) { cur.base = parseInt(baseM[1].replace(/,/g,'')); continue; }
 
     // ── 현재 변동가 ──
     const priceM = line.match(/`?현재\s*변동가`?\s*[：:]\s*([\d,]+)/);

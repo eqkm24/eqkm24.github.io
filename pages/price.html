@@ -5,21 +5,23 @@
     <p class="page-hd-sub">디스코드 메시지 붙여넣기 → 자동 분석 → 전체 공유</p>
   </div>
 
+  <!-- 카테고리 탭 -->
   <div class="price-cats">
-    <div class="price-cat active" data-cat="food"  onclick="switchPriceCat('food',this)">🍳 요리</div>
-    <div class="price-cat"        data-cat="crop"  onclick="switchPriceCat('crop',this)">🌾 농작물</div>
-    <div class="price-cat"        data-cat="fish"  onclick="switchPriceCat('fish',this)">🐟 물고기</div>
+    <div class="price-cat active" data-cat="food" onclick="switchPriceCat('food',this)">🍳 요리</div>
+    <div class="price-cat"        data-cat="crop" onclick="switchPriceCat('crop',this)">🌾 농작물</div>
+    <div class="price-cat"        data-cat="fish" onclick="switchPriceCat('fish',this)">🐟 물고기</div>
   </div>
 
+  <!-- 붙여넣기 카드 -->
   <div class="card" style="margin-bottom:20px;">
     <div class="card-hd">
       <span class="card-title">📋 시세 붙여넣기</span>
-      <span id="price-saved-at" class="card-more" style="cursor:default;color:var(--hint);"></span>
+      <span id="price-saved-at" style="font-size:11px;color:var(--hint);"></span>
     </div>
     <div class="card-body">
-      <textarea class="input price-paste-area" id="price-paste"
-        placeholder="디스코드에서 /시세 명령어 결과를 붙여넣으세요..."
-        rows="4" style="margin-bottom:10px;"></textarea>
+      <textarea class="input" id="price-paste"
+        placeholder="디스코드 변동 가격 메시지를 여기에 붙여넣으세요..."
+        rows="4" style="margin-bottom:10px;resize:vertical;"></textarea>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-primary" onclick="parsePriceInput()">분석 후 저장</button>
         <button class="btn" onclick="document.getElementById('price-paste').value=''">지우기</button>
@@ -27,6 +29,7 @@
     </div>
   </div>
 
+  <!-- 결과 영역 -->
   <div id="price-table-area">
     <div class="empty"><div class="spinner"></div></div>
   </div>

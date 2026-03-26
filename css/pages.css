@@ -688,3 +688,76 @@
   .tribute-bar-wrap { display: none; }
   .recipe-grid { grid-template-columns: 1fr; }
 }
+
+/* ══════════════════════════
+   변동 시세 — 카드형
+══════════════════════════ */
+.price-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.price-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: var(--radius-m);
+  padding: 12px 14px;
+  transition: all var(--fast) var(--ease);
+}
+.price-card:hover {
+  border-color: var(--b2);
+  transform: translateY(-1px);
+}
+.price-card-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.price-card-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.price-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.price-card-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.price-card-stat-lbl {
+  font-size: 11px;
+  color: var(--muted);
+}
+.price-card-stat-val {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--sub);
+}
+.price-card-diff {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-s);
+  font-size: 13px;
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 600px) {
+  .price-card-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 400px) {
+  .price-card-grid { grid-template-columns: 1fr; }
+}

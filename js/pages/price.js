@@ -111,7 +111,9 @@ async function parsePriceInput() {
 
   const cfg = PRICE_CATS[_curPriceCat];
   try {
-    await window.$db.set(cfg.key, { items, savedAt: new Date().toISOString() });
+    // 시세는 모든 사용자가 저장 가능 — firebase 직접 접근
+    if (typeof firebase === 'undefined') throw new Error('Firebase 연결 안 됨');
+    await firebase.database().ref(cfg.key).set({ items, savedAt: new Date().toISOString() });
     document.getElementById('price-paste').value = '';
     alert(`✅ ${items.length}개 항목이 저장되었습니다.`);
   } catch(e) {

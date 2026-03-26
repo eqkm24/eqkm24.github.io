@@ -21,6 +21,7 @@ let _pageCache = {};  // 로드한 HTML 캐시
 /* ── 앱 진입점 ── */
 function initApp() {
   _buildNav();
+  _applyInitTheme();
   _loadGlobalData();
   go('main');
 }
@@ -81,7 +82,7 @@ function _buildNav() {
     <div class="nav-utils">
       <button class="nav-icon-btn" onclick="toggleTheme()" title="테마 전환" id="theme-btn">☀️</button>
       <button class="nav-icon-btn" id="admin-nav-btn"
-        onclick="openAdminLogin()" title="관리자" style="display:none;">👑</button>
+        onclick="openAdminLogin()" title="관리자 로그인">👑</button>
     </div>`;
 
   // 드롭다운 외부 클릭 닫기
@@ -169,23 +170,38 @@ function _loadGlobalData() {
 
 /* ── 테마 토글 ── */
 function toggleTheme() {
-  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
   const next = cur === 'dark' ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', next);
   localStorage.setItem('stella_theme', next);
-  document.getElementById('theme-btn').textContent = next === 'dark' ? '☀️' : '🌙';
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+function _applyInitTheme() {
+  const theme = localStorage.getItem('stella_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
 }
 
 /* ── 관리자 로그인 후 콜백 ── */
 function onAdminLogin() {
   const btn = document.getElementById('admin-nav-btn');
-  if (btn) btn.style.display = '';
-  // 현재 페이지 새로고침 (관리자 버튼 노출)
+  if (btn) {
+    btn.style.background = 'var(--purple-dim)';
+    btn.style.color      = 'var(--purple)';
+    btn.title            = '관리자 페이지';
+  }
   if (_curPage) go(_curPage);
 }
 function onAdminLogout() {
   const btn = document.getElementById('admin-nav-btn');
-  if (btn) btn.style.display = 'none';
+  if (btn) {
+    btn.style.background = '';
+    btn.style.color      = '';
+    btn.title            = '관리자 로그인';
+  }
   if (_curPage) go(_curPage);
 }
 

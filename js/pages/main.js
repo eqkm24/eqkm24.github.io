@@ -114,54 +114,90 @@ function _loadNotes() {
 
 /* ── 방문자 카운터 ── */
 function _initVisitor() {
-  const uid = localStorage.getItem('stella_uid') || crypto.randomUUID();
+  // 방문자 카운터는 firebase 직접 접근 (Admin SDK 불필요, DB Rules에서 허용)
+  if (typeof firebase === 'undefined' || !window._fbReady) return;
+  const db    = firebase.database();
+  const uid   = localStorage.getItem('stella_uid') || crypto.randomUUID();
   localStorage.setItem('stella_uid', uid);
   const today = new Date().toISOString().slice(0,10);
-  window.$db.get(`stella_visitors/daily/${today}/${uid.slice(0,8)}`).then(v => {
-    if (!v) window.$db.set(`stella_visitors/daily/${today}/${uid.slice(0,8)}`, true).catch(() => {});
+  const path  = `stella_visitors/daily/${today}/${uid.slice(0,8)}`;
+
+  db.ref(path).once('value').then(snap => {
+    if (!snap.exists()) db.ref(path).set(true).catch(() => {});
   }).catch(() => {});
 
-  window.$db.on('stella_visitors', val => {
-    const el = document.getElementById('visitor-count');
-    if (!el || !val) return;
-    const today2 = new Date().toISOString().slice(0,10);
-    const todayCount = val.daily?.[today2] ? Object.keys(val.daily[today2]).length : 0;
-    el.textContent = `오늘 방문자 ${todayCount}명`;
+  db.ref('stella_visitors').on('value', snap => {
+    const el  = document.getElementById('visitor-count');
+    if (!el) return;
+    const val = snap.exists() ? snap.val() : null;
+    if (!val) return;
+    const cnt = val.daily?.[today] ? Object.keys(val.daily[today]).length : 0;
+    el.textContent = `오늘 방문자 ${cnt}명`;
   });
 }
 
 /* ── 캐릭터 스펙 ── */
 function parseCharInfo(text) {
-  if (!text?.trim()) { document.getElementById('char-stats').innerHTML = ''; return; }
+  const root = document.getElementById('char-stats');
+  if (!root) return;
+  if (!text?.trim()) { root.innerHTML = ''; return; }
 
-  const lines = text.split('\n');
-  const stats  = {};
-
-  lines.forEach(line => {
-    // "손재주 : 15" 또는 "채광 레벨 : 20" 형식
+  const stats = {};
+  text.split('\n').forEach(line => {
     const m = line.match(/^(.+?)\s*[:：]\s*(.+)$/);
     if (m) stats[m[1].trim()] = m[2].trim();
   });
 
   if (!Object.keys(stats).length) {
-    document.getElementById('char-stats').innerHTML = `<div style="font-size:12px;color:var(--muted);margin-top:8px;">파싱할 수 없는 형식이에요.</div>`;
+    root.innerHTML = `<p style="font-size:12px;color:var(--muted);margin-top:8px;">파싱할 수 없는 형식이에요.</p>`;
     return;
   }
 
-  // 전역 노출 (제련 계산기에서 참조)
   window._charStats = stats;
-
-  const html = `<div class="char-stats">
-    ${Object.entries(stats).map(([k,v]) => `
-      <div class="char-stat-row">
-        <span class="char-stat-key">${k}</span>
-        <span class="char-stat-val">${v}</span>
-      </div>`).join('')}
-  </div>`;
-  document.getElementById('char-stats').innerHTML = html;
-
-  // 저장
   try { localStorage.setItem('stella_char_info', JSON.stringify({ text, stats })); } catch(e) {}
+
+  // 카테고리 분류
+  const CAT = {
+    '기본 정보':  ['닉네임','직업','레벨','경험치','마나','체력'],
+    '스킬 레벨':  ['채광 레벨','낚시 레벨','농사 레벨','요리 레벨','제련 레벨'],
+    '능력치':     ['손재주','체력','민첩','지능','힘','마나 회복'],
+  };
+
+  // 분류되지 않은 항목은 기타로
+  const used  = new Set();
+  const groups = {};
+  for (const [cat, keys] of Object.entries(CAT)) {
+    const matched = Object.entries(stats).filter(([k]) => keys.some(kk => k.includes(kk)));
+    if (matched.length) {
+      groups[cat] = matched;
+      matched.forEach(([k]) => used.add(k));
+    }
+  }
+  const rest = Object.entries(stats).filter(([k]) => !used.has(k));
+  if (rest.length) groups['기타'] = rest;
+
+  // 렌더링
+  const CAT_COLOR = {
+    '기본 정보': 'var(--purple)',
+    '스킬 레벨': 'var(--teal)',
+    '능력치':    'var(--amber)',
+    '기타':      'var(--muted)',
+  };
+
+  root.innerHTML = Object.entries(groups).map(([cat, entries]) => `
+    <div style="margin-top:12px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:1.2px;
+        color:${CAT_COLOR[cat]||'var(--muted)'};text-transform:uppercase;
+        margin-bottom:6px;padding-bottom:4px;
+        border-bottom:1px solid var(--b1);">${cat}</div>
+      <div class="char-stats">
+        ${entries.map(([k,v]) => `
+          <div class="char-stat-row">
+            <span class="char-stat-key">${k}</span>
+            <span class="char-stat-val">${v}</span>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
 function _restoreCharCard() {

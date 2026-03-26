@@ -295,3 +295,35 @@ img { max-width: 100%; display: block; }
 @media (max-width: 768px) {
   .page-hd-title { font-size: 22px; }
 }
+
+/* ══ 라이트 모드 ══ */
+[data-theme="light"] {
+  --bg:      #f5f4f0;
+  --bg-2:    #efeee9;
+  --bg-3:    #e8e6df;
+  --bg-card: rgba(0,0,0,0.04);
+  --bg-hover:rgba(0,0,0,0.06);
+
+  --b1: rgba(0,0,0,0.08);
+  --b2: rgba(0,0,0,0.14);
+  --b3: rgba(0,0,0,0.22);
+
+  --text:  #1a1825;
+  --sub:   #3d3a50;
+  --muted: rgba(0,0,0,0.45);
+  --hint:  rgba(0,0,0,0.28);
+
+  --purple:      #7c5fc8;
+  --purple-dim:  rgba(124,95,200,0.10);
+  --purple-glow: rgba(124,95,200,0.06);
+  --teal:        #1a8c78;
+  --teal-dim:    rgba(26,140,120,0.10);
+  --amber:       #b86a10;
+  --amber-dim:   rgba(184,106,16,0.10);
+  --green:       #1a8c3e;
+  --green-dim:   rgba(26,140,62,0.08);
+  --red:         #c0392b;
+  --red-dim:     rgba(192,57,43,0.08);
+  --blue:        #2563c8;
+  --blue-dim:    rgba(37,99,200,0.10);
+}

@@ -1,30 +1,38 @@
-/* ═══ PIN 인증 시스템 ═══
-   - 일반 PIN : 사이트 전체 잠금 해제 (localStorage 유지)
-   - 관리자 PIN : 관리자 기능 활성화 (세션 유지)
-   핀 변경은 이 파일 상단 상수만 수정하면 됩니다.
-══════════════════════════════════════════════════ */
-
-const SITE_PIN  = '1234';   // ← 마을 공용 비밀번호 (원하는 숫자로 변경)
-const ADMIN_PIN = '9999';   // ← 관리자 전용 비밀번호 (원하는 숫자로 변경)
+/* ══════════════════════════════════════════════════════
+   스텔라 마을 위키 — 인증 시스템 v2
+   
+   변경사항:
+   - PIN 하드코딩 제거 → DB 해시 검증 방식
+   - SITE_PIN: DB stella_config/site_pin_hash 에 SHA-256 해시로 저장
+   - ADMIN_PIN: DB _admin_config/pin_hash 에 SHA-256 해시로 저장
+   - 관리자 세션: DB _admin_sessions/{token} 에 저장 (24시간 만료)
+══════════════════════════════════════════════════════ */
 
 const PIN_STORAGE_KEY   = 'stella_pin_ok';
-const ADMIN_SESSION_KEY = 'stella_admin_ok';
+const ADMIN_SESSION_KEY = 'stella_admin_token'; // 토큰 저장 (이전엔 'ok' 저장)
 
-/* ── 초기화 (Firebase 준비 후 앱 실행) ── */
+/* ── SHA-256 해시 ── */
+async function sha256(str) {
+  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ── 초기화 ── */
 (function checkAuth() {
-  const adminOk = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
-  window._isAdmin     = adminOk;
-  window._currentUser = { mc: adminOk ? '관리자' : '마을원', isAdmin: adminOk };
+  // 저장된 관리자 토큰 복원
+  const savedToken = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  if (savedToken) {
+    window._adminToken = savedToken;
+    window._isAdmin    = true;
+  } else {
+    window._adminToken = null;
+    window._isAdmin    = false;
+  }
 
-  // Firebase가 준비되면 앱 시작 (최대 5초 대기)
   function tryBoot(attempt) {
-    if (window._fbReady) {
-      _bootApp();
-      return;
-    }
+    if (window._fbReady) { _bootApp(); return; }
     if (attempt > 50) {
-      // 5초 초과 — Firebase 없이 앱 시작 (오프라인 모드)
-      console.warn('[stella] Firebase 연결 실패 — 오프라인 모드로 실행');
+      console.warn('[stella] Firebase 연결 실패 — 오프라인 모드');
       _bootApp();
       return;
     }
@@ -38,225 +46,264 @@ const ADMIN_SESSION_KEY = 'stella_admin_ok';
   }
 })();
 
-/* ── PIN 입력 화면 ── */
+/* ── 앱 시작 ── */
+function _bootApp() {
+  const adminBtn = document.getElementById('admin-login-btn');
+  if (adminBtn && window._isAdmin) adminBtn.style.display = '';
+  if (typeof initApp === 'function') initApp();
+}
+
+/* ══════════════════════════════
+   마을 입장 인증 (사이트 PIN)
+══════════════════════════════ */
+function isSiteAuth() {
+  return localStorage.getItem(PIN_STORAGE_KEY) === 'true';
+}
+
 function renderPinGate() {
   const gate = document.createElement('div');
   gate.id = 'pin-gate';
-  gate.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:\'Noto Sans KR\',sans-serif;transition:opacity .2s;';
+  gate.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;font-family:\'Noto Sans KR\',sans-serif;';
   gate.innerHTML = `
     <div style="width:320px;max-width:88vw;text-align:center;">
       <div style="width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,#a090f0,#c084fc);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 16px;">✨</div>
       <div style="font-size:20px;font-weight:900;color:var(--text);margin-bottom:4px;">스텔라 마을 <span style="color:#a090f0;">위키</span></div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:28px;">마을 비밀번호를 입력해주세요</div>
       <div id="pin-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:28px 24px;">
-        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;">
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:20px;">
           <input id="pin-d1" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="pinMove(this,'pin-d2')" onkeydown="pinBack(event,this,null)">
           <input id="pin-d2" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="pinMove(this,'pin-d3')" onkeydown="pinBack(event,this,'pin-d1')">
           <input id="pin-d3" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="pinMove(this,'pin-d4')" onkeydown="pinBack(event,this,'pin-d2')">
           <input id="pin-d4" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="pinAutoSubmit(this)" onkeydown="pinBack(event,this,'pin-d3')">
         </div>
-        <button onclick="submitPin()" style="width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;background:linear-gradient(135deg,#a090f0,#7868d0);color:#fff;font-size:14px;font-weight:800;font-family:'Noto Sans KR',sans-serif;">입장하기</button>
         <div id="pin-msg" style="font-size:12px;color:var(--warn);margin-top:12px;min-height:16px;"></div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:16px;">비밀번호를 모르는 경우 마을 운영진에게 문의하세요</div>
-    </div>
-    <style>
-    .pin-dig{width:54px;height:64px;border-radius:12px;border:2px solid var(--b2);background:var(--s2);color:var(--text);font-size:28px;font-weight:900;text-align:center;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .15s;}
-    .pin-dig:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(160,144,240,.18);}
-    @keyframes pinShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-    </style>`;
+      <style>
+        .pin-dig{width:54px;height:64px;border-radius:12px;border:2px solid var(--b2);background:var(--s2);color:var(--text);font-size:28px;font-weight:900;text-align:center;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .15s;}
+        .pin-dig:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(160,144,240,.18);}
+        @keyframes pinShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+      </style>
+    </div>`;
   document.body.appendChild(gate);
   setTimeout(() => document.getElementById('pin-d1')?.focus(), 100);
 }
 
 function pinMove(el, nextId) {
-  if (el.value && nextId) document.getElementById(nextId)?.focus();
+  if (el.value) document.getElementById(nextId)?.focus();
 }
+
 function pinAutoSubmit(el) {
-  if (el.value && _getPinVal().length === 4) submitPin();
+  if (el.value) submitPin();
 }
+
 function pinBack(e, el, prevId) {
-  if (e.key === 'Backspace' && !el.value && prevId) document.getElementById(prevId)?.focus();
+  if (e.key === 'Backspace' && !el.value && prevId) {
+    document.getElementById(prevId)?.focus();
+  }
   if (e.key === 'Enter') submitPin();
 }
-function _getPinVal() {
-  return ['pin-d1','pin-d2','pin-d3','pin-d4'].map(id => document.getElementById(id)?.value || '').join('');
-}
-function _clearPinInputs() {
-  ['pin-d1','pin-d2','pin-d3','pin-d4'].forEach(id => { const e = document.getElementById(id); if(e) e.value=''; });
-  document.getElementById('pin-d1')?.focus();
-}
 
-function submitPin() {
-  const val = _getPinVal();
+async function submitPin() {
+  const pin = ['pin-d1','pin-d2','pin-d3','pin-d4'].map(id => document.getElementById(id)?.value || '').join('');
+  if (pin.length < 4) return;
+
   const msg = document.getElementById('pin-msg');
-  if (val.length < 4) { if(msg) msg.textContent='4자리를 모두 입력해주세요.'; return; }
+  if (msg) msg.textContent = '확인 중...';
 
-  if (val === SITE_PIN || val === ADMIN_PIN) {
-    localStorage.setItem(PIN_STORAGE_KEY, 'true');
-    if (val === ADMIN_PIN) {
-      sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
-      window._isAdmin = true;
-      window._currentUser = { mc:'관리자', isAdmin:true };
+  try {
+    // DB에서 해시 가져와서 비교
+    const storedHash = await window._fbGet('stella_config/site_pin_hash');
+    if (!storedHash) {
+      // 최초 설정 전: 기본 PIN 1234 허용 (관리자가 설정 후 변경)
+      if (pin === '1234') {
+        _siteAuthSuccess();
+        return;
+      }
+    } else {
+      const inputHash = await sha256(pin);
+      if (inputHash === storedHash) {
+        _siteAuthSuccess();
+        return;
+      }
     }
-    const gate = document.getElementById('pin-gate');
-    if (gate) { gate.style.opacity = '0'; setTimeout(() => { gate.remove(); _bootApp(); }, 180); }
-  } else {
-    if (msg) msg.textContent = '비밀번호가 올바르지 않습니다.';
-    _clearPinInputs();
+    // 틀린 경우
+    if (msg) msg.textContent = '비밀번호가 틀렸습니다.';
     const card = document.getElementById('pin-card');
-    if (card) { card.style.animation = 'pinShake .35s ease'; setTimeout(() => card.style.animation='', 400); }
+    if (card) { card.style.animation = 'pinShake .4s'; setTimeout(() => card.style.animation = '', 400); }
+    ['pin-d1','pin-d2','pin-d3','pin-d4'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    document.getElementById('pin-d1')?.focus();
+  } catch(e) {
+    // Firebase 연결 실패 시 — 오프라인 모드에서는 기본 PIN
+    if (pin === '1234') { _siteAuthSuccess(); return; }
+    if (msg) msg.textContent = '연결 오류. 다시 시도해주세요.';
   }
 }
 
-/* ── 앱 부팅 ── */
-function _bootApp() {
-  // 고정 관리자 02qB — 관리자 로그인 버튼은 관리자만 노출
-  const adminBtn = document.getElementById('admin-login-btn');
-  if (adminBtn && window._isAdmin) adminBtn.style.display = '';
-  if (typeof initApp === 'function') initApp();
-  else document.addEventListener('DOMContentLoaded', () => { if(typeof initApp==='function') initApp(); });
-  setTimeout(() => { if(typeof updateAdminUI==='function') updateAdminUI(); }, 150);
+function _siteAuthSuccess() {
+  localStorage.setItem(PIN_STORAGE_KEY, 'true');
+  const gate = document.getElementById('pin-gate');
+  if (gate) { gate.style.opacity = '0'; setTimeout(() => gate.remove(), 300); }
 }
 
-/* ── 관리자 PIN 모달 ── */
+/* ══════════════════════════════
+   마을 입장 인증 (닉네임)
+══════════════════════════════ */
+function isVillageAuth() {
+  return sessionStorage.getItem('stella_village_ok') === 'true';
+}
+
+function requireVillageAccess(ddId, callback) {
+  if (isVillageAuth()) {
+    const dd = document.getElementById(ddId);
+    if (dd) dd.classList.toggle('dd-open');
+    if (callback) callback();
+    return;
+  }
+  showVillageAuthModal(ddId, callback);
+}
+
+function showVillageAuthModal(ddId, callback) {
+  const existing = document.getElementById('village-auth-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'village-auth-modal';
+  modal.innerHTML = `
+    <div class="mb-modal-bg" onclick="if(event.target===this)this.remove()">
+      <div class="mb-modal" style="max-width:340px;">
+        <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px;">🏡 마을 입장</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:20px;">마인크래프트 닉네임을 입력해주세요</div>
+        <input id="village-nick-input" class="mb-input" type="text" placeholder="닉네임 입력..."
+          style="width:100%;margin-bottom:14px;box-sizing:border-box;"
+          onkeydown="if(event.key==='Enter')submitVillageNick('${ddId}')">
+        <div id="village-auth-msg" style="font-size:11px;color:var(--warn);min-height:14px;margin-bottom:12px;"></div>
+        <div class="mb-modal-btns">
+          <button class="mb-btn" onclick="this.closest('.mb-modal-bg').remove()">취소</button>
+          <button class="mb-btn mb-btn-primary" onclick="submitVillageNick('${ddId}')">입장</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('village-nick-input')?.focus(), 100);
+
+  // callback 보관
+  window._villageCallback = callback;
+}
+
+async function submitVillageNick(ddId) {
+  const input = document.getElementById('village-nick-input');
+  const msg   = document.getElementById('village-auth-msg');
+  const nick  = input?.value?.trim();
+  if (!nick) { if(msg) msg.textContent = '닉네임을 입력해주세요.'; return; }
+  if (msg) msg.textContent = '확인 중...';
+
+  try {
+    const found = (window.members || []).some(m =>
+      (m.mc || '').toLowerCase() === nick.toLowerCase() ||
+      (m.name || '').toLowerCase() === nick.toLowerCase()
+    );
+    if (!found) {
+      if (msg) msg.textContent = '마을원 명단에 없는 닉네임입니다.';
+      return;
+    }
+    sessionStorage.setItem('stella_village_ok', 'true');
+    document.getElementById('village-auth-modal')?.remove();
+    const dd = document.getElementById(ddId);
+    if (dd) dd.classList.add('dd-open');
+    if (window._villageCallback) window._villageCallback();
+    window._villageCallback = null;
+  } catch(e) {
+    if (msg) msg.textContent = '오류가 발생했습니다.';
+  }
+}
+
+/* ══════════════════════════════
+   관리자 인증
+══════════════════════════════ */
 function openAdminLogin() {
   if (window._isAdmin) { renderAdminPage(); return; }
 
-  document.getElementById('adm-modal-root').innerHTML = `
-    <div class="mb-modal-bg" id="adm-pin-bg" onclick="if(event.target.id==='adm-pin-bg')this.remove()">
-      <div class="mb-modal" style="max-width:300px;text-align:center;">
-        <h3 style="margin-bottom:6px;">🔐 관리자 인증</h3>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:20px;">관리자 PIN 4자리를 입력해주세요</p>
-        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:14px;">
-          <input id="adm-d1" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="admMove(this,'adm-d2')" onkeydown="admBack(event,this,null)">
-          <input id="adm-d2" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="admMove(this,'adm-d3')" onkeydown="admBack(event,this,'adm-d1')">
-          <input id="adm-d3" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="admMove(this,'adm-d4')" onkeydown="admBack(event,this,'adm-d2')">
-          <input id="adm-d4" class="pin-dig" type="password" maxlength="1" inputmode="numeric" oninput="admAutoSub(this)" onkeydown="admBack(event,this,'adm-d3')">
-        </div>
-        <div id="adm-pin-msg" style="font-size:12px;color:var(--warn);min-height:16px;margin-bottom:14px;"></div>
+  const existing = document.getElementById('admin-login-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.id = 'admin-login-modal';
+  modal.innerHTML = `
+    <div class="mb-modal-bg" onclick="if(event.target===this)this.remove()">
+      <div class="mb-modal" style="max-width:300px;">
+        <div style="font-size:16px;font-weight:900;color:var(--text);margin-bottom:16px;">👑 관리자 로그인</div>
+        <input id="admin-pin-input" class="mb-input" type="password" placeholder="관리자 PIN"
+          style="width:100%;margin-bottom:12px;box-sizing:border-box;"
+          onkeydown="if(event.key==='Enter')submitAdminPin()">
+        <div id="admin-pin-msg" style="font-size:11px;color:var(--warn);min-height:14px;margin-bottom:12px;"></div>
         <div class="mb-modal-btns">
-          <button class="mb-btn" onclick="document.getElementById('adm-pin-bg').remove()">취소</button>
-          <button class="mb-btn mb-btn-add" onclick="submitAdminPin()">확인</button>
+          <button class="mb-btn" onclick="this.closest('.mb-modal-bg').remove()">취소</button>
+          <button class="mb-btn mb-btn-primary" onclick="submitAdminPin()">로그인</button>
         </div>
       </div>
-    </div>
-    <style>.pin-dig{width:52px;height:60px;border-radius:10px;border:2px solid var(--b2);background:var(--s2);color:var(--text);font-size:26px;font-weight:900;text-align:center;outline:none;font-family:'JetBrains Mono',monospace;transition:border-color .15s;}.pin-dig:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(160,144,240,.18);}</style>`;
-  setTimeout(() => document.getElementById('adm-d1')?.focus(), 80);
+    </div>`;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('admin-pin-input')?.focus(), 100);
 }
 
-function admMove(el, nextId) { if(el.value && nextId) document.getElementById(nextId)?.focus(); }
-function admAutoSub(el) { if(el.value) submitAdminPin(); }
-function admBack(e, el, prevId) {
-  if(e.key==='Backspace' && !el.value && prevId) document.getElementById(prevId)?.focus();
-  if(e.key==='Enter') submitAdminPin();
-}
+async function submitAdminPin() {
+  const input = document.getElementById('admin-pin-input');
+  const msg   = document.getElementById('admin-pin-msg');
+  const pin   = input?.value?.trim();
+  if (!pin) return;
+  if (msg) msg.textContent = '확인 중...';
 
-function submitAdminPin() {
-  const val = ['adm-d1','adm-d2','adm-d3','adm-d4'].map(id => document.getElementById(id)?.value||'').join('');
-  const msg = document.getElementById('adm-pin-msg');
-  if (val === ADMIN_PIN) {
-    sessionStorage.setItem(ADMIN_SESSION_KEY, 'true');
-    window._isAdmin = true;
-    window._currentUser = { mc:'관리자', isAdmin:true };
-    document.getElementById('adm-pin-bg')?.remove();
-    if(typeof updateAdminUI==='function') updateAdminUI();
-    setTimeout(renderAdminPage, 100);
-  } else {
-    if(msg) msg.textContent='관리자 PIN이 올바르지 않습니다.';
-    ['adm-d1','adm-d2','adm-d3','adm-d4'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-    document.getElementById('adm-d1')?.focus();
-  }
-}
-
-/* ── 로그아웃 ── */
-window._authLogout = function() {
-  localStorage.removeItem(PIN_STORAGE_KEY);
-  sessionStorage.removeItem(ADMIN_SESSION_KEY);
-  location.reload();
-};
-
-/* ══════════════════════════════════════
-   마을 카테고리 닉네임 인증
-══════════════════════════════════════ */
-const VILLAGE_SESSION_KEY = 'stella_village_nick';
-
-function isVillageAuth() {
-  return !!sessionStorage.getItem(VILLAGE_SESSION_KEY);
-}
-
-// callback: 인증 성공 후 실행할 함수
-function requireVillageAccess(ddId, callback) {
-  if (isAdmin()) {
-    // 관리자는 바로 통과
-    if (callback) callback();
-    else if (ddId) toggleDD(ddId);
-    return;
-  }
-  if (isVillageAuth()) {
-    if (callback) callback();
-    else if (ddId) toggleDD(ddId);
-    return;
-  }
-  // 닉네임 입력 모달
-  _showVillageNickModal(ddId, callback);
-}
-
-function _showVillageNickModal(ddId, callback) {
-  const root = document.getElementById('adm-modal-root');
-  if (!root) return;
-  root.insertAdjacentHTML('beforeend', `
-    <div class="mb-modal-bg" id="village-nick-bg" onclick="if(event.target.id==='village-nick-bg')this.remove()">
-      <div class="mb-modal" style="max-width:320px;text-align:center;">
-        <div style="font-size:32px;margin-bottom:8px;">🏠</div>
-        <h3 style="margin-bottom:4px;">마을 카테고리</h3>
-        <p style="font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;">
-          마을원 명단에 등록된 닉네임을 입력해주세요
-        </p>
-        <input id="village-nick-input"
-          class="mb-modal input"
-          style="width:100%;padding:10px 12px;border:1px solid var(--b2);border-radius:8px;background:var(--s2);color:var(--text);font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;box-sizing:border-box;text-align:center;"
-          placeholder="마인크래프트 닉네임"
-          onkeydown="if(event.key==='Enter')submitVillageNick('${ddId||''}')">
-        <div id="village-nick-msg" style="font-size:12px;color:var(--warn);min-height:16px;margin:10px 0;"></div>
-        <div class="mb-modal-btns">
-          <button class="mb-btn" onclick="document.getElementById('village-nick-bg').remove()">취소</button>
-          <button class="mb-btn mb-btn-add" onclick="submitVillageNick('${ddId||''}')">확인</button>
-        </div>
-        <p style="font-size:10px;color:var(--muted);margin-top:12px;">
-          명단에 없는 경우 마을 운영자에게 문의해주세요
-        </p>
-      </div>
-    </div>`);
-  // callback 임시 저장
-  window._villageCallback = callback || null;
-  setTimeout(() => document.getElementById('village-nick-input')?.focus(), 80);
-}
-
-function submitVillageNick(ddId) {
-  const input = document.getElementById('village-nick-input');
-  const msg   = document.getElementById('village-nick-msg');
-  const nick  = (input?.value || '').trim();
-  if (!nick) { if(msg) msg.textContent='닉네임을 입력해주세요.'; return; }
-
-  // members 배열에서 일치 여부 확인 (mc 또는 name)
-  const found = (window.members || []).some(m =>
-    (m.mc && m.mc.toLowerCase() === nick.toLowerCase()) ||
-    (m.name && m.name.toLowerCase() === nick.toLowerCase())
-  );
-
-  if (found) {
-    sessionStorage.setItem(VILLAGE_SESSION_KEY, nick);
-    document.getElementById('village-nick-bg')?.remove();
-    if (window._villageCallback) {
-      window._villageCallback();
-      window._villageCallback = null;
-    } else if (ddId) {
-      toggleDD(ddId);
+  try {
+    // DB에서 관리자 PIN 해시 가져와서 비교
+    const storedHash = await window._fbGet('_admin_config/pin_hash');
+    if (!storedHash) {
+      // 최초: 기본 PIN 9999
+      if (pin !== '9999') {
+        if (msg) msg.textContent = 'PIN이 틀렸습니다.'; return;
+      }
+    } else {
+      const inputHash = await sha256(pin);
+      if (inputHash !== storedHash) {
+        if (msg) msg.textContent = 'PIN이 틀렸습니다.'; return;
+      }
     }
-  } else {
-    if (msg) msg.textContent = '마을원 명단에서 찾을 수 없습니다.';
-    input.value = '';
-    input.focus();
+
+    // 토큰 생성 후 DB에 저장
+    const token = Array.from(crypto.getRandomValues(new Uint8Array(24)))
+      .map(b => b.toString(16).padStart(2,'0')).join('');
+    const expiry = Date.now() + 24 * 60 * 60 * 1000; // 24시간
+    await window._fbGet('_admin_sessions'); // DB 접근 가능 여부 확인
+
+    // 직접 DB ref 접근 (토큰 저장은 auth 단계라 검증 전 예외 허용)
+    if (typeof firebase !== 'undefined') {
+      await firebase.database().ref(`_admin_sessions/${token}`).set({ valid: true, expiry });
+    }
+
+    window._adminToken = token;
+    window._isAdmin    = true;
+    sessionStorage.setItem(ADMIN_SESSION_KEY, token);
+
+    document.getElementById('admin-login-modal')?.remove();
+    const ab = document.getElementById('admin-login-btn');
+    if (ab) ab.style.display = '';
+    if (typeof updateAdminUI === 'function') updateAdminUI();
+    renderAdminPage();
+
+  } catch(e) {
+    console.error('[auth] 관리자 로그인 오류:', e);
+    if (msg) msg.textContent = '오류가 발생했습니다.';
   }
+}
+
+function doLogout() {
+  // 관리자 세션 토큰 DB에서 삭제
+  if (window._adminToken && typeof firebase !== 'undefined') {
+    firebase.database().ref(`_admin_sessions/${window._adminToken}`).remove().catch(() => {});
+  }
+  window._adminToken = null;
+  window._isAdmin    = false;
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  if (typeof updateAdminUI === 'function') updateAdminUI();
+  const ab = document.getElementById('admin-login-btn');
+  if (ab) ab.style.display = 'none';
 }

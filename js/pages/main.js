@@ -111,49 +111,54 @@ function _loadMainStats() {
 var FOOD_BASE = {};  
 
 function _loadTop3() {
-  window.$db.on('stella_price_food', val => {
-    const root = document.getElementById('main-top3');
+  window.$db.on('stella_price_food', function(val) {
+    var root = document.getElementById('main-top3');
     if (!root) return;
 
-    if (!val?.items?.length) {
-      root.innerHTML = `<div class="empty" style="padding:16px;">
-        <span style="font-size:20px;opacity:.4;">📊</span>
-        <span>시세 데이터가 없습니다</span>
-      </div>`;
+    if (!val || !val.items || !val.items.length) {
+      root.innerHTML = '<div class="empty" style="padding:16px;">' +
+        '<span style="font-size:20px;opacity:.4;">📊</span>' +
+        '<span>시세 데이터가 없습니다</span></div>';
       return;
     }
 
-    const items = val.items.slice(0, 3);
-    const RANK_SVG = [
+    var items = val.items.slice(0, 3);
+    var RANK_SVG = [
       '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(246,183,107,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#f6b76b"/></svg>',
       '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(176,180,200,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#b0b4c8"/></svg>',
       '<svg viewBox="0 0 20 20" fill="none" style="width:18px;height:18px;"><circle cx="10" cy="10" r="8" fill="rgba(205,127,50,0.2)"/><path d="M10 6L11.2 9.2H14.6L11.9 11.2L12.9 14.4L10 12.4L7.1 14.4L8.1 11.2L5.4 9.2H8.8L10 6Z" fill="#cd7f32"/></svg>',
     ];
-    const RANK = RANK_SVG;
 
-    root.innerHTML = `<div class="top3-list">
-      ${items.map((item, i) => {
-        const name  = item.name || item.n || '';
-        const price = item.price || item.p || 0;
-        const base  = FOOD_BASE[name] || 0;
-        const ratio = base ? ((price - base) / base * 100) : null;
-        const badge = ratio !== null
-          ? `<span class="tag ${ratio >= 0 ? 'tag-green' : 'tag-red'}">${ratio >= 0 ? '+' : ''}${ratio.toFixed(1)}%</span>`
-          : '';
-        return `
-        <div class="top3-row">
-          <span class="top3-rank">${RANK[i]}</span>
-          <div class="top3-info">
-            <div class="top3-name">${name}</div>
-            <div class="top3-price">${price.toLocaleString()} 셀</div>
-          </div>
-          ${badge}
-        </div>`;
-      }).join('')}
-    </div>`;
+    var html = '<div class="top3-list">';
+    items.forEach(function(item, i) {
+      var name  = item.name || '';
+      var price = item.price || 0;
+      var base  = item.base  || 0;
+      var diff  = item.diff  || 0;
+      var ratio = base ? ((diff / base) * 100) : null;
+      var badge = '';
+      if (ratio !== null) {
+        var cls  = ratio >= 0 ? 'tag-green' : 'tag-red';
+        var sign = ratio >= 0 ? '+' : '';
+        badge = '<span class="tag ' + cls + '">' + sign + ratio.toFixed(1) + '%</span>';
+      } else if (diff) {
+        var cls2 = diff >= 0 ? 'tag-green' : 'tag-red';
+        badge = '<span class="tag ' + cls2 + '">' + (diff >= 0 ? '+' : '') + diff + '</span>';
+      }
+      html +=
+        '<div class="top3-row">' +
+          '<div class="top3-rank">' + RANK_SVG[i] + '</div>' +
+          '<div class="top3-info">' +
+            '<div class="top3-name">' + name + '</div>' +
+            '<div class="top3-price">' + price.toLocaleString() + ' 셀</div>' +
+          '</div>' +
+          badge +
+        '</div>';
+    });
+    html += '</div>';
+    root.innerHTML = html;
   });
 }
-
 function _loadNotes() {
   window.$db.on('stella_update_notes', val => {
     const root = document.getElementById('main-notes');
@@ -300,9 +305,13 @@ function parseCharInfo(text) {
 
   var mergedSkills = Object.assign({}, skills);
   Object.entries(tmpSkills).forEach(function(e) {
-    var name = e[0], lv = e[1];
+    var name = e[0], tmpLv = e[1];
     if (mergedSkills[name] != null) {
-      mergedSkills[name] = mergedSkills[name] + ' <span style="color:var(--teal);font-size:10px;">(+' + lv + ' 임시)</span>';
+      var baseLv = typeof mergedSkills[name] === 'number' ? mergedSkills[name] : parseInt(mergedSkills[name]);
+      var total  = baseLv + tmpLv;
+      mergedSkills[name] = String(total) + ' <span style="font-size:10px;color:var(--teal);font-weight:400;">(기본' + baseLv + '+임시' + tmpLv + ')</span>';
+    } else {
+      mergedSkills[name] = String(tmpLv) + ' <span style="font-size:10px;color:var(--teal);font-weight:400;">(임시)</span>';
     }
   });
 

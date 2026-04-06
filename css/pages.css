@@ -724,12 +724,12 @@
   position: fixed;
   inset: 0;
   z-index: 3000;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(6px);
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(2px);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 72px 24px 20px;
   animation: fadeIn .2s var(--ease);
 }
 .notice-popup {
@@ -737,7 +737,7 @@
   border: 1px solid var(--b2);
   border-radius: 20px;
   width: 100%;
-  max-width: 520px;
+  max-width: 400px;
   overflow: hidden;
   animation: slideUp .25s var(--ease);
 }

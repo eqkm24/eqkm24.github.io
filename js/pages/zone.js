@@ -80,25 +80,56 @@ function highlightZone() {
 
 function onZoneClick(key, currentOwner) {
   if (!isAdmin()) return;
-  const members  = (window.members || []).map(m => m.mc || m.name).filter(Boolean);
-  const modal    = document.createElement('div');
+  var members = (window.members || []).map(function(m) { return m.mc || m.name; }).filter(Boolean);
+  var modal   = document.createElement('div');
   modal.className = 'modal-bg';
-  modal.onclick   = e => { if (e.target === modal) modal.remove(); };
+  modal.onclick   = function(e) { if (e.target === modal) modal.remove(); };
 
-  modal.innerHTML = `
-    <div class="modal" style="max-width:320px;">
-      <div class="modal-title">구역 설정</div>
-      <div class="modal-sub">셀 위치: ${key.replace('_',' 행 ')}열</div>
-      <select class="input" id="zone-owner-sel" style="margin-top:12px;cursor:pointer;">
-        <option value="">빈 구역</option>
-        ${members.map(m => `<option value="${m}" ${m===currentOwner?'selected':''}>${m}</option>`).join('')}
-      </select>
-      <div class="modal-btns">
-        <button class="btn" onclick="this.closest('.modal-bg').remove()">취소</button>
-        <button class="btn btn-primary" onclick="saveZoneCell('${key}',this)">저장</button>
-      </div>
-    </div>`;
+  // 닉네임 카드 그리드
+  var nickCards = '<div style="cursor:pointer;padding:7px 12px;border-radius:8px;border:2px solid var(--purple);' +
+    'background:var(--purple-dim);color:var(--purple);font-size:12px;font-weight:700;text-align:center;" ' +
+    'data-nick="" onclick="selectZoneNick(this,\'\')">🚫 빈 구역</div>';
+
+  members.forEach(function(m) {
+    var isSelected = m === currentOwner;
+    nickCards += '<div style="cursor:pointer;padding:7px 12px;border-radius:8px;border:2px solid ' +
+      (isSelected ? 'var(--purple)' : 'var(--b1)') + ';background:' +
+      (isSelected ? 'var(--purple-dim)' : 'var(--bg-card)') + ';color:' +
+      (isSelected ? 'var(--purple)' : 'var(--text)') + ';font-size:12px;font-weight:700;text-align:center;transition:all .15s;" ' +
+      'data-nick="' + m + '" onclick="selectZoneNick(this,\'' + m + '\')">' + m + '</div>';
+  });
+
+  modal.innerHTML =
+    '<div class="modal" style="max-width:400px;">' +
+      '<div class="modal-title">구역 설정</div>' +
+      '<div class="modal-sub" style="margin-bottom:14px;">셀 위치: ' + key.replace('_', '행 ') + '열</div>' +
+      '<div style="max-height:280px;overflow-y:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:2px;" id="zone-nick-grid">' +
+        nickCards +
+      '</div>' +
+      '<input type="hidden" id="zone-owner-sel" value="' + (currentOwner || '') + '">' +
+      '<div class="modal-btns" style="margin-top:14px;">' +
+        '<button class="btn" onclick="this.closest(\'.modal-bg\').remove()">취소</button>' +
+        '<button class="btn btn-primary" onclick="saveZoneCell(\'' + key + '\',this)">저장</button>' +
+      '</div>' +
+    '</div>';
+
   document.body.appendChild(modal);
+}
+
+function selectZoneNick(el, nick) {
+  // 선택 해제
+  document.querySelectorAll('#zone-nick-grid [data-nick]').forEach(function(c) {
+    c.style.border      = '2px solid var(--b1)';
+    c.style.background  = 'var(--bg-card)';
+    c.style.color       = 'var(--text)';
+  });
+  // 선택 표시
+  el.style.border     = '2px solid var(--purple)';
+  el.style.background = 'var(--purple-dim)';
+  el.style.color      = 'var(--purple)';
+  // hidden input에 값 저장
+  var input = document.getElementById('zone-owner-sel');
+  if (input) input.value = nick;
 }
 
 async function saveZoneCell(key, btn) {

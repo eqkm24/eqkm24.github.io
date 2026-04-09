@@ -27,11 +27,11 @@ function initApp() {
   var initPg = path[0] || 'main';
   var initSb = path[1] || null;
   var VALID  = ['main','member','zone','tribute','life','recipe','price'];
-  if (!VALID.includes(initPg)) initPg = 'main';
+  if (!VALID.includes(initPg)) { initPg = 'main'; initSb = null; }
 
   _curPage = initPg;
   _curSub  = initSb;
-  history.replaceState({ page: initPg, sub: initSb }, '', window.location.pathname);
+  history.replaceState({ page: initPg, param: initSb }, '', initPg === 'main' ? '/' : '/' + initPg + (initSb ? '/' + initSb : ''));
 
   _buildNav();
   _applyInitTheme();
@@ -130,8 +130,8 @@ async function go(page, param) {
   const route = ROUTES[page];
   if (!route) return;
 
-  // URL 변경 (History API) — Cloudflare Pages 깔끔한 URL
-  var newPath = '/' + page + (param ? '/' + param : '');
+  // URL 변경 (History API)
+  var newPath = page === 'main' ? '/' : ('/' + page + (param ? '/' + param : ''));
   if (window.location.pathname !== newPath) {
     history.pushState({ page: page, param: param || null }, '', newPath);
   }

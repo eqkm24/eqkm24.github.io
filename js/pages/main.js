@@ -5,6 +5,15 @@ function initMain() {
   _loadNotes();
   _initVisitor();
   _restoreCharCard();
+  // 저장된 스펙 있으면 카드 펼치기
+  if (localStorage.getItem('stella_char_info')) {
+    setTimeout(function() {
+      var body = document.getElementById('char-card-body');
+      var icon = document.getElementById('char-toggle-icon');
+      if (body) { body.style.maxHeight = body.scrollHeight + 500 + 'px'; }
+      if (icon) { icon.style.transform = 'rotate(180deg)'; }
+    }, 100);
+  }
   if (isAdmin()) {
     const btn = document.getElementById('note-admin-btn');
     if (btn) btn.style.display = '';
@@ -186,16 +195,20 @@ function _loadNotes() {
 function openNoteDetail(idx) {
   var notes = window._notesData;
   if (!notes || !notes[idx]) return;
-  var n   = notes[idx];
-  var d   = n.date ? new Date(n.date) : null;
+  window._currentNoteIdx = idx;
+  var n    = notes[idx];
+  var d    = n.date ? new Date(n.date) : null;
   var dStr = d ? d.toLocaleDateString('ko-KR') : '';
-  var popup = document.getElementById('note-detail-popup');
-  var body  = document.getElementById('note-detail-body');
+  var popup   = document.getElementById('note-detail-popup');
+  var body    = document.getElementById('note-detail-body');
+  var titleEl = document.getElementById('note-detail-title');
+  var adminEl = document.getElementById('note-admin-actions');
   if (!popup || !body) return;
+  if (titleEl) titleEl.textContent = n.title || '업데이트 노트';
+  if (adminEl) adminEl.style.display = isAdmin() ? 'flex' : 'none';
   body.innerHTML =
-    '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">' + (n.title||'') + '</div>' +
     '<div style="font-size:11px;color:var(--muted);margin-bottom:14px;">' + dStr + '</div>' +
-    '<div style="white-space:pre-wrap;color:var(--sub);">' + (n.content||'') + '</div>';
+    '<div style="white-space:pre-wrap;color:var(--sub);line-height:1.8;">' + (n.content||'') + '</div>';
   popup.style.display = 'flex';
 }
 
@@ -228,6 +241,9 @@ function parseCharInfo(text) {
   if (!root) return;
   if (!text || !text.trim()) { root.innerHTML = ''; _showCharPaste(true); return; }
 
+  // 타임스탬프 제거: "[10:28:37] " 형태
+  text = text.replace(/^\[\d{2}:\d{2}:\d{2}\]\s*/gm, '');
+
   var lines   = text.split('\n');
   var section = '';
   var stats   = {};
@@ -240,35 +256,48 @@ function parseCharInfo(text) {
     var line = raw.trim();
     if (!line) return;
 
-    if (line.includes('[스탯 정보]'))  { section = 'stat';     return; }
-    if (line.includes('[숙련도]'))     { section = 'prof';     return; }
-    if (line.includes('[스킬]'))       { section = 'skill';    return; }
-    if (line.includes('[임시 스탯]'))  { section = 'skip';     return; }
-    if (line.includes('[임시 스킬]'))  { section = 'tmpskill'; return; }
+    // 섹션 헤더 — 이모지/특수문자 포함된 헤더도 처리
+    if (line.includes('스탯 정보'))  { section = 'stat';     return; }
+    if (line.includes('[숙련도]'))   { section = 'prof';     return; }
+    if (line.includes('[스킬]'))     { section = 'skill';    return; }
+    if (line.includes('[임시 스탯')) { section = 'skip';     return; }
+    if (line.includes('[임시 스킬')) { section = 'tmpskill'; return; }
     if (section === 'skip') return;
 
+    // 명성
     var fameM = line.match(/^명성\s*[:：]\s*(\d+)\s*\(.*?([\d.]+)%\)/);
     if (fameM) { fame = fameM[1]; famePct = parseFloat(fameM[2]); return; }
 
-    var spM = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
-    if (spM) { statPts = spM[1]; return; }
-
+    var spM  = line.match(/^스탯\s*포인트\s*[:：]\s*(\d+)/);
+    if (spM)  { statPts  = spM[1];  return; }
     var skpM = line.match(/^스킬\s*포인트\s*[:：]\s*(\d+)/);
     if (skpM) { skillPts = skpM[1]; return; }
 
+    // 임시 스킬: "- 광맥 감각 (equip:HEAD) +1Lv"
     if (section === 'tmpskill') {
-      var tm = line.match(/ㆍ(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
-      if (tm) tmpSkills[tm[1].trim()] = parseInt(tm[2]);
+      var tm = line.match(/^[-ㆍ]\s*(.+?)\s*[\(\（].+[\)\）]\s*\+(\d+)Lv/);
+      if (tm) {
+        var sname = tm[1].trim().replace(/^[\uD800-\uDFFF\u4E00-\u9FFF\u3400-\u4DBF]+\s*/, '');
+        var slv   = parseInt(tm[2]);
+        tmpSkills[sname] = (tmpSkills[sname] || 0) + slv;
+      }
       return;
     }
 
     if (!line.startsWith('ㆍ')) return;
-    var body = line.slice(1).trim();
+    // ㆍ 뒤 특수문자/이모지 제거
+    var body = line.slice(1).trim().replace(/^[\uD800-\uDFFF\u4E00-\u9FFF\u3400-\u4DBF]+\s*/, '');
 
     if (section === 'stat') {
       var m = body.match(/^(.+?)\s*\(.*?total\s*[:=]\s*([\d.]+)/);
-      if (m) stats[m[1].trim()] = parseFloat(m[2]);
+      if (m) {
+        var sname = m[1].trim();
+        var val   = parseFloat(m[2]);
+        // 중복 스탯 합산 (채광 데미지 증가 등)
+        stats[sname] = (stats[sname] || 0) + val;
+      }
     }
+
     if (section === 'prof') {
       var m2 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)[^)]*,\s*([\d.]+)%/);
       if (m2) profs[m2[1].trim()] = { lv: parseInt(m2[2]), pct: parseFloat(m2[3]) };
@@ -277,6 +306,7 @@ function parseCharInfo(text) {
         if (m3) profs[m3[1].trim()] = { lv: parseInt(m3[2]), pct: 0 };
       }
     }
+
     if (section === 'skill') {
       var m4 = body.match(/^(.+?)\s*\(Lv\s*[:=]\s*(\d+)/);
       if (m4) skills[m4[1].trim()] = parseInt(m4[2]);
@@ -290,44 +320,42 @@ function parseCharInfo(text) {
 
   var fmt = function(v) {
     if (typeof v !== 'number') return v;
-    return Number.isInteger(v) ? v : parseFloat(v.toFixed(2));
+    return parseFloat(v.toFixed(2));
   };
 
   var BASE_STATS = ['행운','노련함','손재주','감각','인내력','카리스마'];
   var JOB_STATS  = ['요리 등급업 확률','음식 효과연장','조리 단축',
                     '일반 작물 감소비율','경작지당 화분통 설치 개수','경작지 점유 수',
-                    '벌목 속도 증가','벌목 데미지 증가'];
+                    '벌목 속도 증가','벌목 데미지 증가','채광 데미지 증가','채광 딜레이 감소',
+                    '기본 광물 추가 개수','기본 광물 추가 드롭률','커스텀 광물 추가 드롭률',
+                    '채광 갈증 감소','곡괭이 내구도 보호'];
   var usedKeys = BASE_STATS.concat(JOB_STATS);
 
   var baseEntries = BASE_STATS.map(function(k) { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
   var jobEntries  = JOB_STATS.map(function(k)  { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
-  var etcEntries  = Object.entries(stats).filter(function(e) { return usedKeys.indexOf(e[0]) < 0; });
+  var etcEntries  = Object.entries(stats).filter(function(e) { return usedKeys.indexOf(e[0]) < 0 && e[1] > 0; });
 
   var profEntries = Object.entries(profs).filter(function(e) { return e[1].lv > 0; });
   var JOB_COLOR = {
     채광:'var(--amber)', 낚시:'var(--blue)', 농사:'var(--green)',
-    요리:'var(--red)', 대장술:'var(--purple)', 생존:'var(--teal)',
+    요리:'var(--red)',   대장술:'var(--purple)', 생존:'var(--teal)',
     연금술:'var(--teal)', 벌목:'var(--green)'
   };
 
+  // 임시 스킬 합산
   var mergedSkills = Object.assign({}, skills);
   Object.entries(tmpSkills).forEach(function(e) {
-    var name = e[0], tmpLv = e[1];
-    if (mergedSkills[name] != null) {
-      var baseLv = typeof mergedSkills[name] === 'number' ? mergedSkills[name] : parseInt(mergedSkills[name]);
-      var total  = baseLv + tmpLv;
-      mergedSkills[name] = String(total) + ' <span style="font-size:10px;color:var(--teal);font-weight:400;">(기본' + baseLv + '+임시' + tmpLv + ')</span>';
-    } else {
-      mergedSkills[name] = String(tmpLv) + ' <span style="font-size:10px;color:var(--teal);font-weight:400;">(임시)</span>';
+    var sname = e[0], lv = e[1];
+    if (mergedSkills[sname] != null) {
+      var base = typeof mergedSkills[sname] === 'number' ? mergedSkills[sname] : parseInt(mergedSkills[sname]);
+      mergedSkills[sname] = String(base + lv) + ' <span style="font-size:10px;color:var(--teal);">(+' + lv + ' 임시)</span>';
     }
   });
 
   var sec = function(title, color, html) {
     if (!html) return '';
     return '<div style="margin-top:14px;">' +
-      '<div style="font-size:10px;font-weight:700;letter-spacing:1.2px;' +
-      'color:' + color + ';text-transform:uppercase;' +
-      'margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--b1);">' + title + '</div>' +
+      '<div style="font-size:10px;font-weight:700;letter-spacing:1.2px;color:' + color + ';text-transform:uppercase;margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--b1);">' + title + '</div>' +
       html + '</div>';
   };
 
@@ -339,8 +367,7 @@ function parseCharInfo(text) {
           '<span class="char-stat-key">' + e[0] + '</span>' +
           '<span class="char-stat-val" style="color:var(--purple);font-size:13px;font-weight:900;">+' + fmt(e[1]) + '</span>' +
           '</div>';
-      }).join('') +
-      '</div>';
+      }).join('') + '</div>';
   };
 
   var profBars = profEntries.length ? profEntries.map(function(e) {
@@ -356,7 +383,7 @@ function parseCharInfo(text) {
       '</div>';
   }).join('') : '';
 
-  var skillTags = Object.entries(mergedSkills).length ?
+  var skillTags = Object.keys(mergedSkills).length ?
     '<div style="display:flex;flex-wrap:wrap;gap:6px;">' +
     Object.entries(mergedSkills).map(function(e) {
       return '<span class="tag tag-amber">' + e[0] + ' Lv.' + e[1] + '</span>';
@@ -377,11 +404,12 @@ function parseCharInfo(text) {
   root.innerHTML =
     (fameHtml ? '<div style="margin-bottom:4px;">' + fameHtml + '</div>' : '') +
     sec('기본 스탯',  'var(--purple)', statGrid(baseEntries)) +
-    sec('숙련도',     'var(--teal)',   profBars) +
-    sec('직업 스탯',  'var(--amber)',  statGrid(jobEntries)) +
-    (etcEntries.length ? sec('기타', 'var(--muted)', statGrid(etcEntries)) : '') +
+    sec('숙련도',     'var(--amber)',  profBars) +
+    sec('직업 스탯',  'var(--teal)',   statGrid(jobEntries)) +
+    (etcEntries.length ? sec('기타',  'var(--muted)', statGrid(etcEntries)) : '') +
     sec('보유 스킬',  'var(--green)',  skillTags);
 }
+
 function _showCharPaste(show) {
   const ta  = document.getElementById('char-paste');
   const btn = document.getElementById('char-paste-toggle');
@@ -411,43 +439,78 @@ function clearCharCard() {
   localStorage.removeItem('stella_char_info');
 }
 
-function openNoteModal() {
-  const m = document.createElement('div');
+
+function toggleCharCard() {
+  var body = document.getElementById('char-card-body');
+  var icon = document.getElementById('char-toggle-icon');
+  if (!body) return;
+  var isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+  if (isOpen) {
+    body.style.maxHeight = '0';
+    if (icon) { icon.style.transform = ''; }
+  } else {
+    body.style.maxHeight = body.scrollHeight + 'px';
+    if (icon) { icon.style.transform = 'rotate(180deg)'; }
+  }
+}
+
+function openNoteModal(existingNote, editIdx) {
+  var m = document.createElement('div');
   m.className = 'modal-bg';
-  m.innerHTML = `
-    <div class="modal">
-      <div class="modal-title">📝 업데이트 노트 작성</div>
-      <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
-        <select class="input" id="note-type" style="cursor:pointer;">
-          <option value="update">🔄 업데이트</option>
-          <option value="notice">📌 공지</option>
-          <option value="fix">🔧 수정</option>
-          <option value="event">🎉 이벤트</option>
-        </select>
-        <textarea class="input" id="note-content" rows="3" placeholder="내용을 입력하세요..."></textarea>
-      </div>
-      <div class="modal-btns">
-        <button class="btn" onclick="this.closest('.modal-bg').remove()">취소</button>
-        <button class="btn btn-primary" onclick="saveNote(this)">저장</button>
-      </div>
-    </div>`;
+  m.onclick   = function(e) { if (e.target === m) m.remove(); };
+  var titleVal   = existingNote ? (existingNote.title   || '') : '';
+  var contentVal = existingNote ? (existingNote.content || '') : '';
+  m.innerHTML =
+    '<div class="modal" style="max-width:480px;">' +
+      '<div class="modal-title">' + (existingNote ? '✏️ 노트 수정' : '📝 업데이트 노트 작성') + '</div>' +
+      '<input class="input" id="note-title-inp" placeholder="제목 입력..." value="' + titleVal.replace(/"/g,'&quot;') + '" style="margin-bottom:10px;">' +
+      '<textarea class="input" id="note-content-inp" rows="8" placeholder="내용 입력..." style="resize:vertical;">' + contentVal + '</textarea>' +
+      '<div class="modal-btns">' +
+        '<button class="btn" onclick="this.closest('.modal-bg').remove()">취소</button>' +
+        '<button class="btn btn-primary" onclick="saveNote(' + (editIdx != null ? editIdx : 'null') + ', this)">저장</button>' +
+      '</div>' +
+    '</div>';
   document.body.appendChild(m);
 }
 
-async function saveNote(btn) {
-  const type    = document.getElementById('note-type')?.value;
-  const content = document.getElementById('note-content')?.value?.trim();
-  if (!content) return;
-  btn.textContent = '저장 중...';
-  btn.disabled = true;
+async function saveNote(editIdx, btn) {
+  var titleEl   = document.getElementById('note-title-inp');
+  var contentEl = document.getElementById('note-content-inp');
+  var title   = titleEl?.value?.trim()   || '';
+  var content = contentEl?.value?.trim() || '';
+  if (!content) { alert('내용을 입력해주세요.'); return; }
+  btn.disabled = true; btn.textContent = '저장 중...';
+  var notes = (window._notesData || []).slice();
+  var note  = { title: title, content: content, date: editIdx != null ? (notes[editIdx]?.date || new Date().toISOString()) : new Date().toISOString() };
+  if (editIdx != null) { notes[editIdx] = note; }
+  else { notes.unshift(note); }
   try {
-    const notes = (await window.$db.get('stella_update_notes')) || [];
-    const arr   = Array.isArray(notes) ? notes : Object.values(notes);
-    arr.unshift({ type, content, createdAt: new Date().toISOString() });
-    await window.$db.set('stella_update_notes', arr.slice(0, 30));
+    await firebase.database().ref('stella_update_notes').set(notes);
     btn.closest('.modal-bg').remove();
   } catch(e) {
     alert('저장 실패: ' + e.message);
-    btn.textContent = '저장'; btn.disabled = false;
+    btn.disabled = false; btn.textContent = '저장';
   }
+}
+
+
+function editCurrentNote() {
+  var notes = window._notesData;
+  var idx   = window._currentNoteIdx;
+  if (!notes || idx == null) return;
+  var n = notes[idx];
+  document.getElementById('note-detail-popup').style.display = 'none';
+  openNoteModal(n, idx);
+}
+
+function deleteCurrentNote() {
+  var notes = window._notesData;
+  var idx   = window._currentNoteIdx;
+  if (!notes || idx == null) return;
+  if (!confirm('이 노트를 삭제할까요?')) return;
+  var newNotes = notes.filter(function(_,i) { return i !== idx; });
+  firebase.database().ref('stella_update_notes').set(newNotes).then(function() {
+    document.getElementById('note-detail-popup').style.display = 'none';
+    alert('삭제됐어요.');
+  }).catch(function(e) { alert('삭제 실패: ' + e.message); });
 }

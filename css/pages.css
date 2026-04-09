@@ -1027,3 +1027,14 @@
   color: var(--purple);
   border-bottom-color: var(--purple);
 }
+
+/* ── 메인 상단 3컬럼 그리드 ── */
+.main-top-grid {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .main-top-grid { grid-template-columns: 1fr; }
+}

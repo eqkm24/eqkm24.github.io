@@ -77,7 +77,7 @@ function _buildNav() {
 
     <div class="nav-utils">
       <button class="nav-icon-btn" onclick="openSettings()" title="환경 설정" id="settings-btn">
-        <svg viewBox="0 0 18 18" fill="none" style="width:16px;height:16px;"><circle cx="9" cy="9" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.42 1.42M13.36 13.36l1.42 1.42M3.22 14.78l1.42-1.42M13.36 4.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 20 20" fill="none" style="width:16px;height:16px;"><path d="M10 13a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.22 4.22l1.06 1.06M14.72 14.72l1.06 1.06M4.22 15.78l1.06-1.06M14.72 5.28l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 6.5a3.5 3.5 0 000 7" stroke="none"/></svg>
       </button>
       <button class="nav-icon-btn" id="admin-nav-btn"
         onclick="openAdminLogin()" title="관리자 로그인">👑</button>

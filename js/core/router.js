@@ -71,7 +71,9 @@ function _buildNav() {
     </div>
 
     <div class="nav-utils">
-      <button class="nav-icon-btn" onclick="toggleTheme()" title="테마 전환" id="theme-btn">☀️</button>
+      <button class="nav-icon-btn" onclick="openSettings()" title="환경 설정" id="settings-btn">
+        <svg viewBox="0 0 18 18" fill="none" style="width:16px;height:16px;"><circle cx="9" cy="9" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M9 1v2M9 15v2M1 9h2M15 9h2M3.22 3.22l1.42 1.42M13.36 13.36l1.42 1.42M3.22 14.78l1.42-1.42M13.36 4.64l1.42-1.42" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      </button>
       <button class="nav-icon-btn" id="admin-nav-btn"
         onclick="openAdminLogin()" title="관리자 로그인">👑</button>
     </div>`;
@@ -157,20 +159,35 @@ function _loadGlobalData() {
   });
 }
 
-function toggleTheme() {
-  const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
-  const next = cur === 'dark' ? 'light' : 'dark';
-  document.documentElement.setAttribute('data-theme', next);
-  localStorage.setItem('stella_theme', next);
-  const btn = document.getElementById('theme-btn');
-  if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+function openSettings() {
+  var panel = document.getElementById('settings-panel-bg');
+  if (panel) { panel.style.display = 'flex'; _updateThemeBtns(); }
 }
-
-function _applyInitTheme() {
-  const theme = localStorage.getItem('stella_theme') || 'dark';
+function closeSettings() {
+  var panel = document.getElementById('settings-panel-bg');
+  if (panel) panel.style.display = 'none';
+}
+function setTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  const btn = document.getElementById('theme-btn');
-  if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('stella_theme', theme);
+  _updateThemeBtns();
+}
+function _updateThemeBtns() {
+  var cur   = document.documentElement.getAttribute('data-theme') || 'dark';
+  var darkB  = document.getElementById('theme-dark-btn');
+  var lightB = document.getElementById('theme-light-btn');
+  if (darkB)  { darkB.style.borderColor  = cur==='dark'  ? 'var(--purple)' : 'var(--b1)'; darkB.style.background  = cur==='dark'  ? 'var(--purple-dim)' : 'transparent'; darkB.style.color  = cur==='dark'  ? 'var(--purple)' : 'var(--muted)'; }
+  if (lightB) { lightB.style.borderColor = cur==='light' ? 'var(--purple)' : 'var(--b1)'; lightB.style.background = cur==='light' ? 'var(--purple-dim)' : 'transparent'; lightB.style.color = cur==='light' ? 'var(--purple)' : 'var(--muted)'; }
+}
+function resetPopup() {
+  localStorage.removeItem('stella_popup_skip');
+  closeSettings();
+  var p = document.getElementById('main-popup');
+  if (p) p.style.display = 'flex';
+}
+function _applyInitTheme() {
+  var theme = localStorage.getItem('stella_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
 }
 
 function onAdminLogin() {

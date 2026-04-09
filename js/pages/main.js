@@ -160,38 +160,45 @@ function _loadTop3() {
   });
 }
 function _loadNotes() {
-  window.$db.on('stella_update_notes', val => {
-    const root = document.getElementById('main-notes');
+  window.$db.on('stella_update_notes', function(val) {
+    var root = document.getElementById('main-notes');
     if (!root) return;
 
-    const notes = val
-      ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean)
-      : [];
-    notes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    const recent = notes.slice(0, 5);
-
-    if (!recent.length) {
-      root.innerHTML = `<div class="empty" style="padding:16px;"><span>등록된 노트가 없습니다</span></div>`;
+    if (!val || !val.length) {
+      root.innerHTML = '<div class="empty" style="padding:12px;font-size:12px;">등록된 노트가 없습니다</div>';
       return;
     }
 
-    const DOT_COLOR = { notice:'var(--purple)', update:'var(--teal)', fix:'var(--amber)', event:'var(--green)' };
-    root.innerHTML = `<div class="note-list">
-      ${recent.map(n => {
-        const color = DOT_COLOR[n.type] || 'var(--muted)';
-        const date  = n.createdAt ? new Date(n.createdAt).toLocaleDateString('ko-KR', { month:'numeric', day:'numeric' }) : '';
-        return `
-        <div class="note-row">
-          <div class="note-dot" style="background:${color}"></div>
-          <div>
-            <div class="note-text">${n.content || n.title || ''}</div>
-            <div class="note-date">${date}</div>
-          </div>
-        </div>`;
-      }).join('')}
-    </div>`;
+    var sorted = val.slice().sort(function(a,b) { return new Date(b.date||0) - new Date(a.date||0); });
+    root.innerHTML = sorted.map(function(n, i) {
+      var d   = n.date ? new Date(n.date) : null;
+      var dStr = d ? (d.getMonth()+1) + '. ' + d.getDate() + '.' : '';
+      return '<div class="note-row" onclick="openNoteDetail(' + i + ')" style="cursor:pointer;">' +
+        '<div class="note-title">' + (n.title || '(제목 없음)') + '</div>' +
+        '<div class="note-date">' + dStr + '</div>' +
+      '</div>';
+    }).join('');
+
+    window._notesData = sorted;
   });
 }
+
+function openNoteDetail(idx) {
+  var notes = window._notesData;
+  if (!notes || !notes[idx]) return;
+  var n   = notes[idx];
+  var d   = n.date ? new Date(n.date) : null;
+  var dStr = d ? d.toLocaleDateString('ko-KR') : '';
+  var popup = document.getElementById('note-detail-popup');
+  var body  = document.getElementById('note-detail-body');
+  if (!popup || !body) return;
+  body.innerHTML =
+    '<div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;">' + (n.title||'') + '</div>' +
+    '<div style="font-size:11px;color:var(--muted);margin-bottom:14px;">' + dStr + '</div>' +
+    '<div style="white-space:pre-wrap;color:var(--sub);">' + (n.content||'') + '</div>';
+  popup.style.display = 'flex';
+}
+
 
 function _initVisitor() {
   

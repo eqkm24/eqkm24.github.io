@@ -27,16 +27,7 @@
       }, true);
       // 우클릭 차단
       document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
-      // 개발자 도구 감지 (크기 차이로 감지)
-      var threshold = 160;
-      function detectDevTools() {
-        if (window.outerWidth - window.innerWidth > threshold ||
-            window.outerHeight - window.innerHeight > threshold) {
-          document.body.innerHTML = '';
-          document.write('<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;background:#0f0e17;color:#fff;flex-direction:column;gap:12px;"><div style="font-size:48px;">🚫</div><div style="font-size:18px;font-weight:700;">개발자 도구를 닫아주세요</div></div>');
-        }
-      }
-      setInterval(detectDevTools, 1000);
+
     })();
   </script>
 </head>

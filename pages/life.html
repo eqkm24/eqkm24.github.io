@@ -1,21 +1,37 @@
 <div class="wrap">
-  <div class="page-hd">
-    <div class="page-hd-label" id="life-label">채광</div>
-    <h1 class="page-hd-title" id="life-title">채광 <em>스킬</em></h1>
-    <p class="page-hd-sub" id="life-sub">숙련도별 스킬 정보 및 수치</p>
+
+  <!-- 페이지 헤더 -->
+  <div class="life-page-hd">
+    <h1 class="life-page-title" id="life-title">생활 스킬</h1>
+    <p class="life-page-sub" id="life-sub">직업을 선택해 스킬과 정보를 확인하세요</p>
   </div>
 
-  
-  <div class="life-job-tabs" id="life-job-tabs">
-    <div class="life-job-tab active" data-job="mining"  onclick="switchLifeJob('mining',this)">⛏ 채광</div>
-    <div class="life-job-tab"        data-job="fishing" onclick="switchLifeJob('fishing',this)">🎣 낚시</div>
-    <div class="life-job-tab"        data-job="farming" onclick="switchLifeJob('farming',this)">🌾 농사</div>
-    <div class="life-job-tab"        data-job="cooking" onclick="switchLifeJob('cooking',this)">🍳 요리</div>
+  <!-- 직업 선택 Pill 탭 -->
+  <div class="life-job-selector">
+    <div class="life-job-pill-wrap">
+      <div class="life-job-pill active" data-job="mining" onclick="switchLifeJob('mining',this)">
+        <span class="life-job-pill-icon">⛏</span>
+        <span>채광</span>
+      </div>
+      <div class="life-job-pill" data-job="fishing" onclick="switchLifeJob('fishing',this)">
+        <span class="life-job-pill-icon">🎣</span>
+        <span>낚시</span>
+      </div>
+      <div class="life-job-pill" data-job="farming" onclick="switchLifeJob('farming',this)">
+        <span class="life-job-pill-icon">🌾</span>
+        <span>농사</span>
+      </div>
+      <div class="life-job-pill" data-job="cooking" onclick="switchLifeJob('cooking',this)">
+        <span class="life-job-pill-icon">🍳</span>
+        <span>요리</span>
+      </div>
+    </div>
   </div>
 
-  
+  <!-- 서브탭 (스킬 / 제련) -->
   <div class="life-sub-tabs" id="life-sub-tabs"></div>
 
-  
-  <div id="life-content"></div>
+  <!-- 콘텐츠 영역 -->
+  <div id="life-content" style="margin-top:8px;"></div>
+
 </div>

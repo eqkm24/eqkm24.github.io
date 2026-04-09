@@ -139,21 +139,21 @@ var SMELT_DATA = [
 function initLife(job) {
   _curJob    = job || 'mining';
   _curSubtab = 'skill';
-  _setJobActive(_curJob);
+  _setPillActive(_curJob);
   _renderSubtabs();
   _renderContent();
 }
 
 function switchLifeJob(job, el) {
   _curJob = job;
-  document.querySelectorAll('.life-job-tab').forEach(function(t) { t.classList.remove('active'); });
-  if (el) el.classList.add('active');
+  _curSubtab = 'skill';
+  _setPillActive(job);
   _renderSubtabs();
   _renderContent();
 }
 
-function _setJobActive(job) {
-  document.querySelectorAll('.life-job-tab').forEach(function(t) {
+function _setPillActive(job) {
+  document.querySelectorAll('.life-job-pill').forEach(function(t) {
     t.classList.toggle('active', t.dataset.job === job);
   });
 }
@@ -183,12 +183,10 @@ function _renderContent() {
   var job = LIFE_JOBS[_curJob];
   if (!job) return;
 
-  var label = document.getElementById('life-label');
   var title = document.getElementById('life-title');
   var sub   = document.getElementById('life-sub');
-  if (label) label.textContent = job.label;
-  if (title) title.innerHTML  = job.label + ' <em>스킬</em>';
-  if (sub)   sub.textContent  = '사용 보주: ' + job.bouju + ' · 기본 Lv.20 / 최대 Lv.30';
+  if (title) title.textContent = job.label + ' 스킬';
+  if (sub)   sub.textContent   = '사용 보주: ' + job.bouju + ' · 기본 Lv.20 / 강화 최대 Lv.30';
 
   if (_curSubtab === 'smelt') {
     root.innerHTML = _buildSmeltPanel();

@@ -139,9 +139,11 @@ var SMELT_DATA = [
 function initLife(job) {
   _curJob    = job || 'mining';
   _curSubtab = 'skill';
-  _setPillActive(_curJob);
-  _renderSubtabs();
-  _renderContent();
+  requestAnimationFrame(function() {
+    _setPillActive(_curJob);
+    _renderSubtabs();
+    _renderContent();
+  });
 }
 
 function switchLifeJob(job, el) {
@@ -209,10 +211,12 @@ function _buildSkillPanel(jobKey) {
 
   var cards = data.skills.map(function(sk, idx) {
     var isActive  = sk.type === 'A';
+    var typeLabel = isActive ? '액티브' : '패시브';
+    var typeBorder = isActive ? 'border-left:3px solid var(--purple);' : 'border-left:3px solid var(--teal);';
     var exclBadge = sk.excl
       ? '<span class="tag tag-red" style="margin-left:4px;">⚔ 택1: ' + sk.excl + '</span>' : '';
     var actRow = sk.act
-      ? '<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;">' +
+      ? '<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;padding:10px 14px;background:var(--bg-3);border-radius:8px;">' +
         '<span><strong style="color:var(--muted)">발동</strong> <span style="color:var(--sub)">' + sk.act + '</span></span>' +
         '<span><strong style="color:var(--muted)">요구</strong> <span style="color:var(--sub)">' + sk.req + '</span></span>' +
         '</div>' : '';
@@ -221,11 +225,14 @@ function _buildSkillPanel(jobKey) {
       return '<tr>' + r.map(function(v) { return '<td>' + v + '</td>'; }).join('') + '</tr>';
     }).join('');
 
-    return '<div class="skill-card" id="sk-' + jobKey + '-' + idx + '">' +
+    return '<div class="skill-card" id="sk-' + jobKey + '-' + idx + '" style="' + typeBorder + '">' +
       '<div class="skill-card-hd" onclick="toggleSkill(\'' + jobKey + '\',' + idx + ')">' +
         '<div class="skill-type ' + (isActive ? 'skill-type-a' : 'skill-type-p') + '">' + sk.type + '</div>' +
         '<div style="flex:1;min-width:0;">' +
-          '<div class="skill-name">' + sk.name + '</div>' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<span class="skill-name">' + sk.name + '</span>' +
+            '<span class="tag ' + (isActive ? 'tag-purple' : 'tag-teal') + '" style="font-size:10px;">' + typeLabel + '</span>' +
+          '</div>' +
           '<div class="skill-desc">' + sk.desc + '</div>' +
         '</div>' +
         '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;">' +

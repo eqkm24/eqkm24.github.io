@@ -564,8 +564,8 @@ function _loadWidgetPrefs() {
 }
 
 function _applyWidgetPrefs(prefs) {
-  // TOP3
-  var top3El   = document.querySelector('#main-top3')?.closest('.card');
+  // TOP3 (사이드바 섹션)
+  var top3El   = document.querySelector('#main-top3')?.closest('.sidebar-section');
   if (top3El)   top3El.style.display   = prefs.top3      === false ? 'none' : '';
   // 캐릭터 스펙
   var charEl   = document.getElementById('char-card-body')?.closest('.card');
@@ -584,8 +584,7 @@ function openFeedbackModal() {
   m.innerHTML =
     '<div class="modal" style="max-width:480px;width:100%;">' +
       '<div class="modal-title">💬 의견 보내기</div>' +
-      '<div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">문의, 오류 신고, 건의사항을 자유롭게 남겨주세요.<br>관리자 모드에서 확인할 수 있습니다.</div>' +
-      '<input class="input" id="feedback-name-inp" placeholder="닉네임 (선택)" style="margin-bottom:10px;">' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">문의, 오류 신고, 건의사항을 자유롭게 남겨주세요.</div>' +
       '<textarea class="input" id="feedback-content-inp" rows="5" placeholder="내용을 입력해주세요..." style="resize:vertical;"></textarea>' +
       '<div class="modal-btns">' +
         '<button class="btn" onclick="this.closest(\'.modal-bg\').remove()">취소</button>' +
@@ -596,18 +595,12 @@ function openFeedbackModal() {
 }
 
 async function submitFeedback(btn) {
-  var name    = document.getElementById('feedback-name-inp')?.value?.trim()    || '익명';
   var content = document.getElementById('feedback-content-inp')?.value?.trim() || '';
   if (!content) { alert('내용을 입력해주세요.'); return; }
   btn.disabled = true; btn.textContent = '전송 중...';
-  var entry = { name: name, content: content, date: new Date().toISOString(), read: false };
+  var entry = { content: content, date: new Date().toISOString(), read: false };
   try {
-    var ref  = firebase.database().ref('stella_feedback');
-    var list = [];
-    var snap = await ref.once('value');
-    list = snap.val() || [];
-    list.push(entry);
-    await ref.set(list);
+    await firebase.database().ref('stella_feedback').push(entry);
     btn.closest('.modal-bg').remove();
     alert('✅ 의견이 전달됐어요! 감사합니다 😊');
   } catch(e) {

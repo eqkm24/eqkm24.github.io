@@ -10,6 +10,7 @@ var ROUTES = {
 };
 
 let _curPage  = null;
+let _curSub   = null;
 let _pageCache = {};  
 
 function initApp() {
@@ -46,8 +47,7 @@ function _buildNav() {
 
   nav.innerHTML = `
     <div class="nav-logo" onclick="go('main')">
-      <div class="nav-logo-dot"></div>
-      <span class="nav-logo-text">스텔라 마을</span>
+      <span class="nav-logo-text">올띵</span>
     </div>
 
     <div class="nav-tabs" id="nav-tabs">
@@ -68,12 +68,11 @@ function _buildNav() {
         </div>
       </div>
 
-      <!-- 생활 단순 탭 (내부에서 직업 선택) -->
       <div class="nav-tab" id="nav-tab-life"
         onclick="go('life')">생활</div>
-
       <div class="nav-tab" id="nav-tab-recipe" onclick="go('recipe')">제작</div>
       <div class="nav-tab" id="nav-tab-price"  onclick="go('price')">시세</div>
+      <div class="nav-tab" id="nav-tab-patchnote" onclick="go('patchnote')">패치노트</div>
     </div>
 
     <div class="nav-utils">

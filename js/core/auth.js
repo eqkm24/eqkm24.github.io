@@ -492,8 +492,11 @@ window.addEventListener('beforeunload', () => {
 function openFeedbackAdmin() {
   var ref = firebase.database().ref('stella_feedback');
   ref.once('value').then(function(snap) {
-    var list = snap.val() || [];
+    var val = snap.val();
+    if (!val) { alert('받은 의견이 없습니다.'); return; }
+    var list = Object.entries(val).map(function(e) { return Object.assign({ _key: e[0] }, e[1]); });
     if (!list.length) { alert('받은 의견이 없습니다.'); return; }
+    list.sort(function(a, b) { return new Date(b.date || 0) - new Date(a.date || 0); });
     var m = document.createElement('div');
     m.className = 'modal-bg';
     m.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;';
@@ -507,11 +510,10 @@ function openFeedbackAdmin() {
         '</div>' +
       '</div>' +
       '<div style="overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;">' +
-        list.slice().reverse().map(function(item, i) {
+        list.map(function(item) {
           var d = item.date ? new Date(item.date).toLocaleString('ko-KR') : '';
           return '<div style="background:var(--bg-card);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;">' +
             '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
-              '<span style="font-size:12px;font-weight:700;color:var(--sub);">' + (item.name || '익명') + '</span>' +
               '<span style="font-size:11px;color:var(--muted);">' + d + '</span>' +
             '</div>' +
             '<div style="font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.6;">' + (item.content || '') + '</div>' +
@@ -525,6 +527,6 @@ function openFeedbackAdmin() {
 
 async function clearFeedback() {
   if (!confirm('모든 의견을 삭제할까요?')) return;
-  await firebase.database().ref('stella_feedback').set([]);
+  await firebase.database().ref('stella_feedback').remove();
   document.querySelector('.modal-bg')?.remove();
 }

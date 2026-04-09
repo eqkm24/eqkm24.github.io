@@ -12,6 +12,27 @@ let _curPage  = null;
 let _pageCache = {};  
 
 function initApp() {
+  // 브라우저 뒤로가기/앞으로가기
+  window.addEventListener('popstate', function(e) {
+    var state = e.state;
+    if (state && state.page) {
+      go(state.page, state.param || null);
+    } else {
+      go('main');
+    }
+  });
+
+  // 현재 URL에서 페이지 파싱 (직접 URL 접속 시)
+  var path   = window.location.pathname.replace(/^\//, '').split('/');
+  var initPg = path[0] || 'main';
+  var initSb = path[1] || null;
+  var VALID  = ['main','member','zone','tribute','life','recipe','price'];
+  if (!VALID.includes(initPg)) initPg = 'main';
+
+  _curPage = initPg;
+  _curSub  = initSb;
+  history.replaceState({ page: initPg, sub: initSb }, '', window.location.pathname);
+
   _buildNav();
   _applyInitTheme();
   _loadGlobalData();
@@ -108,6 +129,12 @@ async function go(page, param) {
 
   const route = ROUTES[page];
   if (!route) return;
+
+  // URL 변경 (History API) — Cloudflare Pages 깔끔한 URL
+  var newPath = '/' + page + (param ? '/' + param : '');
+  if (window.location.pathname !== newPath) {
+    history.pushState({ page: page, param: param || null }, '', newPath);
+  }
 
   
   if (route.village && !window._stella.villageOk) {

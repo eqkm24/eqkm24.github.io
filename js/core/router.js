@@ -5,7 +5,8 @@ var ROUTES = {
   tribute: { file: 'pages/tribute.html', init: 'initTribute', label: '조공',   nav: 'village', village: true },
   life:    { file: 'pages/life.html',    init: 'initLife',    label: '생활',   nav: 'life'    },
   recipe:  { file: 'pages/recipe.html',  init: 'initRecipe',  label: '제작',   nav: 'recipe'  },
-  price:   { file: 'pages/price.html',   init: 'initPrice',   label: '시세',   nav: 'price'   },
+  price:    { file: 'pages/price.html',     init: 'initPrice',     label: '시세',     nav: 'price'     },
+  patchnote:{ file: 'pages/patchnote.html', init: 'initPatchnote', label: '패치노트', nav: 'patchnote' },
 };
 
 let _curPage  = null;
@@ -26,7 +27,7 @@ function initApp() {
   var path   = window.location.pathname.replace(/^\//, '').split('/');
   var initPg = path[0] || 'main';
   var initSb = path[1] || null;
-  var VALID  = ['main','member','zone','tribute','life','recipe','price'];
+  var VALID  = ['main','member','zone','tribute','life','recipe','price','patchnote'];
   if (!VALID.includes(initPg)) { initPg = 'main'; initSb = null; }
 
   _curPage = initPg;
@@ -79,6 +80,7 @@ function _buildNav() {
       <button class="nav-icon-btn" onclick="openSettings()" title="환경 설정" id="settings-btn">
         <svg viewBox="0 0 20 20" fill="none" style="width:16px;height:16px;"><path d="M10 13a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="1.5"/><path d="M10 2v1.5M10 16.5V18M2 10h1.5M16.5 10H18M4.22 4.22l1.06 1.06M14.72 14.72l1.06 1.06M4.22 15.78l1.06-1.06M14.72 5.28l1.06-1.06" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M10 6.5a3.5 3.5 0 000 7" stroke="none"/></svg>
       </button>
+      <button class="nav-icon-btn" id="feedback-admin-btn" onclick="isAdmin() && openFeedbackAdmin()" title="의견함" style="display:none;">💬</button>
       <button class="nav-icon-btn" id="admin-nav-btn"
         onclick="openAdminLogin()" title="관리자 로그인">👑</button>
     </div>`;
@@ -172,7 +174,18 @@ function _loadGlobalData() {
 
 function openSettings() {
   var panel = document.getElementById('settings-panel-bg');
-  if (panel) { panel.style.display = 'flex'; _updateThemeBtns(); }
+  if (panel) {
+    panel.style.display = 'flex';
+    _updateThemeBtns();
+    // 위젯 체크박스 상태 복원
+    try {
+      var prefs = JSON.parse(localStorage.getItem('stella_widget_prefs') || '{}');
+      ['top3','char','patchnote'].forEach(function(key) {
+        var el = document.getElementById('widget-' + key);
+        if (el && prefs[key] !== undefined) el.checked = prefs[key];
+      });
+    } catch(e) {}
+  }
 }
 function closeSettings() {
   var panel = document.getElementById('settings-panel-bg');

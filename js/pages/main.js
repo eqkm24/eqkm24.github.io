@@ -3,6 +3,8 @@ function initMain() {
   _loadMainStats();
   _loadTop3();
   _loadNotes();
+  _loadPatchnotePreview();
+  setTimeout(_loadWidgetPrefs, 200);
   _initVisitor();
   _restoreCharCard();
   // 저장된 스펙 있으면 카드 펼치기
@@ -513,4 +515,103 @@ function deleteCurrentNote() {
     document.getElementById('note-detail-popup').style.display = 'none';
     alert('삭제됐어요.');
   }).catch(function(e) { alert('삭제 실패: ' + e.message); });
+}
+
+
+function _loadPatchnotePreview() {
+  window.$db.on('stella_update_notes', function(val) {
+    var root = document.getElementById('main-patchnote-preview');
+    if (!root) return;
+    if (!val || !val.length) {
+      root.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">등록된 패치노트가 없습니다.</div>';
+      return;
+    }
+    var sorted = val.slice().sort(function(a, b) { return new Date(b.date||0) - new Date(a.date||0); });
+    var top3   = sorted.slice(0, 3);
+    root.innerHTML = top3.map(function(n) {
+      var d    = n.date ? new Date(n.date) : null;
+      var dStr = d ? (d.getMonth()+1) + '. ' + d.getDate() + '.' : '';
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1);">' +
+        '<span style="font-size:12px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + (n.title || '(제목 없음)') + '</span>' +
+        '<span style="font-size:11px;color:var(--muted);flex-shrink:0;margin-left:8px;">' + dStr + '</span>' +
+      '</div>';
+    }).join('') + '<div style="text-align:right;margin-top:6px;font-size:11px;color:var(--purple);">전체보기 →</div>';
+  });
+}
+
+
+// ── 위젯 설정 저장/복원 ──
+function saveWidgetPref() {
+  var prefs = {
+    top3:      document.getElementById('widget-top3')?.checked !== false,
+    char:      document.getElementById('widget-char')?.checked !== false,
+    patchnote: document.getElementById('widget-patchnote')?.checked !== false,
+  };
+  localStorage.setItem('stella_widget_prefs', JSON.stringify(prefs));
+  _applyWidgetPrefs(prefs);
+}
+
+function _loadWidgetPrefs() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('stella_widget_prefs') || '{}');
+    // 체크박스 상태 복원
+    ['top3','char','patchnote'].forEach(function(key) {
+      var el = document.getElementById('widget-' + key);
+      if (el && saved[key] !== undefined) el.checked = saved[key];
+    });
+    _applyWidgetPrefs(saved);
+  } catch(e) {}
+}
+
+function _applyWidgetPrefs(prefs) {
+  // TOP3
+  var top3El   = document.querySelector('#main-top3')?.closest('.card');
+  if (top3El)   top3El.style.display   = prefs.top3      === false ? 'none' : '';
+  // 캐릭터 스펙
+  var charEl   = document.getElementById('char-card-body')?.closest('.card');
+  if (charEl)   charEl.style.display   = prefs.char      === false ? 'none' : '';
+  // 패치노트
+  var patchEl  = document.querySelector('#main-patchnote-preview')?.closest('.card');
+  if (patchEl)  patchEl.style.display  = prefs.patchnote === false ? 'none' : '';
+}
+
+// ── 의견 보내기 ──
+function openFeedbackModal() {
+  var m = document.createElement('div');
+  m.className = 'modal-bg';
+  m.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px;';
+  m.onclick = function(e) { if (e.target === m) m.remove(); };
+  m.innerHTML =
+    '<div class="modal" style="max-width:480px;width:100%;">' +
+      '<div class="modal-title">💬 의견 보내기</div>' +
+      '<div style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.6;">문의, 오류 신고, 건의사항을 자유롭게 남겨주세요.<br>관리자 모드에서 확인할 수 있습니다.</div>' +
+      '<input class="input" id="feedback-name-inp" placeholder="닉네임 (선택)" style="margin-bottom:10px;">' +
+      '<textarea class="input" id="feedback-content-inp" rows="5" placeholder="내용을 입력해주세요..." style="resize:vertical;"></textarea>' +
+      '<div class="modal-btns">' +
+        '<button class="btn" onclick="this.closest(\'.modal-bg\').remove()">취소</button>' +
+        '<button class="btn btn-primary" onclick="submitFeedback(this)">보내기 ✉️</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(m);
+}
+
+async function submitFeedback(btn) {
+  var name    = document.getElementById('feedback-name-inp')?.value?.trim()    || '익명';
+  var content = document.getElementById('feedback-content-inp')?.value?.trim() || '';
+  if (!content) { alert('내용을 입력해주세요.'); return; }
+  btn.disabled = true; btn.textContent = '전송 중...';
+  var entry = { name: name, content: content, date: new Date().toISOString(), read: false };
+  try {
+    var ref  = firebase.database().ref('stella_feedback');
+    var list = [];
+    var snap = await ref.once('value');
+    list = snap.val() || [];
+    list.push(entry);
+    await ref.set(list);
+    btn.closest('.modal-bg').remove();
+    alert('✅ 의견이 전달됐어요! 감사합니다 😊');
+  } catch(e) {
+    alert('전송 실패: ' + e.message);
+    btn.disabled = false; btn.textContent = '보내기 ✉️';
+  }
 }

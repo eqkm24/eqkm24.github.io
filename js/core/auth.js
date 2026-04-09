@@ -486,3 +486,45 @@ window.addEventListener('beforeunload', () => {
   window._stella.adminToken = null;
   window._stella.isAdmin    = false;
 });
+
+
+// 관리자 의견함 확인
+function openFeedbackAdmin() {
+  var ref = firebase.database().ref('stella_feedback');
+  ref.once('value').then(function(snap) {
+    var list = snap.val() || [];
+    if (!list.length) { alert('받은 의견이 없습니다.'); return; }
+    var m = document.createElement('div');
+    m.className = 'modal-bg';
+    m.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:20px;';
+    m.onclick = function(e) { if (e.target === m) m.remove(); };
+    m.innerHTML = '<div style="background:var(--bg-2);border:1px solid var(--b2);border-radius:16px;width:100%;max-width:600px;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;">' +
+      '<div style="padding:16px 20px;border-bottom:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center;">' +
+        '<span style="font-weight:700;color:var(--text);">💬 의견함 (' + list.length + '건)</span>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button onclick="clearFeedback()" style="padding:4px 10px;font-size:11px;border-radius:8px;background:var(--red-dim);color:var(--red);border:1px solid var(--red);cursor:pointer;">전체 삭제</button>' +
+          '<button onclick="this.closest(\'.modal-bg\').remove()" style="background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;">×</button>' +
+        '</div>' +
+      '</div>' +
+      '<div style="overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:12px;">' +
+        list.slice().reverse().map(function(item, i) {
+          var d = item.date ? new Date(item.date).toLocaleString('ko-KR') : '';
+          return '<div style="background:var(--bg-card);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;">' +
+            '<div style="display:flex;justify-content:space-between;margin-bottom:6px;">' +
+              '<span style="font-size:12px;font-weight:700;color:var(--sub);">' + (item.name || '익명') + '</span>' +
+              '<span style="font-size:11px;color:var(--muted);">' + d + '</span>' +
+            '</div>' +
+            '<div style="font-size:13px;color:var(--text);white-space:pre-wrap;line-height:1.6;">' + (item.content || '') + '</div>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+    document.body.appendChild(m);
+  });
+}
+
+async function clearFeedback() {
+  if (!confirm('모든 의견을 삭제할까요?')) return;
+  await firebase.database().ref('stella_feedback').set([]);
+  document.querySelector('.modal-bg')?.remove();
+}

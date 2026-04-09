@@ -466,7 +466,7 @@ function openNoteModal(existingNote, editIdx) {
       '<input class="input" id="note-title-inp" placeholder="제목 입력..." value="' + titleVal.replace(/"/g,'&quot;') + '" style="margin-bottom:10px;">' +
       '<textarea class="input" id="note-content-inp" rows="8" placeholder="내용 입력..." style="resize:vertical;">' + contentVal + '</textarea>' +
       '<div class="modal-btns">' +
-        '<button class="btn" onclick="this.closest('.modal-bg').remove()">취소</button>' +
+        '<button class="btn" onclick="this.closest(\'.modal-bg\').remove()">취소</button>' +
         '<button class="btn btn-primary" onclick="saveNote(' + (editIdx != null ? editIdx : 'null') + ', this)">저장</button>' +
       '</div>' +
     '</div>';

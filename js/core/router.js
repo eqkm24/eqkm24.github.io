@@ -67,25 +67,9 @@ function _buildNav() {
         </div>
       </div>
 
-      <!-- 생활 드롭다운 -->
-      <div class="nav-dd" id="nav-dd-life">
-        <div class="nav-tab" id="nav-tab-life"
-          onclick="toggleNavDd('life')">생활 ▾</div>
-        <div class="nav-dd-menu" id="nav-dd-menu-life">
-          <div class="nav-dd-item" onclick="go('life','mining')">
-            <span class="nav-dd-item-icon">⛏</span> 채광
-          </div>
-          <div class="nav-dd-item" onclick="go('life','fishing')">
-            <span class="nav-dd-item-icon">🎣</span> 낚시
-          </div>
-          <div class="nav-dd-item" onclick="go('life','farming')">
-            <span class="nav-dd-item-icon">🌾</span> 농사
-          </div>
-          <div class="nav-dd-item" onclick="go('life','cooking')">
-            <span class="nav-dd-item-icon">🍳</span> 요리
-          </div>
-        </div>
-      </div>
+      <!-- 생활 단순 탭 (내부에서 직업 선택) -->
+      <div class="nav-tab" id="nav-tab-life"
+        onclick="go('life')">생활</div>
 
       <div class="nav-tab" id="nav-tab-recipe" onclick="go('recipe')">제작</div>
       <div class="nav-tab" id="nav-tab-price"  onclick="go('price')">시세</div>

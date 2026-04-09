@@ -47,7 +47,7 @@ function _buildNav() {
 
   nav.innerHTML = `
     <div class="nav-logo" onclick="go('main')">
-      <span class="nav-logo-text">올띵</span>
+      <span class="nav-logo-text">스텔라</span>
     </div>
 
     <div class="nav-tabs" id="nav-tabs">

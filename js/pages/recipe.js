@@ -86,22 +86,22 @@ var RECIPE_DATA = {
       {
         title: '요리 목록',
         items: [
-          { name:'쌈밥',           grade:'n', time:'30초', prob:'80%', mats:[['잡어',1],['상추',2],['옥수수',2]] },
-          { name:'옥수수 전',      grade:'n', time:'30초', prob:'80%', mats:[['정어리',1],['상추',2],['옥수수',2]] },
-          { name:'전골',           grade:'n', time:'30초', prob:'80%', mats:[['메기',1],['양배추',2],['무',2]] },
-          { name:'무조림',         grade:'n', time:'30초', prob:'80%', mats:[['잉어',1],['양배추',2],['무',2]] },
-          { name:'가스파초',       grade:'n', time:'30초', prob:'80%', mats:[['잡어',1],['무',2],['옥수수',2]] },
-          { name:'옥수수 착즙 주스',grade:'n', time:'15초', prob:'90%', mats:[['옥수수',1],['상추',1]] },
-          { name:'무 착즙 주스',   grade:'n', time:'15초', prob:'90%', mats:[['무',2],['양배추',2]] },
-          { name:'부야베스',       grade:'a', time:'40초', prob:'80%', mats:[['적색통돔',1],['아귀',1],['토마토',3],['석류',3]] },
-          { name:'치오피노',       grade:'a', time:'40초', prob:'80%', mats:[['다랑어',1],['랍스터',1],['토마토',3],['파인애플',3]] },
-          { name:'파에야',         grade:'a', time:'40초', prob:'80%', mats:[['농어',1],['숭어',1],['옥수수',3],['토마토',3]] },
-          { name:'세비체',         grade:'a', time:'40초', prob:'80%', mats:[['블루탱',1],['흰동가리',1],['레몬',3],['딸기',3]] },
-          { name:'페페스',         grade:'a', time:'40초', prob:'80%', mats:[['개복치',1],['줄돔',1],['습지개구리',1],['바나나',3],['토마토',3]] },
-          { name:'해산물 그릴 플래터', grade:'a', time:'40초', prob:'80%', mats:[['만타 가오리',1],['문어',1],['파인애플',3],['오렌지',3]] },
-          { name:'데리야끼',       grade:'a', time:'40초', prob:'80%', mats:[['연어',1],['철갑상어',1],['오렌지',3],['파인애플',3]] },
-          { name:'에스카베체',     grade:'a', time:'40초', prob:'80%', mats:[['강꼬치고기',1],['금붕어',1],['석류',3],['레몬',3]] },
-          { name:'양장피',         grade:'a', time:'40초', prob:'80%', mats:[['푸른 해파리',1],['뱀장어',1],['양배추',3],['무',3]] },
+          { name:'쌈밥',              grade:'n', time:'30초', prob:'80%', effect:'행운 +2',            dur:'600초', mats:[['잡어',1],['상추',2],['옥수수',2]] },
+          { name:'옥수수 전',         grade:'n', time:'30초', prob:'80%', effect:'감각 +4',            dur:'600초', mats:[['정어리',1],['상추',2],['옥수수',2]] },
+          { name:'전골',              grade:'n', time:'30초', prob:'80%', effect:'손재주 +4',          dur:'600초', mats:[['메기',1],['양배추',2],['무',2]] },
+          { name:'무조림',            grade:'n', time:'30초', prob:'80%', effect:'인내력 +10',         dur:'600초', mats:[['잉어',1],['양배추',2],['무',2]] },
+          { name:'가스파초',          grade:'n', time:'30초', prob:'80%', effect:'노련함 +8',          dur:'600초', mats:[['잡어',1],['무',2],['옥수수',2]] },
+          { name:'옥수수 착즙 주스',  grade:'n', time:'15초', prob:'90%', effect:'갈증 4 회복',        dur:'-',     mats:[['옥수수',1],['상추',1]] },
+          { name:'무 착즙 주스',      grade:'n', time:'15초', prob:'90%', effect:'마나 10 회복',       dur:'-',     mats:[['무',2],['양배추',2]] },
+          { name:'부야베스',          grade:'a', time:'40초', prob:'80%', effect:'되뿌리기 LV1, 수확의 손길 LV1', dur:'600초', mats:[['적색통돔',1],['아귀',1],['토마토',3],['석류',3]] },
+          { name:'치오피노',          grade:'a', time:'40초', prob:'80%', effect:'떼낚시 LV1, 쌍걸이 LV1',       dur:'600초', mats:[['다랑어',1],['랍스터',1],['토마토',3],['파인애플',3]] },
+          { name:'파에야',            grade:'a', time:'40초', prob:'80%', effect:'연회 준비 LV1, 즉시 완성 LV1', dur:'600초', mats:[['농어',1],['숭어',1],['옥수수',3],['토마토',3]] },
+          { name:'세비체',            grade:'a', time:'40초', prob:'80%', effect:'폭발적인 채광 LV1, 광맥 탐지 LV1', dur:'600초', mats:[['블루탱',1],['흰동가리',1],['레몬',3],['딸기',3]] },
+          { name:'페페스',            grade:'a', time:'40초', prob:'80%', effect:'행운 +8',            dur:'600초', mats:[['개복치',1],['줄돔',1],['습지개구리',1],['바나나',3],['토마토',3]] },
+          { name:'해산물 그릴 플래터',grade:'a', time:'40초', prob:'80%', effect:'감각 +8',            dur:'600초', mats:[['만타 가오리',1],['문어',1],['파인애플',3],['오렌지',3]] },
+          { name:'데리야끼',          grade:'a', time:'40초', prob:'80%', effect:'손재주 +8',          dur:'600초', mats:[['연어',1],['철갑상어',1],['오렌지',3],['파인애플',3]] },
+          { name:'에스카베체',        grade:'a', time:'40초', prob:'80%', effect:'인내력 +15',         dur:'600초', mats:[['강꼬치고기',1],['금붕어',1],['석류',3],['레몬',3]] },
+          { name:'양장피',            grade:'a', time:'40초', prob:'80%', effect:'노련함 +10',         dur:'600초', mats:[['푸른 해파리',1],['뱀장어',1],['양배추',3],['무',3]] },
         ]
       }
     ]
@@ -118,6 +118,23 @@ var LC_IMGS = {
   '영웅 대지의 보주': 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FdQ6dT835zYIOkjruZm7R%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520142625.png%3Falt%3Dmedia%26token%3De5e14286-78fb-419c-bf22-ee8472b13e92&width=300&dpr=1&quality=100&sign=ea05d4c6&sv=2',
   '허름한 화로':      'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FfZMsMPIMMUv5ffeRisxZ%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163922-Photoroom.png%3Falt%3Dmedia%26token%3D231ade34-2274-49df-ae1c-31f7c92e94dd&width=300&dpr=1&quality=100&sign=2b1cf7ad&sv=2',
   '허름한 조리대':    'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FdlCpVwFbQieXKY7vOnq2%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520163930-Photoroom.png%3Falt%3Dmedia%26token%3Dcde35a5c-0898-4347-aa7b-c52e15fc916c&width=300&dpr=1&quality=100&sign=170031cf&sv=2',
+  // ── 조리대 요리 ──
+  '쌈밥':             'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FjDEsKOdsvxKZZ9OAKjfc%252F2026-01-28_142454-Photoroom.png%3Falt%3Dmedia%26token%3Db42c97a6-c2cc-4ac8-98eb-b578682d8620&width=300&dpr=1&quality=100&sign=a57fb6cd&sv=2',
+  '옥수수 전':        'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FH2HaOgHFH4vSHX8h4HlI%252F2026-01-28_142459-Photoroom.png%3Falt%3Dmedia%26token%3D4a1a8918-03a7-4672-b094-d5ca16e3f966&width=300&dpr=1&quality=100&sign=b6598bc2&sv=2',
+  '전골':             'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F3yLchigMHfSxkSKlDzd1%252F2026-01-28_142503-Photoroom.png%3Falt%3Dmedia%26token%3D76715517-51c6-42e8-b0fc-373994254e1b&width=300&dpr=1&quality=100&sign=de847d51&sv=2',
+  '무조림':           'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FVxPpEFqIjv5rMp8LpDgz%252F2026-01-28_142507-Photoroom.png%3Falt%3Dmedia%26token%3D5ecbfc5a-8111-4453-9866-72f21e7baba2&width=300&dpr=1&quality=100&sign=99e469de&sv=2',
+  '가스파초':         'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FErXuYWvp7DaUw5ixp4gb%252F2026-01-28_142514-Photoroom.png%3Falt%3Dmedia%26token%3D244a0fd7-ca47-45b0-b9f6-32d2daec5648&width=300&dpr=1&quality=100&sign=25df63fd&sv=2',
+  '옥수수 착즙 주스': 'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FfZUYZpzVRPqZmpcVUg1w%252F2026-01-28_142518-Photoroom.png%3Falt%3Dmedia%26token%3Dfa835b06-be86-42f2-aa59-765171085c9f&width=300&dpr=1&quality=100&sign=96370c65&sv=2',
+  '무 착즙 주스':     'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FL66D6NymOq9Vs6TNVMuT%252F2026-01-28_142522-Photoroom.png%3Falt%3Dmedia%26token%3Ddbf07792-38a8-4227-9df0-976a1d2eb779&width=300&dpr=1&quality=100&sign=fcf6c216&sv=2',
+  '부야베스':         'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FeayMl2fdRbxrvCCqjKgE%252F2026-01-28_142527-Photoroom.png%3Falt%3Dmedia%26token%3D2f2848e4-694f-4da3-abc8-c02e0edafb04&width=300&dpr=1&quality=100&sign=db88edf2&sv=2',
+  '치오피노':         'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FsqxOskduiRPRSVs5jlp1%252F2026-01-28_142533-Photoroom.png%3Falt%3Dmedia%26token%3Df4f3aa12-9d54-458f-85a5-bc027498043e&width=300&dpr=1&quality=100&sign=8b7dbe3f&sv=2',
+  '파에야':           'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F2yLZ0dQt90pc2ANN7jde%252F2026-01-28_142542-Photoroom.png%3Falt%3Dmedia%26token%3D6df82eb2-8684-4177-812c-4353d4b10c41&width=300&dpr=1&quality=100&sign=2d1224f8&sv=2',
+  '세비체':           'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252F0ATU1S6Khf55SaotyXke%252F2026-01-28_142546-Photoroom.png%3Falt%3Dmedia%26token%3Da0c5779e-648c-4cd6-8089-dabfce9d3571&width=300&dpr=1&quality=100&sign=3a920968&sv=2',
+  '페페스':           'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FG5P4Cbz4uurZatCCCFXp%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-01-29%2520143355-Photoroom.png%3Falt%3Dmedia%26token%3D40ae4cad-96dc-499e-adab-8657b39d94d6&width=300&dpr=1&quality=100&sign=671c10dd&sv=2',
+  '해산물 그릴 플래터':'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FcTWfoYqUbLjjadGhDyr8%252F2026-01-28_142556-Photoroom.png%3Falt%3Dmedia%26token%3D2e68abea-32fb-4cf3-ad94-daa9b1dd5b20&width=300&dpr=1&quality=100&sign=8321cb4f&sv=2',
+  '데리야끼':         'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FWazrHJQ3aETvW4E7JWWV%252F2026-01-28_142601-Photoroom.png%3Falt%3Dmedia%26token%3D861802af-6d5c-45a9-903f-2fa3215f364b&width=300&dpr=1&quality=100&sign=e8caa11a&sv=2',
+  '에스카베체':       'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FwtZ7JYb7e795QNsLvh4n%252F2026-01-28_142605-Photoroom.png%3Falt%3Dmedia%26token%3Daaaa26b2-94a9-41ff-91cf-12d5e002dd57&width=300&dpr=1&quality=100&sign=630ca7b1&sv=2',
+  '양장피':           'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FHndUKQUDEpkMo5sK1f1W%252F2026-01-28_142612-Photoroom.png%3Falt%3Dmedia%26token%3D33baa53d-2f81-46f2-9a0a-58ce1cf061f7&width=300&dpr=1&quality=100&sign=e1ee472c&sv=2',
   '평범한 화분통':    'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FFm9pp5p8JrjkQv5QdPOh%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164025-Photoroom.png%3Falt%3Dmedia%26token%3D76202652-a4eb-443c-beb1-bac18ae1f8b7&width=300&dpr=1&quality=100&sign=80ecbd92&sv=2',
   '깔끔한 화분통':    'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FLrsm4cMB4V9KOLHodkLy%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164028-Photoroom.png%3Falt%3Dmedia%26token%3D408f1aec-cc5e-4398-9a1d-7c58e3ac0700&width=300&dpr=1&quality=100&sign=5b9cc1a3&sv=2',
   '허수아비':         'https://lunawiki.gitbook.io/hello/~gitbook/image?url=https%3A%2F%2F1365047812-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FJn8Ixf7wXQ4SG9sL8RMK%252Fuploads%252FAEzI8aSixjvUOq8zNC2j%252F%25EC%258A%25A4%25ED%2581%25AC%25EB%25A6%25B0%25EC%2583%25B7%25202026-02-28%2520164036-Photoroom.png%3Falt%3Dmedia%26token%3D3dacf5ee-d56a-4a81-aaa3-a7df532ac958&width=300&dpr=1&quality=100&sign=c157784f&sv=2',
@@ -173,7 +190,8 @@ function renderRecipe() {
     if (q) {
       items = items.filter(function(it) {
         return it.name.toLowerCase().includes(q) ||
-               it.mats.some(function(m) { return String(m[0]).toLowerCase().includes(q); });
+               it.mats.some(function(m) { return String(m[0]).toLowerCase().includes(q); }) ||
+               (it.effect && it.effect.toLowerCase().includes(q));
       });
     }
     if (!items.length) return;
@@ -193,6 +211,11 @@ function renderRecipe() {
       var probBadge = (it.prob !== '100%')
         ? '<span class="tag tag-amber">' + it.prob + '</span>' : '';
 
+      var effectHtml = it.effect
+        ? '<div class="recipe-effect"><span class="recipe-effect-icon">✨</span>' + it.effect +
+          (it.dur && it.dur !== '-' ? '<span class="recipe-effect-dur">(' + it.dur + ')</span>' : '') + '</div>'
+        : '';
+
       var matsHtml = it.mats.map(function(m) {
         return '<span class="mat-tag">' + m[0] + ' <span class="mat-qty">×' + m[1] + '</span></span>';
       }).join('');
@@ -211,6 +234,7 @@ function renderRecipe() {
             '</div>' +
           '</div>' +
           '<div class="recipe-mats">' + matsHtml + '</div>' +
+          effectHtml +
         '</div>';
     });
   });

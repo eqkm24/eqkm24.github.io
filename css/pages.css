@@ -577,6 +577,26 @@
 .recipe-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
 .recipe-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .recipe-mats { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.recipe-effect {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 5px 8px;
+  background: var(--purple-dim);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--purple);
+  line-height: 1.4;
+}
+.recipe-effect-icon { font-size: 11px; flex-shrink: 0; }
+.recipe-effect-dur {
+  margin-left: 4px;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
 .mat-tag {
   display: inline-flex;
   align-items: center;

@@ -1,239 +1,148 @@
-// ── 구역 페이지 ──────────────────────────────────────────────
-// DB 구조: stella_zone / { zoneId: { name, desc, color, chunks, members: [...] } }
-
-var _zoneData = {};
-
-var ZONE_COLORS = [
-  '#c8b4f8','#7dd3c0','#f6b76b','#f87171','#60a5fa',
-  '#4ade80','#fb7185','#a78bfa','#34d399','#fbbf24',
-  '#e879f9','#38bdf8','#a3e635','#f472b6','#94a3b8',
-];
+let _zoneData = {};
 
 function initZone() {
   if (isAdmin()) {
-    var addBtn = document.getElementById('zone-add-btn');
-    if (addBtn) addBtn.style.display = '';
+    const btn = document.getElementById('zn-reset-btn');
+    if (btn) btn.style.display = '';
   }
-  window.$db.on('stella_zone', function(val) {
+  window.$db.on('stella_zone', val => {
     _zoneData = val || {};
-    _renderZone();
+    rebuildZone();
   });
 }
 
-// ── 렌더 ─────────────────────────────────────────────────────
-function _renderZone() {
-  var grid  = document.getElementById('zone-card-grid');
-  var empty = document.getElementById('zone-empty');
-  var bar   = document.getElementById('zone-summary-bar');
-  if (!grid) return;
+function rebuildZone() {
+  const cols = parseInt(document.getElementById('zn-cols')?.value) || 16;
+  const rows = parseInt(document.getElementById('zn-rows')?.value) || 16;
+  const map  = document.getElementById('zn-map');
+  if (!map) return;
 
-  var q       = (document.getElementById('zone-search')?.value || '').toLowerCase().trim();
-  var entries = Object.entries(_zoneData);
+  map.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
 
-  var filtered = entries.filter(function(e) {
-    var z = e[1];
-    if (!q) return true;
-    if ((z.name || '').toLowerCase().includes(q)) return true;
-    if ((z.desc || '').toLowerCase().includes(q)) return true;
-    if ((z.members || []).some(function(m) { return m.toLowerCase().includes(q); })) return true;
-    return false;
+  const members = window.members || [];
+  const colors  = _buildColorMap(members);
+
+  let html = '';
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const key   = `${r}_${c}`;
+      const cell  = _zoneData[key];
+      const owner = cell?.owner || '';
+      const color = owner ? (colors[owner] || '#888') : '';
+      const label = owner ? owner.slice(0, 3) : '';
+
+      html += `<div class="zn-cell${owner ? ' owned' : ''}"
+        style="${color ? `--cc:${color};` : ''}"
+        title="${owner || ''}"
+        onclick="onZoneClick('${key}','${owner}')">
+        ${owner ? `<span class="zn-cell-label">${label}</span>` : ''}
+      </div>`;
+    }
+  }
+  map.innerHTML = html;
+
+  // 통계
+  const owned    = Object.values(_zoneData).filter(z => z?.owner).length;
+  const total    = cols * rows;
+  const pct      = total > 0 ? Math.round(owned / total * 100) : 0;
+  const ownerSet = new Set(Object.values(_zoneData).map(z => z?.owner).filter(Boolean));
+
+  const el = (id, txt) => { const e = document.getElementById(id); if (e) e.textContent = txt; };
+  el('zn-owned-count', owned);
+  el('zn-total-count', total);
+  el('zn-pct-count',   pct + '%');
+  el('zn-owner-count', ownerSet.size + '명');
+
+  _buildLegend(colors);
+}
+
+function _buildColorMap(members) {
+  const PALETTE = [
+    '#c8b4f8','#7dd3c0','#f6b76b','#f87171','#60a5fa',
+    '#4ade80','#fb7185','#a78bfa','#34d399','#fbbf24',
+    '#e879f9','#38bdf8','#a3e635','#f472b6','#94a3b8',
+  ];
+  const map    = {};
+  const owners = [...new Set(Object.values(_zoneData).map(z => z?.owner).filter(Boolean))];
+  owners.forEach((o, i) => { map[o] = PALETTE[i % PALETTE.length]; });
+  return map;
+}
+
+function _buildLegend(colors) {
+  const wrap   = document.getElementById('zn-legend-wrap');
+  const legend = document.getElementById('zn-legend');
+  if (!legend || !wrap) return;
+  const entries = Object.entries(colors);
+  if (!entries.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  legend.innerHTML = entries.map(([name, color]) => `
+    <div class="zn-legend-item">
+      <div class="zn-legend-dot" style="background:${color};box-shadow:0 0 6px ${color}55;"></div>
+      <span>${name}</span>
+    </div>`).join('');
+}
+
+function highlightZone() {
+  const q = (document.getElementById('zn-search')?.value || '').toLowerCase().trim();
+  document.querySelectorAll('.zn-cell').forEach(cell => {
+    const owner = (cell.title || '').toLowerCase();
+    if (!q)                    { cell.classList.remove('dimmed'); return; }
+    if (owner && owner.includes(q)) { cell.classList.remove('dimmed'); }
+    else                            { cell.classList.add('dimmed'); }
+  });
+}
+
+function onZoneClick(key, currentOwner) {
+  if (!isAdmin()) return;
+  const members = (window.members || []).map(m => m.mc || m.name).filter(Boolean);
+  const modal   = document.createElement('div');
+  modal.className = 'modal-bg';
+  modal.onclick   = e => { if (e.target === modal) modal.remove(); };
+
+  let nickCards = `<div class="zn-nick-card zn-nick-empty" data-nick="" onclick="selectZoneNick(this,'')">🚫 비우기</div>`;
+  members.forEach(m => {
+    const sel = m === currentOwner;
+    nickCards += `<div class="zn-nick-card${sel ? ' selected' : ''}" data-nick="${m}" onclick="selectZoneNick(this,'${m}')">${m}</div>`;
   });
 
-  // 요약 바
-  var totalChunks = entries.reduce(function(s, e) { return s + (parseInt(e[1].chunks) || 0); }, 0);
-  var allMembers  = new Set();
-  entries.forEach(function(e) { (e[1].members || []).forEach(function(m) { allMembers.add(m); }); });
-
-  var zsTotal   = document.getElementById('zs-total');
-  var zsChunks  = document.getElementById('zs-chunks');
-  var zsMembers = document.getElementById('zs-members');
-  if (zsTotal)   zsTotal.textContent   = entries.length;
-  if (zsChunks)  zsChunks.textContent  = totalChunks + '청크';
-  if (zsMembers) zsMembers.textContent = allMembers.size + '명';
-  if (bar) bar.style.display = entries.length ? 'flex' : 'none';
-
-  if (!entries.length) {
-    grid.innerHTML = '';
-    if (empty) empty.style.display = 'flex';
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-
-  if (!filtered.length) {
-    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;"><div class="empty-icon">🔍</div>검색 결과가 없어요.</div>';
-    return;
-  }
-
-  grid.innerHTML = filtered.map(function(e) {
-    return _zoneCardHtml(e[0], e[1]);
-  }).join('');
-}
-
-function _zoneCardHtml(id, z) {
-  var color   = z.color   || ZONE_COLORS[0];
-  var name    = z.name    || '이름 없는 구역';
-  var desc    = z.desc    || '';
-  var chunks  = parseInt(z.chunks) || 0;
-  var members = z.members || [];
-
-  var memberHtml = members.length
-    ? members.map(function(m) {
-        return '<span class="zone-member-tag">' + m + '</span>';
-      }).join('')
-    : '<span style="font-size:12px;color:var(--muted);">소유자 없음</span>';
-
-  var adminBtns = isAdmin()
-    ? '<div class="zone-card-admin">' +
-        '<button class="zone-admin-btn" onclick="openZoneEditModal(\'' + id + '\',event)" title="수정">✏️</button>' +
-        '<button class="zone-admin-btn zone-admin-btn-danger" onclick="deleteZone(\'' + id + '\',event)" title="삭제">🗑</button>' +
-      '</div>'
-    : '';
-
-  return '<div class="zone-card" style="--zc:' + color + ';" onclick="openZoneDetailModal(\'' + id + '\')">' +
-    '<div class="zone-card-accent"></div>' +
-    '<div class="zone-card-body">' +
-      '<div class="zone-card-top">' +
-        '<div style="min-width:0;">' +
-          '<div class="zone-card-name">' + name + '</div>' +
-          (desc ? '<div class="zone-card-desc">' + desc + '</div>' : '') +
-        '</div>' +
-        '<div class="zone-card-chunk-badge">' + chunks + '<span>청크</span></div>' +
-      '</div>' +
-      '<div class="zone-member-list">' + memberHtml + '</div>' +
-    '</div>' +
-    adminBtns +
-  '</div>';
-}
-
-function filterZoneCards() { _renderZone(); }
-
-// ── 상세 모달 ─────────────────────────────────────────────────
-function openZoneDetailModal(id) {
-  var z = _zoneData[id];
-  if (!z) return;
-  var color   = z.color   || ZONE_COLORS[0];
-  var name    = z.name    || '이름 없는 구역';
-  var desc    = z.desc    || '';
-  var chunks  = parseInt(z.chunks) || 0;
-  var members = z.members || [];
-
-  var memberRows = members.length
-    ? members.map(function(m) {
-        return '<span class="zone-member-tag" style="font-size:13px;padding:6px 14px;">' + m + '</span>';
-      }).join('')
-    : '<span style="font-size:13px;color:var(--muted);">등록된 소유자가 없어요</span>';
-
-  var modal = document.createElement('div');
-  modal.className = 'modal-bg';
-  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
   modal.innerHTML =
-    '<div class="modal" style="max-width:420px;padding-top:0;overflow:hidden;">' +
-      '<div style="height:5px;background:' + color + ';margin:-1px -20px 20px;"></div>' +
-      '<div class="modal-title">' + name + '</div>' +
-      (desc ? '<div class="modal-sub" style="margin-bottom:16px;">' + desc + '</div>' : '<div style="margin-bottom:16px;"></div>') +
-      '<div style="display:flex;gap:20px;margin-bottom:20px;">' +
-        '<div class="zone-detail-stat"><span class="zone-detail-stat-val" style="color:' + color + ';">' + chunks + '</span><span class="zone-detail-stat-label">청크</span></div>' +
-        '<div class="zone-detail-stat"><span class="zone-detail-stat-val" style="color:' + color + ';">' + members.length + '</span><span class="zone-detail-stat-label">소유자</span></div>' +
-      '</div>' +
-      '<div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">소유자 목록</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:6px;min-height:32px;">' + memberRows + '</div>' +
-      '<div class="modal-btns" style="margin-top:20px;">' +
-        '<button class="btn" onclick="this.closest(\'.modal-bg\').remove()">닫기</button>' +
-        (isAdmin() ? '<button class="btn btn-primary" onclick="this.closest(\'.modal-bg\').remove();openZoneEditModal(\'' + id + '\')">수정</button>' : '') +
-      '</div>' +
-    '</div>';
+    `<div class="modal" style="max-width:420px;">
+      <div class="modal-title">구역 소유자 설정</div>
+      <div class="modal-sub" style="margin-bottom:16px;">위치: ${key.replace('_', '행 ')}열</div>
+      <div class="zn-nick-grid" id="zone-nick-grid">${nickCards}</div>
+      <input type="hidden" id="zone-owner-sel" value="${currentOwner || ''}">
+      <div class="modal-btns" style="margin-top:16px;">
+        <button class="btn" onclick="this.closest('.modal-bg').remove()">취소</button>
+        <button class="btn btn-primary" onclick="saveZoneCell('${key}',this)">저장</button>
+      </div>
+    </div>`;
   document.body.appendChild(modal);
 }
 
-// ── 폼 모달 (추가/수정) ───────────────────────────────────────
-function openZoneAddModal()       { _openZoneFormModal(null, null); }
-function openZoneEditModal(id, e) { if (e) e.stopPropagation(); _openZoneFormModal(id, _zoneData[id]); }
-
-function _openZoneFormModal(id, z) {
-  var isEdit   = !!id;
-  var mcNames  = (window.members || []).map(function(m) { return m.mc || m.name; }).filter(Boolean);
-  var curColor   = (z && z.color)   || ZONE_COLORS[Math.floor(Math.random() * ZONE_COLORS.length)];
-  var curName    = (z && z.name)    || '';
-  var curDesc    = (z && z.desc)    || '';
-  var curChunks  = (z && z.chunks != null) ? z.chunks : '';
-  var curMembers = (z && z.members) || [];
-
-  var colorDots = ZONE_COLORS.map(function(c) {
-    return '<div class="zf-color-dot' + (c === curColor ? ' selected' : '') + '" style="background:' + c + ';" data-color="' + c + '" onclick="selectZoneColor(this)"></div>';
-  }).join('');
-
-  var memberChecks = mcNames.map(function(m) {
-    var checked = curMembers.includes(m);
-    return '<label class="zf-member-check' + (checked ? ' checked' : '') + '">' +
-      '<input type="checkbox" value="' + m + '"' + (checked ? ' checked' : '') + ' onchange="this.closest(\'label\').classList.toggle(\'checked\',this.checked)"> ' + m +
-    '</label>';
-  }).join('');
-
-  var modal = document.createElement('div');
-  modal.className = 'modal-bg';
-  modal.id = 'zone-form-modal';
-  modal.onclick = function(e) { if (e.target === modal) modal.remove(); };
-  modal.innerHTML =
-    '<div class="modal" style="max-width:460px;">' +
-      '<div class="modal-title">' + (isEdit ? '구역 수정' : '구역 추가') + '</div>' +
-      '<div class="zf-field">' +
-        '<label class="zf-label">구역 이름</label>' +
-        '<input class="input" id="zf-name" placeholder="예) 항구 구역" value="' + curName + '">' +
-      '</div>' +
-      '<div class="zf-field">' +
-        '<label class="zf-label">설명 <span style="color:var(--muted);font-weight:400;">(선택)</span></label>' +
-        '<input class="input" id="zf-desc" placeholder="예) 항구 주변 공용 구역" value="' + curDesc + '">' +
-      '</div>' +
-      '<div class="zf-field">' +
-        '<label class="zf-label">청크 수</label>' +
-        '<input class="input" id="zf-chunks" type="number" min="0" placeholder="0" value="' + curChunks + '" style="width:100px;">' +
-      '</div>' +
-      '<div class="zf-field">' +
-        '<label class="zf-label">색상</label>' +
-        '<div class="zf-color-palette">' + colorDots + '</div>' +
-        '<input type="hidden" id="zf-color" value="' + curColor + '">' +
-      '</div>' +
-      (mcNames.length
-        ? '<div class="zf-field"><label class="zf-label">소유자</label><div class="zf-member-grid">' + memberChecks + '</div></div>'
-        : '') +
-      '<div class="modal-btns" style="margin-top:20px;">' +
-        '<button class="btn" onclick="document.getElementById(\'zone-form-modal\').remove()">취소</button>' +
-        '<button class="btn btn-primary" onclick="saveZoneCard(\'' + (id || '') + '\',this)">' + (isEdit ? '저장' : '추가') + '</button>' +
-      '</div>' +
-    '</div>';
-  document.body.appendChild(modal);
-}
-
-function selectZoneColor(el) {
-  document.querySelectorAll('.zf-color-dot').forEach(function(d) { d.classList.remove('selected'); });
+function selectZoneNick(el, nick) {
+  document.querySelectorAll('#zone-nick-grid .zn-nick-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('zf-color').value = el.dataset.color;
+  const input = document.getElementById('zone-owner-sel');
+  if (input) input.value = nick;
 }
 
-async function saveZoneCard(id, btn) {
-  var name    = (document.getElementById('zf-name')?.value || '').trim();
-  var desc    = (document.getElementById('zf-desc')?.value || '').trim();
-  var chunks  = parseInt(document.getElementById('zf-chunks')?.value) || 0;
-  var color   = document.getElementById('zf-color')?.value || ZONE_COLORS[0];
-  var members = Array.from(document.querySelectorAll('#zone-form-modal .zf-member-check input:checked'))
-                  .map(function(cb) { return cb.value; });
-
-  if (!name) { alert('구역 이름을 입력해주세요.'); return; }
+async function saveZoneCell(key, btn) {
+  const owner = document.getElementById('zone-owner-sel')?.value || '';
   btn.textContent = '저장 중...'; btn.disabled = true;
   try {
-    var zoneId = id || ('zone_' + Date.now());
-    await firebase.database().ref('stella_zone/' + zoneId).set({ name, desc, chunks, color, members });
-    document.getElementById('zone-form-modal')?.remove();
+    const updated = { ..._zoneData };
+    if (owner) updated[key] = { owner };
+    else delete updated[key];
+    await firebase.database().ref('stella_zone').set(Object.keys(updated).length ? updated : {});
+    btn.closest('.modal-bg').remove();
   } catch(e) {
     alert('저장 실패: ' + e.message);
-    btn.textContent = id ? '저장' : '추가'; btn.disabled = false;
+    btn.textContent = '저장'; btn.disabled = false;
   }
 }
 
-async function deleteZone(id, e) {
-  if (e) e.stopPropagation();
-  var z = _zoneData[id];
-  if (!confirm('"' + (z?.name || '구역') + '"을 삭제할까요?')) return;
-  try { await firebase.database().ref('stella_zone/' + id).remove(); }
-  catch(err) { alert('삭제 실패: ' + err.message); }
+async function resetZone() {
+  if (!confirm('구역 데이터를 초기화하시겠습니까?')) return;
+  try { await firebase.database().ref('stella_zone').set({}); }
+  catch(e) { alert('실패: ' + e.message); }
 }

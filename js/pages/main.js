@@ -596,7 +596,7 @@ function openFeedbackModal() {
 
 async function submitFeedback(btn) {
   var content = document.getElementById('feedback-content-inp')?.value?.trim() || '';
-  if (!content) { alert('내용을 입력해주세요.'); return; }
+  if (!content) { alert('내용을 입력해주세요. (200자 이내)'); return; }
   btn.disabled = true; btn.textContent = '전송 중...';
   var entry = { content: content, date: new Date().toISOString(), read: false };
   try {

@@ -2,23 +2,45 @@
   <div class="page-hd">
     <div class="page-hd-label">스텔라 마을</div>
     <h1 class="page-hd-title">마을 <em>구역</em></h1>
-    <p class="page-hd-sub">청크 기반 마을 땅 점유 현황 — 셀 클릭으로 소유자 설정</p>
+    <p class="page-hd-sub">마을 구역별 점유 현황 — 구역 카드를 클릭해 상세 정보를 확인하세요</p>
   </div>
-  <div class="zone-controls">
-    <input class="input" id="zn-search" type="text" placeholder="🔍 소유자 검색..."
-      oninput="highlightZone()" style="max-width:200px;">
-    <label style="font-size:12px;color:var(--muted);">가로</label>
-    <input class="input" id="zn-cols" type="number" value="16" min="4" max="32"
-      onchange="rebuildZone()" style="width:60px;">
-    <label style="font-size:12px;color:var(--muted);">세로</label>
-    <input class="input" id="zn-rows" type="number" value="16" min="4" max="32"
-      onchange="rebuildZone()" style="width:60px;">
-    <div id="zn-stat" style="font-size:12px;color:var(--muted);margin-left:auto;"></div>
-    <button class="btn btn-danger btn-sm" id="zn-reset-btn" onclick="resetZone()" style="display:none;">초기화</button>
+
+  <!-- 요약 바 -->
+  <div class="zone-summary-bar" id="zone-summary-bar" style="display:none;">
+    <div class="zone-summary-item">
+      <span class="zone-summary-label">총 구역</span>
+      <span class="zone-summary-val" id="zs-total">0</span>
+    </div>
+    <div class="zone-summary-sep"></div>
+    <div class="zone-summary-item">
+      <span class="zone-summary-label">점유 청크</span>
+      <span class="zone-summary-val" id="zs-chunks">0</span>
+    </div>
+    <div class="zone-summary-sep"></div>
+    <div class="zone-summary-item">
+      <span class="zone-summary-label">마을원 참여</span>
+      <span class="zone-summary-val" id="zs-members">0명</span>
+    </div>
   </div>
-  <div class="zone-map-wrap">
-    <div class="zone-map" id="zn-map"></div>
+
+  <!-- 컨트롤 -->
+  <div class="zone-toolbar">
+    <input class="input" id="zone-search" type="text" placeholder="🔍 구역·소유자 검색..." oninput="filterZoneCards()" style="max-width:220px;">
+    <div style="flex:1;"></div>
+    <button class="btn btn-primary btn-sm" id="zone-add-btn" onclick="openZoneAddModal()" style="display:none;">+ 구역 추가</button>
   </div>
-  <div class="zone-legend" id="zn-legend"></div>
-  <div id="zn-modal-root"></div>
+
+  <!-- 카드 그리드 -->
+  <div class="zone-card-grid" id="zone-card-grid">
+    <div class="empty"><div class="spinner"></div></div>
+  </div>
+
+  <!-- 빈 상태 -->
+  <div class="empty" id="zone-empty" style="display:none;">
+    <div class="empty-icon">🗺</div>
+    <div>아직 등록된 구역이 없어요</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;">관리자가 구역을 추가할 수 있어요</div>
+  </div>
+
+  <div id="zone-modal-root"></div>
 </div>

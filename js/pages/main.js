@@ -333,7 +333,17 @@ function parseCharInfo(text) {
                     '채광 갈증 감소','곡괭이 내구도 보호'];
   var usedKeys = BASE_STATS.concat(JOB_STATS);
 
-  var baseEntries = BASE_STATS.map(function(k) { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
+  var BASE_STAT_COLOR = {
+    '행운':   'var(--green)',
+    '감각':   'var(--purple)',
+    '손재주': 'var(--amber)',
+    '노련함': 'var(--blue)',
+    '인내력': 'var(--red)',
+    '카리스마':'var(--yellow)',
+  };
+
+  // 기본 스탯: 없는 항목도 +0으로 항상 표시
+  var baseEntries = BASE_STATS.map(function(k) { return [k, stats[k] != null ? stats[k] : 0]; });
   var jobEntries  = JOB_STATS.map(function(k)  { return stats[k] != null ? [k, stats[k]] : null; }).filter(Boolean);
   var etcEntries  = Object.entries(stats).filter(function(e) { return usedKeys.indexOf(e[0]) < 0 && e[1] > 0; });
 
@@ -361,13 +371,16 @@ function parseCharInfo(text) {
       html + '</div>';
   };
 
-  var statGrid = function(entries) {
+  var statGrid = function(entries, colorMap) {
     if (!entries.length) return '';
     return '<div class="char-stats">' +
       entries.map(function(e) {
+        var color = (colorMap && colorMap[e[0]]) ? colorMap[e[0]] : 'var(--purple)';
+        var valStr = e[1] === 0 ? '+0' : '+' + fmt(e[1]);
+        var muted  = e[1] === 0 ? ';opacity:0.38' : '';
         return '<div class="char-stat-row">' +
-          '<span class="char-stat-key">' + e[0] + '</span>' +
-          '<span class="char-stat-val" style="color:var(--purple);font-size:13px;font-weight:900;">+' + fmt(e[1]) + '</span>' +
+          '<span class="char-stat-key" style="color:' + color + ';font-weight:700;">' + e[0] + '</span>' +
+          '<span class="char-stat-val" style="color:' + color + ';font-size:13px;font-weight:900' + muted + ';">' + valStr + '</span>' +
           '</div>';
       }).join('') + '</div>';
   };
@@ -405,7 +418,7 @@ function parseCharInfo(text) {
 
   root.innerHTML =
     (fameHtml ? '<div style="margin-bottom:4px;">' + fameHtml + '</div>' : '') +
-    sec('기본 스탯',  'var(--purple)', statGrid(baseEntries)) +
+    sec('기본 스탯',  'var(--purple)', statGrid(baseEntries, BASE_STAT_COLOR)) +
     sec('숙련도',     'var(--amber)',  profBars) +
     sec('직업 스탯',  'var(--teal)',   statGrid(jobEntries)) +
     (etcEntries.length ? sec('기타',  'var(--muted)', statGrid(etcEntries)) : '') +

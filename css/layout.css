@@ -120,10 +120,13 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
+  border: none;
+  background: transparent;
   color: var(--muted);
   font-size: 13px;
   transition: all var(--fast) var(--ease);
   cursor: pointer;
+  padding: 0;
 }
 .nav-icon-btn:hover {
   background: rgba(255,255,255,0.08);

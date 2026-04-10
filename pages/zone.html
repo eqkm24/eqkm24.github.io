@@ -2,18 +2,18 @@
   <div class="page-hd">
     <div class="page-hd-label">스텔라 마을</div>
     <h1 class="page-hd-title">마을 <em>구역</em></h1>
-    <p class="page-hd-sub">청크 기반 마을 땅 점유 현황 — 셀을 클릭해 소유자를 설정하세요</p>
+    <p class="page-hd-sub">20×20 청크 기반 마을 땅 점유 현황 — 셀을 클릭해 소유자를 설정하세요</p>
   </div>
 
   <!-- 통계 바 -->
-  <div class="zn-stat-bar" id="zn-stat-bar">
+  <div class="zn-stat-bar">
     <div class="zn-stat-item">
       <span class="zn-stat-val" id="zn-owned-count">0</span>
       <span class="zn-stat-label">점유 청크</span>
     </div>
     <div class="zn-stat-sep"></div>
     <div class="zn-stat-item">
-      <span class="zn-stat-val" id="zn-total-count">0</span>
+      <span class="zn-stat-val" id="zn-total-count">400</span>
       <span class="zn-stat-label">전체 청크</span>
     </div>
     <div class="zn-stat-sep"></div>
@@ -28,29 +28,21 @@
     </div>
   </div>
 
-  <!-- 컨트롤 -->
+  <!-- 검색 -->
   <div class="zn-controls">
     <input class="input" id="zn-search" type="text" placeholder="🔍 소유자 검색..."
-      oninput="highlightZone()" style="max-width:180px;">
-    <div class="zn-grid-ctrl">
-      <span class="zn-ctrl-label">가로</span>
-      <input class="input" id="zn-cols" type="number" value="16" min="4" max="32"
-        onchange="rebuildZone()" style="width:56px;">
-      <span class="zn-ctrl-label">세로</span>
-      <input class="input" id="zn-rows" type="number" value="16" min="4" max="32"
-        onchange="rebuildZone()" style="width:56px;">
-    </div>
+      oninput="highlightZone()" style="max-width:200px;">
     <button class="btn btn-danger btn-sm" id="zn-reset-btn" onclick="resetZone()" style="display:none;">초기화</button>
   </div>
 
   <!-- 그리드 -->
   <div class="zn-map-wrap">
-    <div class="zn-map" id="zn-map"></div>
+    <div class="zn-map" id="zn-map" style="grid-template-columns:repeat(20,1fr);"></div>
   </div>
 
   <!-- 범례 -->
   <div class="zn-legend-wrap" id="zn-legend-wrap" style="display:none;">
-    <div class="zn-legend-title">소유자</div>
+    <div class="zn-legend-title">소유자 — 클릭해서 하이라이트</div>
     <div class="zn-legend" id="zn-legend"></div>
   </div>
 

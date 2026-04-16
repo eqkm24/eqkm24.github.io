@@ -1419,7 +1419,7 @@ input:checked + .settings-toggle:before {
   flex-wrap: wrap;
 }
 .people-tab {
-  padding: 7px 16px;
+  padding: 7px 18px;
   border-radius: 999px;
   border: 1.5px solid var(--b1);
   background: var(--bg-card);
@@ -1432,126 +1432,90 @@ input:checked + .settings-toggle:before {
 .people-tab:hover  { border-color: var(--b2); color: var(--text); }
 .people-tab.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 
-/* 경고 배너 */
-.people-warn {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: var(--red-dim);
-  border: 1px solid rgba(248,113,113,0.25);
-  border-radius: 12px;
-  font-size: 13px;
-  color: var(--red);
-  margin-bottom: 20px;
-}
-
-/* 게이지 카드 */
-.people-gauge-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  background: var(--bg-card);
-  border: 1px solid var(--b1);
-  border-radius: 14px;
-  padding: 16px 20px;
-  margin-bottom: 20px;
-}
-.people-gauge-label {
-  font-size: 12px;
+/* 섹션 */
+.ppl-section       { margin-bottom: 28px; }
+.ppl-section-title {
+  font-size: 11px;
   font-weight: 700;
-  color: var(--muted);
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-.people-gauge-bar-wrap {
-  flex: 1;
-  height: 8px;
-  background: var(--bg-3);
-  border-radius: 999px;
-  overflow: hidden;
-}
-.people-gauge-bar {
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, var(--teal), var(--purple));
-  border-radius: 999px;
-}
-.people-gauge-val {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--purple);
-  font-family: var(--font-display);
-  flex-shrink: 0;
-}
-
-/* 섹션 타이틀 */
-.people-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   color: var(--muted);
   text-transform: uppercase;
   margin-bottom: 12px;
 }
 
-/* 음식 카드 그리드 */
-.people-food-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.people-food-card {
-  background: var(--fcd, var(--bg-card));
-  border: 1.5px solid var(--fc, var(--b1));
-  border-radius: 14px;
-  padding: 16px;
-}
-.people-food-top {
+/* 경고 / 팁 */
+.ppl-warn {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
-  margin-bottom: 12px;
+  padding: 12px 16px;
+  background: var(--red-dim);
+  border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 20px;
+  line-height: 1.5;
 }
-.people-food-icon { font-size: 24px; }
-.people-food-name { font-size: 14px; font-weight: 800; color: var(--text); }
-.people-food-range { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.people-food-count { display: flex; flex-direction: column; gap: 6px; }
-.people-food-count-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.people-food-count-label { font-size: 11px; color: var(--muted); width: 52px; flex-shrink: 0; }
-.people-food-count-val   { font-size: 16px; font-weight: 900; font-family: var(--font-display); }
-.people-food-count-sub   { font-size: 10px; color: var(--muted); }
-
-/* 계산기 바로가기 */
-.people-calc-cta {
+.ppl-tip {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  background: var(--purple-dim);
-  border: 1.5px solid rgba(200,180,248,0.25);
-  border-radius: 14px;
-  cursor: pointer;
-  transition: border-color var(--fast);
-  font-size: 24px;
-}
-.people-calc-cta:hover { border-color: var(--purple); }
-
-/* 노트 박스 */
-.people-note {
-  font-size: 12px;
-  color: var(--amber);
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
   background: var(--amber-dim);
   border-radius: 10px;
-  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--amber);
+  margin-top: 12px;
   line-height: 1.6;
 }
 
+/* 음식 등급 그리드 */
+.ppl-food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.ppl-food-card {
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.ppl-food-icon  { font-size: 28px; margin-bottom: 8px; }
+.ppl-food-name  { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+.ppl-food-range { font-size: 12px; color: var(--muted); }
+
+/* 계약서 카드 */
+.ppl-contract-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.ppl-contract-card {
+  background: var(--bg-card);
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+/* 보유 슬롯 */
+.ppl-slot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--b0);
+}
+.ppl-slot-row:last-child { border-bottom: none; }
+.ppl-slot-base { padding-bottom: 14px; margin-bottom: 4px; border-bottom: 2px dashed var(--b1); }
+.ppl-slot-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
 /* 고용 단계 */
-.people-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-.people-step  { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sub); }
-.people-step-num {
+.ppl-steps { display: flex; flex-direction: column; gap: 10px; }
+.ppl-step  { display: flex; align-items: center; gap: 12px; }
+.ppl-step-num {
   width: 24px; height: 24px;
   border-radius: 50%;
   background: var(--purple-dim);
@@ -1561,30 +1525,6 @@ input:checked + .settings-toggle:before {
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0;
 }
-
-/* 계약서 카드 */
-.people-contract-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.people-contract-card {
-  background: var(--bg-card);
-  border: 1.5px solid var(--fc, var(--b1));
-  border-radius: 14px;
-  padding: 16px;
-}
-.people-contract-name { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
-.people-contract-prob { font-size: 13px; color: var(--sub); }
-
-/* 슬롯 행 */
-.people-slot-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--b0);
-  font-size: 13px;
-}
-.people-slot-row:last-child { border-bottom: none; }
-.people-slot-label { color: var(--sub); }
-.people-slot-val   { font-weight: 800; font-family: var(--font-display); }
 
 /* ══════════════════════════════════════════════════════════
    계산기 페이지

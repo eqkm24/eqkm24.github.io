@@ -1788,3 +1788,161 @@ input:checked + .settings-toggle:before {
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
 }
+
+/* ── 주민 효율 계산기 추가 스타일 ─────────────────────────── */
+.calc-eff-group {
+  border: 1px solid var(--b1);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background: var(--bg-3);
+}
+.calc-eff-group-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--b1);
+}
+
+/* 등급·작업 chip (라디오) */
+.calc-grade-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.calc-grade-chip,
+.calc-work-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  user-select: none;
+}
+.calc-grade-chip input,
+.calc-work-chip input { display: none; }
+.calc-grade-chip:hover,
+.calc-work-chip:hover { border-color: var(--b2); color: var(--text); }
+.calc-grade-chip.active { border-color: var(--fc, var(--purple)); background: var(--bg-card); color: var(--fc, var(--purple)); box-shadow: 0 0 0 3px color-mix(in srgb, var(--fc, var(--purple)) 15%, transparent); }
+.calc-work-chip.active  { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+
+/* 스탯 입력 행 */
+.calc-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--b0);
+  gap: 12px;
+}
+.calc-stat-row:last-child { border-bottom: none; }
+
+/* 스킬·장비 행 */
+.calc-skill-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--b0);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.calc-skill-row:last-child { border-bottom: none; }
+
+/* select 스타일 */
+.calc-select {
+  font-size: 12px;
+  padding: 6px 10px;
+  height: auto;
+  cursor: pointer;
+}
+
+/* 세트 보너스 체크박스 */
+.calc-set-bonus-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: var(--amber-dim);
+  border: 1px solid rgba(246,183,107,0.3);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--amber);
+  user-select: none;
+}
+.calc-set-bonus-check input { width: 14px; height: 14px; cursor: pointer; accent-color: var(--amber); }
+
+/* 결과 — 요약 스탯 그리드 */
+.calc-eff-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.calc-eff-stat {
+  background: var(--bg-3);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+.calc-eff-stat-val   { font-size: 20px; font-weight: 900; font-family: var(--font-display); margin-bottom: 4px; }
+.calc-eff-stat-label { font-size: 11px; font-weight: 700; color: var(--muted); }
+.calc-eff-stat-sub   { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* 결과 — 시간별 카드 */
+.calc-eff-time-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.calc-eff-time-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--purple);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.calc-eff-time-label { font-size: 11px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+.calc-eff-time-val   { font-size: 22px; font-weight: 900; font-family: var(--font-display); margin-bottom: 4px; }
+.calc-eff-time-sub   { font-size: 11px; color: var(--muted); }
+
+/* 세트 보너스 배지 */
+.calc-eff-bonus-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--amber-dim);
+  border: 1px solid rgba(246,183,107,0.3);
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 12px;
+}
+
+/* 적용 버프 요약 */
+.calc-eff-buff-list {
+  padding: 14px;
+  background: var(--bg-3);
+  border-radius: 12px;
+  border: 1px solid var(--b1);
+}
+.calc-eff-buff-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.calc-eff-buffs { display: flex; flex-wrap: wrap; gap: 6px; }

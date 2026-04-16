@@ -1432,15 +1432,39 @@ input:checked + .settings-toggle:before {
 .people-tab:hover  { border-color: var(--b2); color: var(--text); }
 .people-tab.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 
+/* 합쳐진 탭 내부 구분선 */
+.ppl-tab-divider {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.3px;
+  padding: 10px 0 14px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--b1);
+  margin-bottom: 20px;
+}
+.ppl-tab-divider:first-child { margin-top: 0; padding-top: 0; }
+
 /* 섹션 */
-.ppl-section       { margin-bottom: 28px; }
+.ppl-section { margin-bottom: 24px; }
 .ppl-section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 1.2px;
   color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  letter-spacing: 0.3px;
+}
+.ppl-col-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 8px;
+  letter-spacing: 0.3px;
+}
+.ppl-body-text {
+  font-size: 13px;
+  color: var(--sub);
+  line-height: 1.7;
 }
 
 /* 경고 / 팁 */
@@ -1466,16 +1490,46 @@ input:checked + .settings-toggle:before {
   border-radius: 10px;
   font-size: 12px;
   color: var(--amber);
-  margin-top: 12px;
+  margin-top: 10px;
   line-height: 1.6;
 }
+.ppl-info-box { padding: 14px 18px; }
 
-/* 음식 등급 그리드 */
+/* 테이블 — 모노폰트 제거, 자연스러운 폰트로 */
+.ppl-table-wrap { padding: 0; overflow: hidden; }
+.ppl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.ppl-table th {
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  background: var(--bg-3);
+  border-bottom: 1px solid var(--b1);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.ppl-table td {
+  padding: 9px 14px;
+  color: var(--sub);
+  border-bottom: 1px solid var(--b0);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.ppl-table td:first-child { color: var(--text); font-weight: 700; }
+.ppl-table tr:last-child td { border-bottom: none; }
+.ppl-table tr:hover td { background: var(--bg-hover); }
+
+/* 음식 카드 */
 .ppl-food-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 10px;
 }
 .ppl-food-card {
   border: 1.5px solid;
@@ -1483,14 +1537,14 @@ input:checked + .settings-toggle:before {
   padding: 16px;
   text-align: center;
 }
-.ppl-food-icon  { font-size: 28px; margin-bottom: 8px; }
+.ppl-food-icon  { font-size: 26px; margin-bottom: 8px; }
 .ppl-food-name  { font-size: 13px; font-weight: 800; margin-bottom: 6px; }
 .ppl-food-range { font-size: 12px; color: var(--muted); }
 
 /* 계약서 카드 */
 .ppl-contract-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 12px;
 }
 .ppl-contract-card {
@@ -1499,18 +1553,48 @@ input:checked + .settings-toggle:before {
   border-radius: 14px;
   padding: 18px;
 }
+.ppl-contract-name { font-size: 14px; font-weight: 800; margin-bottom: 12px; }
+.ppl-contract-desc { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
 
-/* 보유 슬롯 */
-.ppl-slot-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--b0);
+/* 2컬럼 */
+.ppl-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
 }
-.ppl-slot-row:last-child { border-bottom: none; }
-.ppl-slot-base { padding-bottom: 14px; margin-bottom: 4px; border-bottom: 2px dashed var(--b1); }
-.ppl-slot-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+@media (max-width: 620px) {
+  .ppl-2col { grid-template-columns: 1fr; }
+}
+
+/* 작업 흐름 */
+.ppl-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.ppl-flow-step {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--b1);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+}
+.ppl-flow-arrow { font-size: 14px; color: var(--muted); }
+
+/* 산출물 그리드 */
+.ppl-output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
 
 /* 고용 단계 */
 .ppl-steps { display: flex; flex-direction: column; gap: 10px; }

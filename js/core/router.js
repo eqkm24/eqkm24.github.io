@@ -1,12 +1,14 @@
 var ROUTES = {
-  main:    { file: 'pages/main.html',    init: 'initMain',    label: '메인',   nav: null },
-  member:  { file: 'pages/member.html',  init: 'initMember',  label: '명단',   nav: 'village', village: true },
-  zone:    { file: 'pages/zone.html',    init: 'initZone',    label: '구역',   nav: 'village', village: true },
-  tribute: { file: 'pages/tribute.html', init: 'initTribute', label: '조공',   nav: 'village', village: true },
-  life:    { file: 'pages/life.html',    init: 'initLife',    label: '생활',   nav: 'life'    },
-  recipe:  { file: 'pages/recipe.html',  init: 'initRecipe',  label: '제작',   nav: 'recipe'  },
-  price:    { file: 'pages/price.html',     init: 'initPrice',     label: '시세',     nav: 'price'     },
-  patchnote:{ file: 'pages/patchnote.html', init: 'initPatchnote', label: '패치노트', nav: 'patchnote' },
+  main:      { file: 'pages/main.html',      init: 'initMain',      label: '메인',    nav: null },
+  member:    { file: 'pages/member.html',    init: 'initMember',    label: '명단',    nav: 'village', village: true },
+  zone:      { file: 'pages/zone.html',      init: 'initZone',      label: '구역',    nav: 'village', village: true },
+  tribute:   { file: 'pages/tribute.html',   init: 'initTribute',   label: '조공',    nav: 'village', village: true },
+  life:      { file: 'pages/life.html',      init: 'initLife',      label: '생활',    nav: 'life'      },
+  people:    { file: 'pages/people.html',    init: 'initPeople',    label: '주민',    nav: 'people'    },
+  recipe:    { file: 'pages/recipe.html',    init: 'initRecipe',    label: '제작',    nav: 'recipe'    },
+  price:     { file: 'pages/price.html',     init: 'initPrice',     label: '시세',    nav: 'price'     },
+  calc:      { file: 'pages/calc.html',      init: 'initCalc',      label: '계산기',  nav: 'calc'      },
+  patchnote: { file: 'pages/patchnote.html', init: 'initPatchnote', label: '패치노트',nav: 'patchnote' },
 };
 
 let _curPage  = null;
@@ -28,7 +30,7 @@ function initApp() {
   var path   = window.location.pathname.replace(/^\//, '').split('/');
   var initPg = path[0] || 'main';
   var initSb = path[1] || null;
-  var VALID  = ['main','member','zone','tribute','life','recipe','price','patchnote'];
+  var VALID  = ['main','member','zone','tribute','life','people','recipe','price','calc','patchnote'];
   if (!VALID.includes(initPg)) { initPg = 'main'; initSb = null; }
 
   _curPage = initPg;
@@ -70,8 +72,10 @@ function _buildNav() {
 
       <div class="nav-tab" id="nav-tab-life"
         onclick="go('life')">생활</div>
+      <div class="nav-tab" id="nav-tab-people" onclick="go('people')">주민</div>
       <div class="nav-tab" id="nav-tab-recipe" onclick="go('recipe')">제작</div>
       <div class="nav-tab" id="nav-tab-price"  onclick="go('price')">시세</div>
+      <div class="nav-tab" id="nav-tab-calc"   onclick="go('calc')">계산기</div>
       <div class="nav-tab" id="nav-tab-patchnote" onclick="go('patchnote')">패치노트</div>
     </div>
 

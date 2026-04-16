@@ -1408,3 +1408,318 @@ input:checked + .settings-toggle:before {
   transform: translateX(18px);
   background: #fff;
 }
+
+/* ══════════════════════════════════════════════════════════
+   주민 페이지
+══════════════════════════════════════════════════════════ */
+.people-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.people-tab {
+  padding: 7px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.people-tab:hover  { border-color: var(--b2); color: var(--text); }
+.people-tab.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+
+/* 경고 배너 */
+.people-warn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--red-dim);
+  border: 1px solid rgba(248,113,113,0.25);
+  border-radius: 12px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 20px;
+}
+
+/* 게이지 카드 */
+.people-gauge-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+.people-gauge-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.people-gauge-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-3);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.people-gauge-bar {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--teal), var(--purple));
+  border-radius: 999px;
+}
+.people-gauge-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--purple);
+  font-family: var(--font-display);
+  flex-shrink: 0;
+}
+
+/* 섹션 타이틀 */
+.people-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+/* 음식 카드 그리드 */
+.people-food-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.people-food-card {
+  background: var(--fcd, var(--bg-card));
+  border: 1.5px solid var(--fc, var(--b1));
+  border-radius: 14px;
+  padding: 16px;
+}
+.people-food-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.people-food-icon { font-size: 24px; }
+.people-food-name { font-size: 14px; font-weight: 800; color: var(--text); }
+.people-food-range { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.people-food-count { display: flex; flex-direction: column; gap: 6px; }
+.people-food-count-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.people-food-count-label { font-size: 11px; color: var(--muted); width: 52px; flex-shrink: 0; }
+.people-food-count-val   { font-size: 16px; font-weight: 900; font-family: var(--font-display); }
+.people-food-count-sub   { font-size: 10px; color: var(--muted); }
+
+/* 계산기 바로가기 */
+.people-calc-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--purple-dim);
+  border: 1.5px solid rgba(200,180,248,0.25);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color var(--fast);
+  font-size: 24px;
+}
+.people-calc-cta:hover { border-color: var(--purple); }
+
+/* 노트 박스 */
+.people-note {
+  font-size: 12px;
+  color: var(--amber);
+  background: var(--amber-dim);
+  border-radius: 10px;
+  padding: 10px 14px;
+  line-height: 1.6;
+}
+
+/* 고용 단계 */
+.people-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.people-step  { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--sub); }
+.people-step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--purple-dim);
+  color: var(--purple);
+  font-weight: 800;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* 계약서 카드 */
+.people-contract-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.people-contract-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--fc, var(--b1));
+  border-radius: 14px;
+  padding: 16px;
+}
+.people-contract-name { font-size: 14px; font-weight: 800; margin-bottom: 6px; }
+.people-contract-prob { font-size: 13px; color: var(--sub); }
+
+/* 슬롯 행 */
+.people-slot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--b0);
+  font-size: 13px;
+}
+.people-slot-row:last-child { border-bottom: none; }
+.people-slot-label { color: var(--sub); }
+.people-slot-val   { font-weight: 800; font-family: var(--font-display); }
+
+/* ══════════════════════════════════════════════════════════
+   계산기 페이지
+══════════════════════════════════════════════════════════ */
+.calc-card {
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: 16px;
+  padding: 24px;
+}
+.calc-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--b1);
+}
+.calc-card-icon  { font-size: 32px; flex-shrink: 0; }
+.calc-card-title { font-size: 16px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.calc-card-sub   { font-size: 12px; color: var(--muted); }
+
+.calc-section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+.calc-section-label:first-of-type { margin-top: 0; }
+
+/* 음식 chip 선택 */
+.calc-food-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.calc-food-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-3);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  user-select: none;
+}
+.calc-food-chip input { display: none; }
+.calc-food-chip:hover { border-color: var(--fc); }
+.calc-food-chip.active {
+  border-color: var(--fc);
+  background: var(--bg-card);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--fc) 15%, transparent);
+}
+.calc-food-chip-icon  { font-size: 18px; }
+.calc-food-chip-label { font-size: 13px; font-weight: 700; color: var(--text); }
+.calc-food-chip-range { font-size: 11px; color: var(--muted); }
+.calc-food-chip.active .calc-food-chip-label { color: var(--fc); }
+.calc-food-chip.active .calc-food-chip-range { color: var(--fc); opacity: 0.7; }
+
+/* 가격 입력 */
+.calc-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--b0);
+  flex-wrap: wrap;
+}
+.calc-price-row:last-child { border-bottom: none; }
+.calc-price-label { font-size: 13px; font-weight: 600; display: flex; flex-direction: column; gap: 2px; }
+.calc-price-input-wrap { display: flex; align-items: center; gap: 6px; }
+.calc-price-input { width: 130px; text-align: right; font-family: var(--font-mono); }
+.calc-price-unit  { font-size: 12px; color: var(--muted); font-weight: 600; flex-shrink: 0; }
+
+/* 결과 영역 */
+.calc-result-wrap {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--b1);
+}
+.calc-result-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 14px;
+}
+.calc-result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.calc-result-card {
+  background: var(--bg-3);
+  border: 1.5px solid var(--fc, var(--b1));
+  border-radius: 14px;
+  padding: 16px;
+}
+.calc-result-card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.calc-result-rows  { display: flex; flex-direction: column; gap: 8px; }
+.calc-result-row   { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.calc-result-row-label { font-size: 12px; color: var(--muted); padding-top: 2px; flex-shrink: 0; }
+.calc-result-row-val   { font-size: 16px; font-weight: 900; font-family: var(--font-display); }
+
+.calc-multi-note {
+  font-size: 12px;
+  color: var(--amber);
+  background: var(--amber-dim);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+.calc-mixed-card {
+  background: var(--purple-dim);
+  border: 1.5px solid rgba(200,180,248,0.25);
+  border-radius: 14px;
+  padding: 16px;
+  margin-top: 4px;
+}
+
+/* 빈 상태 */
+.calc-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}

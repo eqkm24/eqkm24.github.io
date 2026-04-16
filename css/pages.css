@@ -1663,3 +1663,44 @@ input:checked + .settings-toggle:before {
   padding: 40px 20px;
   color: var(--muted);
 }
+
+/* 주민 페이지 추가 레이아웃 */
+.ppl-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 600px) {
+  .ppl-2col { grid-template-columns: 1fr; }
+}
+
+.ppl-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.ppl-flow-step {
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--bg-3);
+  border: 1px solid var(--b1);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sub);
+}
+.ppl-flow-arrow {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ppl-output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}

@@ -1860,6 +1860,21 @@ input:checked + .settings-toggle:before {
   padding: 6px 10px;
   height: auto;
   cursor: pointer;
+  color: var(--text);
+  background-color: var(--bg-card);
+}
+.calc-select option {
+  background-color: #1a1f2e;
+  color: #e8e8f0;
+  font-size: 13px;
+}
+[data-theme="light"] .calc-select {
+  background-color: #ffffff;
+  color: #1a1a2e;
+}
+[data-theme="light"] .calc-select option {
+  background-color: #ffffff;
+  color: #1a1a2e;
 }
 
 /* 세트 보너스 체크박스 */

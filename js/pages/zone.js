@@ -1,8 +1,7 @@
 // ── 구역 페이지 ──────────────────────────────────────────────
-// 셀 디자인: 소유자별 고유 색상 + 이니셜 원형 아바타
 // DB: stella_zone
 //   _bounds   : { r1, c1, r2, c2 }  마을 전체 영역 경계
-//   _acquired : { "r_c": true }      확보(구매)된 청크
+//   _acquired : { "r_c": true }      확보(구매)된 청크 목록
 //   "r_c"     : { owner: "이름" }    소유자 배정된 청크
 
 var _zoneData = {};
@@ -16,10 +15,18 @@ var ZONE_PALETTE = [
   '#818cf8','#f97316','#06b6d4','#84cc16','#ec4899',
 ];
 
-// ── 이니셜 추출 ─────────────────────────────────────────────
-function _getInitials(name) {
-  var clean = name.replace(/[^가-힣a-zA-Z0-9]/g, '');
-  return clean.slice(0, 2).toUpperCase() || '?';
+// ── 스킨 이미지 URL 생성 + fallback ─────────────────────────
+function _skinUrl(mc) {
+  return 'https://minotar.net/avatar/' + encodeURIComponent(mc) + '/32';
+}
+function _skinFallback(img, mc) {
+  img.onerror = null;
+  img.src = 'https://mc-heads.net/avatar/' + encodeURIComponent(mc) + '/32';
+  img.onerror = function() {
+    this.style.display = 'none';
+    var fb = this.parentElement.querySelector('.zn-cell-fb');
+    if (fb) fb.style.display = 'flex';
+  };
 }
 
 function initZone() {
@@ -96,12 +103,18 @@ function rebuildZone() {
       var owner    = cellData ? cellData.owner : '';
       var isAcq    = !!(_acquired[key]);
       var color    = owner ? (colors[owner] || '#888') : '';
+      var mc       = owner ? _getMc(owner) : '';
 
       if (owner) {
-        // ① 배정됨: 이니셜 아바타 + 이름
+        // ① 배정됨: 스킨 얼굴 + 이름
         var shortName = owner.length > 6 ? owner.slice(0, 5) + '…' : owner;
         html += '<div class="zn-cell zn-cell--owned" style="--cc:' + color + ';" title="' + owner + '" onclick="onZoneClick(\'' + key + '\',\'' + owner + '\')">' +
-          '<div class="zn-cell-initial">' + _getInitials(owner) + '</div>' +
+          '<img class="zn-cell-avatar"' +
+            ' src="' + _skinUrl(mc) + '"' +
+            ' alt="' + owner + '"' +
+            ' loading="lazy"' +
+            ' onerror="_skinFallback(this,\'' + mc + '\')">' +
+          '<span class="zn-cell-fb">' + owner.slice(0,2) + '</span>' +
           '<span class="zn-cell-name">' + shortName + '</span>' +
         '</div>';
       } else if (isAcq) {
@@ -156,7 +169,10 @@ function _buildLegend(colors) {
     var name = entry[0], color = entry[1];
     var mc   = _getMc(name);
     return '<div class="zn-legend-item" onclick="highlightOwner(\'' + name + '\')" title="' + name + ' 하이라이트">' +
-      '<div class="zn-legend-initial" style="background:' + color + ';">' + _getInitials(name) + '</div>' +
+      '<img class="zn-legend-avatar"' +
+        ' src="' + _skinUrl(mc) + '"' +
+        ' alt="' + name + '"' +
+        ' onerror="_skinFallback(this,\'' + mc + '\')">' +
       '<div class="zn-legend-dot" style="background:' + color + ';box-shadow:0 0 5px ' + color + '88;"></div>' +
       '<span>' + name + '</span>' +
     '</div>';
@@ -260,7 +276,10 @@ function onZoneClick(key, currentOwner) {
     var sel    = name === currentOwner;
     var color  = colors[name] || '#888';
     nickCards += '<div class="zn-nick-card' + (sel ? ' selected' : '') + '" data-nick="' + name + '" onclick="selectZoneNick(this,\'' + name + '\')">' +
-      '<div class="zn-nick-initial" style="background:' + color + ';">' + _getInitials(name) + '</div>' +
+      '<img class="zn-nick-avatar"' +
+        ' src="' + _skinUrl(mc) + '"' +
+        ' alt="' + name + '"' +
+        ' onerror="_skinFallback(this,\'' + mc + '\')">' +
       '<span>' + name + '</span>' +
     '</div>';
   });

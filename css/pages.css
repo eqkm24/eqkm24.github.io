@@ -359,23 +359,32 @@
 /* 하이라이트 dim */
 .zn-cell.dimmed { opacity: 0.1 !important; }
 
-/* 이니셜 원형 아바타 */
-.zn-cell-initial {
+/* 스킨 이미지 */
+.zn-cell-avatar {
   width: 30px;
   height: 30px;
-  border-radius: 50%;
+  image-rendering: pixelated;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  display: block;
+  flex-shrink: 0;
+}
+/* fallback 텍스트 (스킨 실패 시) */
+.zn-cell-fb {
+  display: none;
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
   background: var(--cc, var(--b2));
-  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 900;
   color: #fff;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
-  letter-spacing: -0.5px;
 }
 /* 이름 */
 .zn-cell-name {
@@ -400,7 +409,7 @@
     border-radius: 8px;
     gap: 2px;
   }
-  .zn-cell-initial { width: 22px; height: 22px; font-size: 9px; }
+  .zn-cell-avatar, .zn-cell-fb { width: 24px; height: 24px; }
   .zn-cell-name { font-size: 7.5px; max-width: 42px; }
 }
 
@@ -446,18 +455,12 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.zn-legend-initial {
+.zn-legend-avatar {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8px;
-  font-weight: 900;
-  color: #fff;
+  image-rendering: pixelated;
+  border-radius: 3px;
   flex-shrink: 0;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* ── 모달 닉 선택 ─────────────────────────────────────────── */
@@ -489,18 +492,11 @@
 .zn-nick-card.selected { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 .zn-nick-empty         { color: var(--muted); flex-direction: row; justify-content: center; }
 .zn-nick-empty.selected { border-color: var(--red); background: var(--red-dim); color: var(--red); }
-.zn-nick-initial {
+.zn-nick-avatar {
   width: 32px;
   height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 900;
-  color: #fff;
-  flex-shrink: 0;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  image-rendering: pixelated;
+  border-radius: 6px;
 }
 
 .tribute-summary {

@@ -237,22 +237,30 @@
 }
 
 /* ── 구역 페이지 ─────────────────────────────────────────── */
+/* ── 구역 페이지 ─────────────────────────────────────────── */
+.zn-legend-hint {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
 .zn-stat-bar {
   display: flex;
   align-items: center;
   background: var(--bg-card);
   border: 1px solid var(--b1);
   border-radius: 14px;
-  padding: 14px 24px;
-  margin-bottom: 20px;
+  padding: 14px 20px;
   gap: 0;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 .zn-stat-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
   flex: 1;
+  min-width: 80px;
 }
 .zn-stat-val   { font-size: 20px; font-weight: 900; color: var(--text); font-family: var(--font-display); }
 .zn-stat-label { font-size: 11px; color: var(--muted); font-weight: 500; }
@@ -260,85 +268,143 @@
 
 .zn-controls {
   display: flex;
+  gap: 8px;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
-.zn-grid-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.zn-ctrl-label { font-size: 12px; color: var(--muted); }
 
+/* 관리자 안내 */
+.zn-admin-hint {
+  font-size: 12px;
+  color: var(--amber);
+  background: var(--amber-dim);
+  border-radius: 10px;
+  padding: 9px 14px;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* ── 그리드 ──────────────────────────────────────────────── */
 .zn-map-wrap {
   overflow-x: auto;
   padding-bottom: 8px;
 }
 .zn-map {
   display: grid;
-  gap: 4px;
+  gap: 3px;
   width: fit-content;
+  /* grid-template-columns은 JS에서 동적으로 설정 */
 }
+
+/* 셀 공통 */
 .zn-cell {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  --zn-cell-size: 60px;
+  width:  var(--zn-cell-size);
+  height: var(--zn-cell-size);
+  border-radius: 10px;
   border: 1.5px solid var(--b1);
-  background: var(--bg-card);
   cursor: pointer;
   transition: all .12s var(--ease);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  gap: 3px;
 }
-.zn-cell::before {
+.zn-cell:hover { transform: scale(1.08); z-index: 2; }
+
+/* ① 배정됨 */
+.zn-cell--owned {
+  background: var(--bg-card);
+  border-color: var(--cc);
+  border-width: 2px;
+}
+.zn-cell--owned::before {
   content: '';
   position: absolute;
   inset: 0;
   background: var(--cc, transparent);
-  opacity: 0;
-  transition: opacity .12s;
+  opacity: 0.12;
 }
-.zn-cell.owned {
-  border-color: var(--cc);
-  border-width: 2px;
-}
-.zn-cell.owned::before { opacity: 0.15; }
-.zn-cell:hover {
-  border-color: var(--b3);
-  transform: scale(1.12);
-  z-index: 2;
-}
-.zn-cell.owned:hover {
+.zn-cell--owned:hover {
   filter: brightness(1.1);
-  transform: scale(1.12);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
 }
-.zn-cell.dimmed { opacity: 0.12; }
-.zn-cell-avatar {
-  width: 28px;
-  height: 28px;
-  image-rendering: pixelated;
-  border-radius: 4px;
+
+/* ② 확보됨·미배정 */
+.zn-cell--vacant {
+  background: var(--bg-card);
+  border-color: var(--teal);
+  border-width: 1.5px;
+  border-style: dashed;
+}
+.zn-cell--vacant:hover { border-color: var(--teal); box-shadow: 0 0 0 2px rgba(125,211,192,0.25); }
+
+/* ③ 미확보 */
+.zn-cell--locked {
+  background: var(--bg-2);
+  border-color: var(--b0);
+  opacity: 0.45;
+  cursor: default;
+}
+.zn-cell--locked:hover { transform: none; opacity: 0.6; }
+
+/* 관리자는 미확보 클릭 가능 */
+.zn-admin .zn-cell--locked { cursor: pointer; }
+.zn-admin .zn-cell--locked:hover { transform: scale(1.05); opacity: 0.7; }
+
+/* 하이라이트 dim */
+.zn-cell.dimmed { opacity: 0.1 !important; }
+
+/* 이니셜 원형 아바타 */
+.zn-cell-initial {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--cc, var(--b2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
   position: relative;
   z-index: 1;
-  display: block;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  letter-spacing: -0.5px;
 }
-.zn-cell-fb {
-  display: none;
+/* 이름 */
+.zn-cell-name {
   position: relative;
   z-index: 1;
   font-size: 9px;
-  font-weight: 800;
-  color: rgba(0,0,0,0.7);
-  align-items: center;
-  justify-content: center;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  text-align: center;
+  max-width: 56px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  letter-spacing: -0.3px;
 }
 
-/* 범례 */
+/* 반응형 */
+@media (max-width: 700px) {
+  .zn-cell {
+    --zn-cell-size: 46px;
+    border-radius: 8px;
+    gap: 2px;
+  }
+  .zn-cell-initial { width: 22px; height: 22px; font-size: 9px; }
+  .zn-cell-name { font-size: 7.5px; max-width: 42px; }
+}
+
+/* ── 범례 ─────────────────────────────────────────────────── */
 .zn-legend-wrap {
   margin-top: 20px;
   padding: 16px;
@@ -349,15 +415,15 @@
 .zn-legend-title {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 1px;
   color: var(--muted);
-  text-transform: uppercase;
   margin-bottom: 10px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 .zn-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 .zn-legend-item {
   display: flex;
@@ -380,15 +446,21 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.zn-legend-avatar {
+.zn-legend-initial {
   width: 20px;
   height: 20px;
-  image-rendering: pixelated;
-  border-radius: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 900;
+  color: #fff;
   flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-/* 모달 닉 선택 그리드 */
+/* ── 모달 닉 선택 ─────────────────────────────────────────── */
 .zn-nick-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -417,14 +489,19 @@
 .zn-nick-card.selected { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 .zn-nick-empty         { color: var(--muted); flex-direction: row; justify-content: center; }
 .zn-nick-empty.selected { border-color: var(--red); background: var(--red-dim); color: var(--red); }
-.zn-nick-avatar {
+.zn-nick-initial {
   width: 32px;
   height: 32px;
-  image-rendering: pixelated;
-  border-radius: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
-
-
 
 .tribute-summary {
   display: grid;

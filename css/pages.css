@@ -2131,3 +2131,86 @@ input:checked + .settings-toggle:before {
 .market-type-chip input { display: none; }
 .market-type-chip:hover { border-color: var(--b2); color: var(--text); }
 .market-type-chip.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
+
+/* ── 거래장 추가 스타일 ──────────────────────────────────────── */
+.market-section-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text);
+  padding: 6px 0 12px;
+  border-bottom: 1px solid var(--b1);
+  margin-bottom: 14px;
+}
+
+/* 품목 chip (체크박스) */
+.market-chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+.market-item-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px 5px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-card);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  user-select: none;
+}
+.market-item-chip input { display: none; }
+.market-item-chip img {
+  width: 18px;
+  height: 18px;
+  image-rendering: pixelated;
+  border-radius: 3px;
+}
+.market-item-chip:hover { border-color: var(--b2); color: var(--text); }
+.market-item-chip.active {
+  border-color: var(--teal);
+  background: var(--teal-dim);
+  color: var(--teal);
+}
+
+/* 별 등급 chip */
+.market-star-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  user-select: none;
+}
+.market-star-chip input { display: none; }
+.market-star-chip:hover { border-color: var(--amber); color: var(--text); }
+.market-star-chip.active { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); }
+
+/* 수량 입력 행 */
+.market-qty-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--b0);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.market-qty-row:last-child { border-bottom: none; }
+.market-qty-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}

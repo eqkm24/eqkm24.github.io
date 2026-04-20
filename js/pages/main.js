@@ -3,7 +3,7 @@ function initMain() {
   _loadMainStats();
   _loadTop3();
   _loadNotes();
-  _loadPatchnotePreview();
+  _renderSmeltPanel();
   setTimeout(_loadWidgetPrefs, 200);
   _initVisitor();
   _restoreCharCard();
@@ -531,34 +531,72 @@ function deleteCurrentNote() {
 }
 
 
-function _loadPatchnotePreview() {
-  window.$db.on('stella_update_notes', function(val) {
-    var root = document.getElementById('main-patchnote-preview');
-    if (!root) return;
-    if (!val || !val.length) {
-      root.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0;">등록된 패치노트가 없습니다.</div>';
-      return;
-    }
-    var sorted = val.slice().sort(function(a, b) { return new Date(b.date||0) - new Date(a.date||0); });
-    var top3   = sorted.slice(0, 3);
-    root.innerHTML = top3.map(function(n) {
-      var d    = n.date ? new Date(n.date) : null;
-      var dStr = d ? (d.getMonth()+1) + '. ' + d.getDate() + '.' : '';
-      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--b1);">' +
-        '<span style="font-size:12px;color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + (n.title || '(제목 없음)') + '</span>' +
-        '<span style="font-size:11px;color:var(--muted);flex-shrink:0;margin-left:8px;">' + dStr + '</span>' +
-      '</div>';
-    }).join('') + '<div style="text-align:right;margin-top:6px;font-size:11px;color:var(--purple);">전체보기 →</div>';
-  });
+// ── 제련 패널 (메인 페이지) ─────────────────────────────────
+var SMELT_DATA_MAIN = [
+  { name:'미스릴 주괴',      ore:'일반 미스릴 원석',      qty:3, fuel:4, time:'15초', prob:'커먼 80% / 언커먼 15% / 레어 5%' },
+  { name:'아르젠타이트 주괴', ore:'일반 아르젠타이트 원석', qty:3, fuel:4, time:'15초', prob:'커먼 80% / 언커먼 15% / 레어 5%' },
+  { name:'벨리움 주괴',      ore:'일반 벨리움 원석',      qty:3, fuel:4, time:'15초', prob:'커먼 80% / 언커먼 15% / 레어 5%' },
+];
+
+function _renderSmeltPanel() {
+  var root = document.getElementById('main-smelt-panel');
+  if (!root) return;
+
+  var dex    = parseInt(window._charStats && window._charStats['손재주'] ? window._charStats['손재주'] : 0) || 0;
+  var plain  = 80;
+  var silver = 15 + dex * 0.5;
+  var gold   = 5  + dex * 0.3;
+  var total  = plain + silver + gold;
+  var prob   = {
+    plain:  (plain  / total * 100).toFixed(1),
+    silver: (silver / total * 100).toFixed(1),
+    gold:   (gold   / total * 100).toFixed(1),
+  };
+
+  // 확률 바
+  var probHtml =
+    '<div class="smelt-prob" style="margin-bottom:14px;">' +
+      '<div style="font-size:11px;color:var(--muted);margin-bottom:8px;">커먼 80% / 언커먼 15% / 레어 5% (기본) · 손재주로 은별·금별 확률 증가' +
+        (dex > 0 ? ' · <strong style="color:var(--text);">손재주 ' + dex + '</strong>' : '') +
+      '</div>' +
+      '<div class="smelt-bars">' +
+        '<div class="smelt-bar-row"><span class="smelt-star" style="color:var(--muted)">커먼</span><div class="smelt-bar-bg smelt-bar-plain"><div class="smelt-bar-fill" style="width:' + prob.plain + '%"></div></div><span class="smelt-pct">' + prob.plain + '%</span></div>' +
+        '<div class="smelt-bar-row"><span class="smelt-star" style="color:#c0c0c0">언커먼</span><div class="smelt-bar-bg smelt-bar-silver"><div class="smelt-bar-fill" style="width:' + Math.min(prob.silver,100) + '%"></div></div><span class="smelt-pct">' + prob.silver + '%</span></div>' +
+        '<div class="smelt-bar-row"><span class="smelt-star" style="color:#ffd700">레어</span><div class="smelt-bar-bg smelt-bar-gold"><div class="smelt-bar-fill" style="width:' + Math.min(prob.gold,100) + '%"></div></div><span class="smelt-pct">' + prob.gold + '%</span></div>' +
+      '</div>' +
+      (dex === 0 ? '<div class="smelt-hint">💡 메인 페이지에서 /생활 정보를 붙여넣으면 손재주 수치가 자동 반영됩니다.</div>' : '') +
+    '</div>';
+
+  // 재료 카드
+  var cards = SMELT_DATA_MAIN.map(function(d) {
+    return '<div class="recipe-card">' +
+      '<div class="recipe-card-hd">' +
+        '<div class="recipe-img">🪨</div>' +
+        '<div>' +
+          '<div class="recipe-name">' + d.name + '</div>' +
+          '<div class="recipe-meta">' +
+            '<span class="tag tag-teal">⏱ ' + d.time + '</span>' +
+            '<span class="tag" style="color:var(--muted);background:var(--bg-3);font-size:10px;">' + d.prob + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="recipe-mats">' +
+        '<span class="mat-tag">' + d.ore + ' <span class="mat-qty">×' + d.qty + '</span></span>' +
+        '<span class="mat-tag">마그마 블록 <span class="mat-qty">×' + d.fuel + '</span></span>' +
+        '<span class="mat-tag" style="color:var(--red);font-size:10px;">🔥 허름한 화로</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  root.innerHTML = probHtml + '<div class="recipe-grid">' + cards + '</div>';
 }
 
 
-// ── 위젯 설정 저장/복원 ──
 function saveWidgetPref() {
   var prefs = {
     top3:      document.getElementById('widget-top3')?.checked !== false,
     char:      document.getElementById('widget-char')?.checked !== false,
-    patchnote: document.getElementById('widget-patchnote')?.checked !== false,
+
   };
   localStorage.setItem('stella_widget_prefs', JSON.stringify(prefs));
   _applyWidgetPrefs(prefs);
@@ -568,7 +606,7 @@ function _loadWidgetPrefs() {
   try {
     var saved = JSON.parse(localStorage.getItem('stella_widget_prefs') || '{}');
     // 체크박스 상태 복원
-    ['top3','char','patchnote'].forEach(function(key) {
+    ['top3','char'].forEach(function(key) {
       var el = document.getElementById('widget-' + key);
       if (el && saved[key] !== undefined) el.checked = saved[key];
     });
@@ -583,9 +621,7 @@ function _applyWidgetPrefs(prefs) {
   // 캐릭터 스펙
   var charEl   = document.getElementById('char-card-body')?.closest('.card');
   if (charEl)   charEl.style.display   = prefs.char      === false ? 'none' : '';
-  // 패치노트
-  var patchEl  = document.querySelector('#main-patchnote-preview')?.closest('.card');
-  if (patchEl)  patchEl.style.display  = prefs.patchnote === false ? 'none' : '';
+
 }
 
 // ── 의견 보내기 ──

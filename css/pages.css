@@ -359,32 +359,23 @@
 /* 하이라이트 dim */
 .zn-cell.dimmed { opacity: 0.1 !important; }
 
-/* 스킨 이미지 */
-.zn-cell-avatar {
+/* 이니셜 원형 아바타 */
+.zn-cell-initial {
   width: 30px;
   height: 30px;
-  image-rendering: pixelated;
-  border-radius: 5px;
-  position: relative;
-  z-index: 1;
-  display: block;
-  flex-shrink: 0;
-}
-/* fallback 텍스트 (스킨 실패 시) */
-.zn-cell-fb {
-  display: none;
-  position: relative;
-  z-index: 1;
-  width: 30px;
-  height: 30px;
-  border-radius: 5px;
+  border-radius: 50%;
   background: var(--cc, var(--b2));
+  display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
   font-weight: 900;
   color: #fff;
   flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  letter-spacing: -0.5px;
 }
 /* 이름 */
 .zn-cell-name {
@@ -409,7 +400,7 @@
     border-radius: 8px;
     gap: 2px;
   }
-  .zn-cell-avatar, .zn-cell-fb { width: 24px; height: 24px; }
+  .zn-cell-initial { width: 22px; height: 22px; font-size: 9px; }
   .zn-cell-name { font-size: 7.5px; max-width: 42px; }
 }
 
@@ -455,12 +446,18 @@
   border-radius: 50%;
   flex-shrink: 0;
 }
-.zn-legend-avatar {
+.zn-legend-initial {
   width: 20px;
   height: 20px;
-  image-rendering: pixelated;
-  border-radius: 3px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  font-weight: 900;
+  color: #fff;
   flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 /* ── 모달 닉 선택 ─────────────────────────────────────────── */
@@ -492,11 +489,18 @@
 .zn-nick-card.selected { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }
 .zn-nick-empty         { color: var(--muted); flex-direction: row; justify-content: center; }
 .zn-nick-empty.selected { border-color: var(--red); background: var(--red-dim); color: var(--red); }
-.zn-nick-avatar {
+.zn-nick-initial {
   width: 32px;
   height: 32px;
-  image-rendering: pixelated;
-  border-radius: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+  flex-shrink: 0;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .tribute-summary {
@@ -2034,3 +2038,96 @@ input:checked + .settings-toggle:before {
   letter-spacing: 0.3px;
 }
 .calc-eff-buffs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* ══════════════════════════════════════════════════════════
+   거래장 (market)
+══════════════════════════════════════════════════════════ */
+.market-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.market-stat {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--b1);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+}
+.market-stat-val   { font-size: 22px; font-weight: 900; font-family: var(--font-display); color: var(--text); }
+.market-stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.market-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.market-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--b1);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color var(--fast);
+}
+.market-card:hover { border-color: var(--b2); }
+.market-card--done { opacity: 0.65; }
+
+.market-card-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.market-card-from {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.market-card-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.market-card-note {
+  font-size: 12px;
+  color: var(--muted);
+  background: var(--bg-3);
+  border-radius: 8px;
+  padding: 7px 10px;
+  line-height: 1.5;
+}
+.market-card-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+/* 거래 유형 chip (라디오) */
+.market-type-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 12px;
+  border: 1.5px solid var(--b1);
+  background: var(--bg-card);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+  user-select: none;
+  flex: 1;
+  justify-content: center;
+}
+.market-type-chip input { display: none; }
+.market-type-chip:hover { border-color: var(--b2); color: var(--text); }
+.market-type-chip.active { border-color: var(--purple); background: var(--purple-dim); color: var(--purple); }

@@ -1,0 +1,16 @@
+<div class="wrap">
+  <div class="page-hd">
+    <div class="page-hd-label">스텔라 마을</div>
+    <h1 class="page-hd-title">🌾 농부·요리사 <em>거래장</em></h1>
+    <p class="page-hd-sub">농부와 요리사 간 재료·요리 거래 편의를 위한 체크 보드</p>
+  </div>
+
+  <!-- 탭 -->
+  <div class="people-tabs" id="market-tabs">
+    <div class="people-tab active" data-tab="board"   onclick="switchMarketTab('board',this)">📋 거래 현황</div>
+    <div class="people-tab"        data-tab="request" onclick="switchMarketTab('request',this)">✏️ 거래 등록</div>
+    <div class="people-tab"        data-tab="history" onclick="switchMarketTab('history',this)">📦 완료 내역</div>
+  </div>
+
+  <div id="market-content"></div>
+</div>

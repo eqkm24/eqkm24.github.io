@@ -1,10 +1,7 @@
 var ROUTES = {
-  main:    { file: 'pages/main.html',    init: 'initMain',    label: '메인',  nav: null },
-  member:  { file: 'pages/member.html',  init: 'initMember',  label: '명단',  nav: 'village', village: true },
-  zone:    { file: 'pages/zone.html',    init: 'initZone',    label: '구역',  nav: 'village', village: true },
-  tribute: { file: 'pages/tribute.html', init: 'initTribute', label: '조공',  nav: 'village', village: true },
-  price:   { file: 'pages/price.html',   init: 'initPrice',   label: '시세',  nav: 'price'  },
-  market:  { file: 'pages/market.html',  init: 'initMarket',  label: '거래장',nav: 'market' },
+  main:   { file: 'pages/main.html',   init: 'initMain',   label: '메인',    nav: null },
+  member: { file: 'pages/member.html', init: 'initMember', label: '명단',    nav: 'village', village: true },
+  price:  { file: 'pages/price.html',  init: 'initPrice',  label: '변동시세', nav: 'price' },
 };
 
 let _curPage  = null;
@@ -26,7 +23,7 @@ function initApp() {
   var path   = window.location.pathname.replace(/^\//, '').split('/');
   var initPg = path[0] || 'main';
   var initSb = path[1] || null;
-  var VALID  = ['main','member','zone','tribute','price','market'];
+  var VALID  = ['main','member','price'];
   if (!VALID.includes(initPg)) { initPg = 'main'; initSb = null; }
 
   _curPage = initPg;
@@ -57,17 +54,10 @@ function _buildNav() {
           <div class="nav-dd-item" onclick="goVillage('member')">
             <span class="nav-dd-item-icon">👥</span> 마을원 명단
           </div>
-          <div class="nav-dd-item" onclick="goVillage('zone')">
-            <span class="nav-dd-item-icon">🗺</span> 마을 구역
-          </div>
-          <div class="nav-dd-item" onclick="goVillage('tribute')">
-            <span class="nav-dd-item-icon">⭐</span> 조공 포인트
-          </div>
         </div>
       </div>
 
-      <div class="nav-tab" id="nav-tab-price"   onclick="go('price')">시세</div>
-      <div class="nav-tab" id="nav-tab-market"  onclick="go('market')">거래장</div>
+      <div class="nav-tab" id="nav-tab-price" onclick="go('price')">변동시세</div>
     </div>
 
     <div class="nav-utils">

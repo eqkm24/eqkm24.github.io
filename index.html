@@ -1,64 +1,1451 @@
-<!DOCTYPE html>
-<html lang="ko" data-theme="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>스텔라 마을 위키</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Dongleland</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- Firebase -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
 
-  
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4c1.2 0 2.3.7 2.8 1.8l7 14.2 15.7 2.3c1.2.2 2.1 1 2.5 2.1.3 1.1 0 2.3-.9 3.1L47.7 38.6l2.7 15.6c.2 1.2-.3 2.3-1.3 3-.5.3-1 .5-1.6.5-.4 0-.9-.1-1.3-.3L32 49.8l-14.2 7.5c-1 .5-2.3.4-3.2-.3s-1.3-1.8-1.1-3l2.7-15.6L4.9 27.5c-.8-.8-1.2-2-.9-3.1.4-1.1 1.3-1.9 2.5-2.1l15.7-2.3 7-14.2C29.7 4.7 30.8 4 32 4z' fill='%23c8b4f8'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg:       #0d0e12;
+  --bg2:      #13151c;
+  --bg3:      #191c27;
+  --bg4:      #1e2235;
+  --border:   #252840;
+  --border2:  #2e3252;
+  --txt:      #e8eaf0;
+  --txt2:     #8890b0;
+  --txt3:     #4a5070;
+  --accent:   #7c6af7;
+  --accent2:  #5b4fd4;
+  --accent-g: linear-gradient(135deg,#7c6af7,#a78bfa);
+  --green:    #34d399;
+  --red:      #f87171;
+  --yellow:   #fbbf24;
+  --orange:   #fb923c;
+  --silver:   #94a3b8;
+  --gold:     #f59e0b;
+  --mono: 'Inter', monospace;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--txt);
+  font-size: 14px;
+  line-height: 1.6;
+}
 
-  
-  <script>(function(){const t=localStorage.getItem('stella_theme')||'dark';document.documentElement.setAttribute('data-theme',t);})();</script>
+/* NAV */
+.nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 200;
+  background: rgba(13,14,18,0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+}
+.nav-brand { display:flex; align-items:center; gap:9px; flex-shrink:0; }
+.nav-logo {
+  width:30px; height:30px; border-radius:8px;
+  background: var(--accent-g);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; flex-shrink:0;
+}
+.nav-title { font-size:16px; font-weight:900; color:var(--txt); letter-spacing:-0.5px; }
+.nav-tabs { flex:1; display:flex; justify-content:center; gap:2px; }
+.nav-tab {
+  padding:6px 16px; border-radius:8px; font-size:13px; font-weight:500;
+  color:var(--txt2); cursor:pointer; border:none; background:none;
+  font-family:inherit; transition:background .15s, color .15s;
+}
+.nav-tab:hover { background:var(--bg3); color:var(--txt); }
+.nav-tab.active { background:var(--bg3); color:var(--accent); font-weight:700; }
+.nav-end { flex-shrink:0; width:120px; }
 
-  
-  <link rel="stylesheet" href="css/vars.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/pages.css">
+/* PAGE */
+.page { display:none; }
+.page.active { display:block; }
+.wrap { max-width:960px; margin:0 auto; padding:28px 20px 80px; }
 
-  <script>
-    (function() {
-      // F12, Ctrl+Shift+I, Ctrl+U 차단
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'F12') { e.preventDefault(); return false; }
-        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) { e.preventDefault(); return false; }
-        if (e.ctrlKey && e.key === 'u') { e.preventDefault(); return false; }
-        if (e.ctrlKey && e.key === 's') { e.preventDefault(); return false; }
-      }, true);
-      // 우클릭 차단
-      document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; }, true);
+/* HERO */
+.hero {
+  display:flex; align-items:center; gap:24px;
+  padding:28px; background:var(--bg2);
+  border:1px solid var(--border); border-radius:16px;
+  margin-bottom:20px; position:relative; overflow:hidden;
+}
+.hero::after {
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 55% 80% at 95% -10%, rgba(124,106,247,0.12) 0%, transparent 60%);
+  pointer-events:none;
+}
+.hero-avatar {
+  width:80px; height:80px; border-radius:14px;
+  background:var(--bg4); border:2px solid var(--border2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; flex-shrink:0; overflow:hidden;
+}
+.hero-avatar img { width:100%; height:100%; object-fit:cover; border-radius:11px; }
+.hero-avatar .avatar-placeholder { font-size:32px; }
+.hero-info { flex:1; min-width:0; }
+.hero-name-row {
+  display:flex; align-items:center; gap:10px;
+  flex-wrap:wrap; margin-bottom:10px;
+}
+.hero-name-input {
+  font-size:22px; font-weight:900; letter-spacing:-0.6px;
+  background:transparent; border:none; outline:none;
+  color:var(--txt); font-family:'Noto Sans KR', sans-serif;
+  min-width:80px; max-width:260px;
+  border-bottom:2px solid transparent;
+  transition:border-color .2s;
+  padding-bottom:2px;
+}
+.hero-name-input:focus { border-bottom-color:var(--accent); }
+.hero-name-input::placeholder { color:var(--txt3); }
+.hero-edit-hint { font-size:11px; color:var(--txt3); }
+.hero-desc { font-size:13px; color:var(--txt2); margin-bottom:12px; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:6px; }
+.tag { font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:0.3px; }
+.tag-purple { background:rgba(124,106,247,0.15); color:#a78bfa; border:1px solid rgba(124,106,247,0.25); }
+.tag-green  { background:rgba(52,211,153,0.1); color:var(--green); border:1px solid rgba(52,211,153,0.2); }
+.tag-yellow { background:rgba(251,191,36,0.1); color:var(--yellow); border:1px solid rgba(251,191,36,0.2); }
 
-    })();
-  </script>
-</head>
-<body>
+/* HOME 2-COL */
+.home-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:20px; }
+.card-hd { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.card-hd-title { font-size:11px; font-weight:700; color:var(--txt3); text-transform:uppercase; letter-spacing:0.8px; }
+.card-hd-sub { font-size:11px; color:var(--txt3); cursor:pointer; }
+.card-hd-sub:hover { color:var(--txt2); }
 
-<div id="app">
+/* NOTICE LIST (home) */
+.notice-list { display:flex; flex-direction:column; gap:8px; }
+.notice-item {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; background:var(--bg3);
+  border-radius:9px; cursor:pointer; transition:background .12s;
+}
+.notice-item:hover { background:var(--bg4); }
+.notice-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); margin-top:6px; flex-shrink:0; }
+.notice-dot.yellow { background:var(--yellow); }
+.notice-dot.green { background:var(--green); }
+.notice-item-title { font-size:13px; font-weight:500; line-height:1.4; }
+.notice-item-date { font-size:11px; color:var(--txt3); margin-top:2px; }
 
-  
-  <nav class="topnav" id="topnav"></nav>
+/* HOME SELL RECOMMENDATION */
+.sell-rec-list { display:flex; flex-direction:column; gap:5px; }
+.sell-rec-row {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px; background:var(--bg3); border-radius:9px;
+}
+.src-rank { font-size:11px; font-weight:700; color:var(--txt3); width:16px; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.src-star { font-size:13px; flex-shrink:0; }
+.src-name { flex:1; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.src-price { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--green); font-variant-numeric:tabular-nums; flex-shrink:0; }
+.src-diff { font-family:var(--mono); font-size:10px; color:var(--txt3); flex-shrink:0; font-variant-numeric:tabular-nums; }
 
-  
-  <div id="view"></div>
+/* STALE WARNING */
+.stale-warning {
+  display:flex; align-items:flex-start; gap:10px;
+  padding:12px 16px; background:rgba(251,146,60,0.08);
+  border:1px solid rgba(251,146,60,0.3); border-radius:10px;
+  margin-bottom:16px;
+}
+.stale-icon { font-size:18px; flex-shrink:0; line-height:1.4; }
+.stale-text { font-size:12px; color:var(--orange); line-height:1.6; }
+.stale-text strong { color:var(--orange); font-weight:700; }
 
+/* ══ 변동시세 PAGE ══ */
+.price-page-hd {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  margin-bottom:20px; flex-wrap:wrap; gap:12px;
+}
+.page-title { font-size:22px; font-weight:900; letter-spacing:-0.6px; }
+.page-title-sub { font-size:13px; color:var(--txt2); margin-top:3px; }
+
+/* 타이머 */
+.timer-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:12px; padding:14px 18px;
+  display:flex; align-items:center; gap:14px;
+  margin-bottom:18px; flex-wrap:wrap;
+}
+.timer-icon { font-size:20px; flex-shrink:0; }
+.timer-label { font-size:11px; color:var(--txt3); font-weight:700; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:2px; }
+.timer-countdown {
+  font-family:var(--mono); font-size:22px; font-weight:700;
+  color:var(--accent); font-variant-numeric:tabular-nums; letter-spacing:1px;
+}
+.timer-next { font-size:11px; color:var(--txt3); margin-top:2px; }
+.timer-bar-wrap { flex:1; min-width:120px; }
+.timer-bar { height:4px; background:var(--bg4); border-radius:2px; overflow:hidden; margin-top:6px; }
+.timer-fill { height:100%; border-radius:2px; background:var(--accent-g); transition:width 1s linear; }
+.last-updated-info {
+  font-size:11px; color:var(--txt3); margin-top:2px; font-variant-numeric:tabular-nums;
+}
+
+/* 시세 입력 패널 */
+.input-panel {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:12px; margin-bottom:18px; overflow:hidden;
+}
+.input-panel-hd {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 18px; border-bottom:1px solid var(--border);
+  cursor:pointer; user-select:none;
+}
+.input-panel-hd-left { display:flex; align-items:center; gap:8px; }
+.input-panel-hd-icon { font-size:16px; }
+.input-panel-hd-title { font-size:13px; font-weight:700; }
+.input-panel-hd-badge {
+  font-size:10px; font-weight:700; padding:2px 8px; border-radius:5px;
+  background:rgba(124,106,247,0.15); color:#a78bfa; border:1px solid rgba(124,106,247,0.25);
+}
+.input-panel-hd-sub { font-size:11px; color:var(--txt3); }
+.input-panel-toggle { font-size:12px; color:var(--txt3); transition:transform .2s; }
+.input-panel-toggle.open { transform:rotate(180deg); }
+.input-panel-body { display:none; padding:16px 18px; }
+.input-panel-body.open { display:block; }
+.input-section { margin-bottom:20px; }
+.input-section:last-child { margin-bottom:0; }
+.input-section-title {
+  font-size:11px; font-weight:700; color:var(--txt3);
+  text-transform:uppercase; letter-spacing:0.6px; margin-bottom:10px;
+}
+.input-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:8px; }
+.input-row {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 10px; background:var(--bg3); border-radius:8px;
+}
+.input-row-name { flex:1; font-size:12px; color:var(--txt2); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.price-input {
+  width:72px; font-family:var(--mono); font-size:13px; font-weight:700;
+  background:var(--bg4); border:1px solid var(--border2);
+  color:var(--txt); border-radius:6px; padding:4px 8px;
+  text-align:right; outline:none; transition:border-color .15s;
+  font-variant-numeric:tabular-nums;
+}
+.price-input:focus { border-color:var(--accent); }
+.input-submit-row { display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:10px; }
+.input-submit-note { font-size:11px; color:var(--txt3); }
+.btn-submit {
+  padding:8px 20px; background:var(--accent); border:none; border-radius:8px;
+  color:#fff; font-size:13px; font-weight:700; cursor:pointer; font-family:inherit;
+  transition:background .15s;
+}
+.btn-submit:hover { background:var(--accent2); }
+
+/* 등급 탭 */
+.grade-tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+.gtab {
+  display:flex; align-items:center; gap:5px;
+  padding:6px 16px; border-radius:20px; font-size:12px; font-weight:700;
+  cursor:pointer; border:1px solid var(--border2); background:var(--bg3); color:var(--txt2);
+  transition:all .12s;
+}
+.gtab.active.g-plain  { background:rgba(100,116,139,0.2); border-color:var(--silver); color:var(--txt); }
+.gtab.active.g-silver { background:rgba(148,163,184,0.15); border-color:var(--silver); color:var(--silver); }
+.gtab.active.g-gold   { background:rgba(245,158,11,0.15); border-color:var(--gold); color:var(--gold); }
+
+/* 최고가 추천 배너 */
+.sell-now-card {
+  background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.2);
+  border-radius:12px; padding:14px 18px; margin-bottom:16px;
+}
+.sell-now-hd { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+.sell-now-title { font-size:13px; font-weight:700; color:var(--green); }
+.sell-now-badge {
+  font-size:10px; font-weight:700; padding:2px 7px; border-radius:5px;
+  background:rgba(52,211,153,0.15); color:var(--green);
+}
+.sell-now-list { display:flex; flex-direction:column; gap:5px; }
+.sell-now-row {
+  display:flex; align-items:center; gap:8px;
+  padding:7px 12px; background:rgba(52,211,153,0.04); border-radius:8px;
+}
+.sn-rank { font-size:11px; font-weight:700; color:var(--txt3); width:18px; flex-shrink:0; font-variant-numeric:tabular-nums; }
+.sn-grade { font-size:12px; flex-shrink:0; width:50px; }
+.sn-name { flex:1; font-size:12px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sn-price { font-family:var(--mono); font-size:13px; font-weight:700; color:var(--green); font-variant-numeric:tabular-nums; }
+.sn-diff { font-family:var(--mono); font-size:10px; color:var(--txt3); flex-shrink:0; }
+
+/* 가격 테이블 */
+.price-table-wrap { overflow-x:auto; }
+.price-table { width:100%; border-collapse:collapse; min-width:440px; }
+.price-table th {
+  font-size:11px; font-weight:700; color:var(--txt3);
+  text-transform:uppercase; letter-spacing:0.6px;
+  padding:0 14px 10px; text-align:left;
+  border-bottom:1px solid var(--border); white-space:nowrap;
+}
+.price-table th.r { text-align:right; }
+.price-table td {
+  padding:10px 14px; border-bottom:1px solid var(--border);
+  font-size:13px; vertical-align:middle;
+}
+.price-table tr:last-child td { border-bottom:none; }
+.price-table tr:hover td { background:rgba(255,255,255,0.02); }
+.price-table td.r { text-align:right; font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.price-table td.bold { font-weight:600; }
+.best-row td { background:rgba(52,211,153,0.04) !important; }
+.best-badge {
+  display:inline-block; font-size:9px; font-weight:700; padding:1px 5px; border-radius:4px;
+  background:rgba(52,211,153,0.15); color:var(--green); margin-left:5px; vertical-align:middle;
+}
+
+/* chg badge */
+.chg { font-family:var(--mono); font-size:10px; font-weight:700; padding:2px 6px; border-radius:5px; }
+.chg.up   { color:var(--green);  background:rgba(52,211,153,0.1); }
+.chg.dn   { color:var(--red);    background:rgba(248,113,113,0.1); }
+.chg.flat { color:var(--txt3);   background:var(--bg4); }
+
+/* ══ 공지사항 PAGE ══ */
+.notice-page-list { display:flex; flex-direction:column; gap:10px; }
+.notice-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:13px; padding:18px 20px; cursor:pointer;
+  transition:border-color .15s, background .15s;
+  display:flex; gap:14px; align-items:flex-start;
+}
+.notice-card:hover { border-color:var(--border2); background:var(--bg3); }
+.notice-card.pinned { border-color:rgba(124,106,247,0.35); }
+.notice-cat-pill {
+  font-size:10px; font-weight:700; padding:3px 9px;
+  border-radius:5px; flex-shrink:0; margin-top:2px; letter-spacing:0.3px;
+}
+.np-patch  { background:rgba(124,106,247,0.15); color:#a78bfa; }
+.np-notice { background:rgba(52,211,153,0.12);  color:var(--green); }
+.notice-card-body { flex:1; min-width:0; }
+.notice-card-title { font-size:15px; font-weight:700; margin-bottom:4px; line-height:1.4; }
+.notice-card-preview {
+  font-size:12px; color:var(--txt2); line-height:1.5;
+  overflow:hidden; display:-webkit-box;
+  -webkit-line-clamp:2; -webkit-box-orient:vertical;
+}
+.notice-card-meta { margin-top:8px; font-size:11px; color:var(--txt3); display:flex; gap:12px; }
+.back-btn {
+  display:flex; align-items:center; gap:6px;
+  background:none; border:none; color:var(--txt2); font-size:13px;
+  font-family:inherit; cursor:pointer; padding:0; margin-bottom:20px;
+}
+.back-btn:hover { color:var(--txt); }
+.detail-title { font-size:22px; font-weight:900; letter-spacing:-0.5px; margin-bottom:10px; text-wrap:balance; }
+.detail-meta { font-size:12px; color:var(--txt3); margin-bottom:20px; display:flex; gap:12px; }
+.detail-body { font-size:14px; line-height:1.8; color:var(--txt2); padding-top:20px; border-top:1px solid var(--border); }
+.detail-body p { margin-bottom:12px; }
+.detail-body strong { color:var(--txt); display:block; margin-bottom:6px; }
+.detail-body ul { padding-left:18px; }
+.detail-body li { margin-bottom:6px; }
+.notice-detail { display:none; }
+.notice-detail.open { display:block; }
+
+/* 입력 모드 탭 */
+.input-mode-tabs { display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap; }
+.imode-tab {
+  padding:6px 14px; border-radius:8px; font-size:12px; font-weight:700;
+  cursor:pointer; border:1px solid var(--border2); background:var(--bg3); color:var(--txt2);
+  font-family:inherit; transition:all .12s;
+}
+.imode-tab.active { background:var(--accent2); border-color:var(--accent); color:#fff; }
+.imode-panel { }
+.discord-hint {
+  font-size:12px; color:var(--txt2); margin-bottom:10px; line-height:1.6;
+}
+.discord-hint code {
+  font-family:var(--mono); font-size:11px; background:var(--bg4);
+  padding:2px 6px; border-radius:4px; color:var(--txt);
+}
+#discordPaste {
+  width:100%; min-height:160px; background:var(--bg4); border:1px solid var(--border2);
+  border-radius:8px; color:var(--txt); font-family:var(--mono); font-size:12px;
+  padding:12px; resize:vertical; outline:none; line-height:1.7;
+  transition:border-color .15s;
+}
+#discordPaste:focus { border-color:var(--accent); }
+.parse-preview {
+  margin-top:10px; padding:12px 14px;
+  background:rgba(52,211,153,0.06); border:1px solid rgba(52,211,153,0.2);
+  border-radius:8px; font-size:12px; line-height:1.8;
+}
+.parse-preview .pr-ok  { color:var(--green); }
+.parse-preview .pr-miss { color:var(--txt3); }
+.parse-preview .pr-count { font-weight:700; color:var(--green); }
+
+/* 관리자 UI */
+.btn-sm {
+  padding:5px 12px; border-radius:7px; font-size:12px; font-weight:700;
+  cursor:pointer; border:1px solid var(--accent); background:rgba(124,106,247,0.15);
+  color:#a78bfa; font-family:inherit; transition:all .12s;
+}
+.btn-sm:hover { background:var(--accent); color:#fff; }
+.btn-sm-ghost { border-color:var(--border2); background:var(--bg3); color:var(--txt2); }
+.btn-sm-ghost:hover { background:var(--bg4); color:var(--txt); }
+.btn-sm-danger { border-color:rgba(248,113,113,0.4); background:rgba(248,113,113,0.1); color:var(--red); }
+.btn-sm-danger:hover { background:var(--red); color:#fff; }
+.btn-new-notice {
+  padding:8px 18px; border-radius:8px; font-size:13px; font-weight:700;
+  cursor:pointer; border:1px dashed var(--border2); background:var(--bg3); color:var(--txt2);
+  font-family:inherit; transition:all .12s; width:100%;
+}
+.btn-new-notice:hover { border-color:var(--accent); color:var(--accent); background:rgba(124,106,247,0.06); }
+.write-panel {
+  background:var(--bg2); border:1px solid var(--accent); border-radius:12px;
+  padding:18px 20px; margin-bottom:16px;
+}
+.write-panel-title { font-size:13px; font-weight:700; color:var(--accent); margin-bottom:14px; }
+.write-fields { display:flex; flex-direction:column; gap:10px; }
+.write-row { display:flex; align-items:center; gap:10px; }
+.write-row label { font-size:11px; font-weight:700; color:var(--txt3); width:54px; flex-shrink:0; }
+.write-input {
+  flex:1; background:var(--bg4); border:1px solid var(--border2);
+  color:var(--txt); border-radius:7px; padding:7px 10px; font-size:13px;
+  font-family:inherit; outline:none; transition:border-color .15s;
+}
+.write-input:focus { border-color:var(--accent); }
+.write-select {
+  background:var(--bg4); border:1px solid var(--border2);
+  color:var(--txt); border-radius:7px; padding:6px 10px; font-size:13px;
+  font-family:inherit; outline:none; cursor:pointer;
+}
+.write-textarea {
+  flex:1; background:var(--bg4); border:1px solid var(--border2);
+  color:var(--txt); border-radius:7px; padding:8px 10px; font-size:12px;
+  font-family:var(--mono); outline:none; resize:vertical; min-height:100px;
+  line-height:1.6; transition:border-color .15s;
+}
+.write-textarea:focus { border-color:var(--accent); }
+.write-actions { display:flex; align-items:center; justify-content:space-between; margin-top:14px; flex-wrap:wrap; gap:8px; }
+
+/* PCAT */
+.pcat-row { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px; }
+.pcat {
+  padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600;
+  cursor:pointer; border:1px solid var(--border2); background:var(--bg3); color:var(--txt2);
+  transition:all .12s;
+}
+.pcat.active { background:var(--accent2); border-color:var(--accent); color:#fff; }
+
+@media (max-width:640px) {
+  .home-grid { grid-template-columns:1fr; }
+  .nav-title { display:none; }
+  .hero { flex-direction:column; align-items:flex-start; }
+  .price-page-hd { flex-direction:column; align-items:flex-start; }
+  .input-grid { grid-template-columns:1fr; }
+}
+</style>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">🎮</div>
+    <span class="nav-title">Dongleland</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="home">홈</button>
+    <button class="nav-tab" data-page="price">변동시세</button>
+    <button class="nav-tab" data-page="notice">공지사항</button>
+  </div>
+  <div class="nav-end"></div>
+</nav>
+
+<!-- ══ HOME ══ -->
+<div id="page-home" class="page active">
+  <div class="wrap">
+    <div class="hero">
+      <div class="hero-avatar" id="heroAvatar">
+        <span class="avatar-placeholder">🧑‍🍳</span>
+      </div>
+      <div class="hero-info">
+        <div class="hero-name-row">
+          <input
+            class="hero-name-input"
+            id="nicknameInput"
+            placeholder="닉네임 입력..."
+            maxlength="32"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <span class="hero-edit-hint">← 클릭해서 입력</span>
+        </div>
+        <div class="hero-desc">Dongleland 개인 위키 · 게임 기록 보관소</div>
+        <div class="hero-tags">
+          <span class="tag tag-purple">요리사</span>
+          <span class="tag tag-green">마을 관리자</span>
+          <span class="tag tag-yellow">금별 요리</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-grid">
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-hd-title">최신 공지</span>
+          <span class="card-hd-sub" onclick="switchPage('notice')">전체 보기 →</span>
+        </div>
+        <div class="notice-list">
+          <div class="notice-item" onclick="switchPage('notice')">
+            <span class="notice-dot"></span>
+            <div>
+              <div class="notice-item-title">요리 시스템 밸런스 패치 안내</div>
+              <div class="notice-item-date">2026.09.15 · 패치노트</div>
+            </div>
+          </div>
+          <div class="notice-item" onclick="switchPage('notice')">
+            <span class="notice-dot yellow"></span>
+            <div>
+              <div class="notice-item-title">추석 이벤트 — 특별 보상 지급</div>
+              <div class="notice-item-date">2026.09.10 · 공지사항</div>
+            </div>
+          </div>
+          <div class="notice-item" onclick="switchPage('notice')">
+            <span class="notice-dot green"></span>
+            <div>
+              <div class="notice-item-title">서버 점검 완료 안내</div>
+              <div class="notice-item-date">2026.09.05 · 공지사항</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd">
+          <span class="card-hd-title">🔥 지금 팔면 좋은 요리</span>
+          <span class="card-hd-sub" onclick="switchPage('price')">전체 보기 →</span>
+        </div>
+        <div id="homeSellRec" class="sell-rec-list"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
-  
-  <script>
-    var GRADE_LABEL = { n:'일반', a:'고급', r:'희귀', h:'영웅' };
-    var GRADE_TAG   = { '커먼':'tag-blue', '언커먼':'tag-teal', '레어':'tag-purple', '에픽':'tag-amber', '전설':'tag-red' };
-  </script>
+<!-- ══ 변동시세 ══ -->
+<div id="page-price" class="page">
+  <div class="wrap">
+    <div class="price-page-hd">
+      <div>
+        <div class="page-title">변동시세</div>
+        <div class="page-title-sub">요리사 아이템 · 3시간마다 갱신 (0·3·6·9·12·15·18·21시)</div>
+      </div>
+    </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+    <!-- 갱신 필요 경고 -->
+    <div id="staleWarning" class="stale-warning" style="display:none;">
+      <span class="stale-icon">⚠️</span>
+      <div class="stale-text" id="staleText"></div>
+    </div>
 
-<script src="js/core/firebase.js"></script>
-<script src="js/core/auth.js"></script>
-<script src="js/core/router.js"></script>
+    <!-- 타이머 -->
+    <div class="timer-card">
+      <div class="timer-icon">⏱</div>
+      <div>
+        <div class="timer-label">다음 갱신까지</div>
+        <div class="timer-countdown" id="timerCountdown">--:--:--</div>
+        <div class="timer-next" id="timerNext"></div>
+      </div>
+      <div class="timer-bar-wrap">
+        <div class="timer-label" style="text-align:right;">현재 주기 경과</div>
+        <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:0%"></div></div>
+        <div class="last-updated-info" id="lastUpdatedInfo" style="text-align:right;margin-top:4px;"></div>
+      </div>
+    </div>
 
-<script src="js/pages/main.js"></script>
-<script src="js/pages/member.js"></script>
-<script src="js/pages/price.js"></script>
+    <!-- 시세 입력 패널 -->
+    <div class="input-panel">
+      <div class="input-panel-hd" onclick="toggleInputPanel()">
+        <div class="input-panel-hd-left">
+          <span class="input-panel-hd-icon">📝</span>
+          <span class="input-panel-hd-title">시세 입력</span>
+          <span class="input-panel-hd-badge">수동 갱신</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span class="input-panel-hd-sub" id="inputPanelSub">클릭해서 펼치기</span>
+          <span class="input-panel-toggle" id="inputPanelToggle">▼</span>
+        </div>
+      </div>
+      <div class="input-panel-body" id="inputPanelBody">
+        <!-- 입력 방식 탭 -->
+        <div class="input-mode-tabs">
+          <button class="imode-tab active" data-mode="discord" onclick="switchInputMode(this,'discord')">📋 디스코드 메시지 붙여넣기</button>
+          <button class="imode-tab" data-mode="manual" onclick="switchInputMode(this,'manual')">✏️ 직접 입력</button>
+        </div>
 
-</body>
-</html>
+        <!-- 디스코드 붙여넣기 모드 -->
+        <div id="discordMode" class="imode-panel">
+          <div class="discord-hint">디스코드 시세 메시지를 아래에 그대로 붙여넣으세요. <code>🍳[아이템명] | 0 → 가격</code> 형식을 자동으로 읽습니다.</div>
+          <textarea id="discordPaste"
+            placeholder="🍳[고로케] | 0 → 12&#10;🍳[아스파라거스 샐러드] | 0 → 48&#10;..."
+            rows="10"
+            spellcheck="false"
+            oninput="previewDiscordParse()"
+          ></textarea>
+          <div id="parsePreview" class="parse-preview" style="display:none;"></div>
+          <div class="input-submit-row">
+            <span class="input-submit-note" id="discordNote">붙여넣으면 자동 인식됩니다</span>
+            <button class="btn-submit" onclick="submitDiscord()">✓ 시세 반영</button>
+          </div>
+        </div>
+
+        <!-- 직접 입력 모드 -->
+        <div id="manualMode" class="imode-panel" style="display:none;">
+          <div id="inputSections"></div>
+          <div class="input-submit-row">
+            <span class="input-submit-note">입력한 가격을 기준으로 시세가 표시됩니다</span>
+            <button class="btn-submit" onclick="submitPrices()">✓ 시세 저장</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 지금 팔면 좋은 요리 -->
+    <div class="sell-now-card" id="sellNowCard" style="display:none;">
+      <div class="sell-now-hd">
+        <span>🔥</span>
+        <span class="sell-now-title">지금 팔면 좋은 요리</span>
+        <span class="sell-now-badge">최고가 ±5원 이내</span>
+      </div>
+      <div class="sell-now-list" id="sellNowList"></div>
+    </div>
+
+    <!-- 등급 탭 -->
+    <div class="grade-tabs">
+      <div class="gtab active g-plain"  data-grade="plain"  onclick="switchGrade(this)">⬜ 무별</div>
+      <div class="gtab g-silver" data-grade="silver" onclick="switchGrade(this)">🩶 은별</div>
+      <div class="gtab g-gold"   data-grade="gold"   onclick="switchGrade(this)">🌟 금별</div>
+    </div>
+
+    <div id="priceContent"></div>
+  </div>
+</div>
+
+<!-- ══ 공지사항 ══ -->
+<div id="page-notice" class="page">
+  <div class="wrap">
+    <div id="noticeListView">
+      <div class="price-page-hd">
+        <div>
+          <div class="page-title">공지사항</div>
+          <div class="page-title-sub">Dongleland 서버 업데이트 및 공지</div>
+        </div>
+        <div id="adminAuthArea" style="display:flex;align-items:center;gap:8px;">
+          <span id="authUserName" style="font-size:12px;color:var(--txt3);"></span>
+          <button id="loginBtn" class="btn-sm" onclick="signInGoogle()" style="display:none;">🔑 관리자 로그인</button>
+          <button id="logoutBtn" class="btn-sm btn-sm-ghost" onclick="signOutUser()" style="display:none;">로그아웃</button>
+        </div>
+      </div>
+
+      <!-- 공지 작성 패널 (관리자만 표시) -->
+      <div id="writePanel" style="display:none;" class="write-panel">
+        <div class="write-panel-title">✏️ 공지 작성</div>
+        <div class="write-fields">
+          <div class="write-row">
+            <label>카테고리</label>
+            <select id="wCat" class="write-select">
+              <option value="patch">패치노트</option>
+              <option value="notice">공지사항</option>
+            </select>
+            <label style="margin-left:12px;">📌 상단고정</label>
+            <input type="checkbox" id="wPin" style="width:16px;height:16px;margin-left:4px;cursor:pointer;">
+          </div>
+          <div class="write-row">
+            <label>제목</label>
+            <input type="text" id="wTitle" class="write-input" placeholder="공지 제목">
+          </div>
+          <div class="write-row">
+            <label>한줄요약</label>
+            <input type="text" id="wPreview" class="write-input" placeholder="목록에 표시될 짧은 설명">
+          </div>
+          <div class="write-row" style="align-items:flex-start;">
+            <label style="padding-top:4px;">내용</label>
+            <textarea id="wBody" class="write-textarea" placeholder="공지 내용 (HTML 사용 가능)&#10;예: &lt;p&gt;내용&lt;/p&gt;&lt;ul&gt;&lt;li&gt;항목&lt;/li&gt;&lt;/ul&gt;"></textarea>
+          </div>
+        </div>
+        <div class="write-actions">
+          <span id="writeStatus" style="font-size:12px;color:var(--txt3);"></span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-sm btn-sm-ghost" onclick="cancelWrite()">취소</button>
+            <button class="btn-submit" onclick="saveNotice()">✓ 저장</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 새 공지 버튼 (관리자만) -->
+      <div id="newNoticeBtn" style="display:none;margin-bottom:14px;">
+        <button class="btn-new-notice" onclick="openWrite()">+ 새 공지 작성</button>
+      </div>
+
+      <div class="pcat-row">
+        <div class="pcat active" onclick="filterNotice(this,'all')">전체</div>
+        <div class="pcat" onclick="filterNotice(this,'patch')">패치노트</div>
+        <div class="pcat" onclick="filterNotice(this,'notice')">공지사항</div>
+      </div>
+      <div id="noticeLoading" style="font-size:13px;color:var(--txt3);padding:20px 0;">불러오는 중...</div>
+      <div class="notice-page-list" id="noticeList"></div>
+    </div>
+    <div id="noticeDetailView" class="notice-detail">
+      <button class="back-btn" onclick="closeNoticeDetail()">← 목록으로</button>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <div id="detailCatPill" class="notice-cat-pill" style="display:inline-block;"></div>
+        <div id="detailAdminBtns" style="display:none;margin-left:auto;display:flex;gap:6px;">
+          <button class="btn-sm" onclick="editCurrentNotice()">✏️ 수정</button>
+          <button class="btn-sm btn-sm-danger" onclick="deleteCurrentNotice()">🗑 삭제</button>
+        </div>
+      </div>
+      <div id="detailTitle" class="detail-title"></div>
+      <div id="detailMeta" class="detail-meta"></div>
+      <div id="detailBody" class="detail-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── 닉네임 + 스킨 ─── */
+const nicknameInput = document.getElementById('nicknameInput');
+const heroAvatar    = document.getElementById('heroAvatar');
+let skinTimer = null;
+
+function loadSkin(nick) {
+  if (!nick) { heroAvatar.innerHTML = '<span class="avatar-placeholder">🧑‍🍳</span>'; return; }
+  const img = new Image();
+  img.onload = () => { heroAvatar.innerHTML = ''; heroAvatar.appendChild(img); };
+  img.onerror = () => { heroAvatar.innerHTML = '<span class="avatar-placeholder">🎮</span>'; };
+  img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:11px;';
+  img.src = `https://crafatar.com/avatars/${encodeURIComponent(nick)}?size=80&overlay`;
+}
+try { const s = localStorage.getItem('dl_nickname'); if (s) { nicknameInput.value = s; loadSkin(s); } } catch(e) {}
+nicknameInput.addEventListener('input', () => {
+  clearTimeout(skinTimer);
+  skinTimer = setTimeout(() => {
+    const v = nicknameInput.value.trim();
+    try { localStorage.setItem('dl_nickname', v); } catch(e) {}
+    loadSkin(v);
+  }, 800);
+});
+
+/* ─── 요리 데이터 ─── */
+const COOK_DATA = {
+  plain: [
+    { tier:'무별 고로케', range:null, special:true, items:[{name:'고로케', base:12}] },
+    { tier:'1차 무별', range:'48~62', items:[
+      {name:'아스파라거스 샐러드', base:48},
+      {name:'갈릭 포테이토 콩피',  base:49},
+      {name:'레몬 당근 라페',       base:59},
+      {name:'어니언 포테이토 그라탱', base:48},
+    ]},
+    { tier:'2차 무별', range:'69~90', items:[
+      {name:'갈릭 아스파라거스 피클', base:84},
+      {name:'시트러스 어니언 스튜',   base:89},
+      {name:'어니언 감자조림',         base:74},
+      {name:'아스파라거스 라페',       base:84},
+    ]},
+    { tier:'3차 무별', range:'120~156', items:[
+      {name:'파프리카 비프 스튜',   base:126},
+      {name:'피치 레몬 치킨',       base:135},
+      {name:'허브 램 플래터',       base:124},
+      {name:'스파이시 갈릭 포크',   base:126},
+    ]},
+    { tier:'4차 무별', range:'191~248', items:[
+      {name:'비프 라구 파이',       base:219},
+      {name:'복숭아 치킨 타르트',   base:247},
+      {name:'키슈 파이',             base:202},
+      {name:'갈릭 포크 크로켓',     base:247},
+    ]},
+    { tier:'5차 무별', range:null, items:[
+      {name:'크리미 파프리카 비프플레이트', base:213},
+      {name:'스파이시 포크라이스',           base:250},
+      {name:'시트러스 피치 치킨램',           base:214},
+      {name:'그린 허브 램플',                 base:199},
+    ]},
+  ],
+  silver: [
+    { tier:'은별 고로케', range:null, special:true, items:[{name:'🩶 고로케', base:17}] },
+    { tier:'1차 은별', range:'62~72', items:[
+      {name:'🩶 아스파라거스 샐러드', base:72},
+      {name:'🩶 갈릭 포테이토 콩피',  base:68},
+      {name:'🩶 레몬 당근 라페',       base:72},
+      {name:'🩶 어니언 포테이토 그라탱', base:71},
+    ]},
+    { tier:'2차 은별', range:'90~104', items:[
+      {name:'🩶 갈릭 아스파라거스 피클', base:99},
+      {name:'🩶 시트러스 어니언 스튜',   base:102},
+      {name:'🩶 어니언 감자조림',         base:93},
+      {name:'🩶 아스파라거스 라페',       base:92},
+    ]},
+    { tier:'3차 은별', range:'156~180', items:[
+      {name:'🩶 파프리카 비프 스튜', base:176},
+      {name:'🩶 피치 레몬 치킨',     base:156},
+      {name:'🩶 허브 램 플래터',     base:175},
+      {name:'🩶 스파이시 갈릭 포크', base:174},
+    ]},
+    { tier:'4차 은별', range:'248~287', items:[
+      {name:'🩶 비프 라구 파이',     base:266},
+      {name:'🩶 복숭아 치킨 타르트', base:271},
+      {name:'🩶 키슈 파이',           base:270},
+      {name:'🩶 갈릭 포크 크로켓',   base:269},
+    ]},
+    { tier:'5차 은별', range:null, items:[
+      {name:'🩶 크리미 파프리카 비프플레이트', base:288},
+      {name:'🩶 시트러스 피치 치킨램',           base:258},
+      {name:'🩶 그린 허브 램플',                 base:271},
+      {name:'🩶 스파이시 포크라이스',             base:277},
+    ]},
+  ],
+  gold: [
+    { tier:'금별 고로케', range:null, special:true, items:[{name:'🌟 고로케', base:20}] },
+    { tier:'1차 금별', range:'72~82', items:[
+      {name:'🌟 아스파라거스 샐러드', base:78},
+      {name:'🌟 갈릭 포테이토 콩피',  base:82},
+      {name:'🌟 레몬 당근 라페',       base:81},
+      {name:'🌟 어니언 포테이토 그라탱', base:80},
+    ]},
+    { tier:'2차 금별', range:'104~117', items:[
+      {name:'🌟 갈릭 아스파라거스 피클', base:114},
+      {name:'🌟 시트러스 어니언 스튜',   base:111},
+      {name:'🌟 어니언 감자조림',         base:117},
+      {name:'🌟 아스파라거스 라페',       base:107},
+    ]},
+    { tier:'3차 금별', range:'180~204', items:[
+      {name:'🌟 파프리카 비프 스튜', base:204},
+      {name:'🌟 피치 레몬 치킨',     base:186},
+      {name:'🌟 허브 램 플래터',     base:186},
+      {name:'🌟 스파이시 갈릭 포크', base:192},
+    ]},
+    { tier:'4차 금별', range:'287~325', items:[
+      {name:'🌟 비프 라구 파이',     base:319},
+      {name:'🌟 복숭아 치킨 타르트', base:307},
+      {name:'🌟 키슈 파이',           base:291},
+      {name:'🌟 갈릭 포크 크로켓',   base:314},
+    ]},
+    { tier:'5차 금별', range:null, items:[
+      {name:'🌟 크리미 파프리카 비프플레이트', base:329},
+      {name:'🌟 시트러스 피치 치킨램',           base:282},
+      {name:'🌟 그린 허브 램플',                 base:304},
+      {name:'🌟 스파이시 포크라이스',             base:324},
+    ]},
+  ]
+};
+
+/* ─── 저장된 시세 (localStorage) ─── */
+// 구조: { prices: {key: number}, savedAt: timestamp }
+// key = grade + '_' + groupIdx + '_' + itemIdx
+let savedPriceData = null;
+try {
+  const raw = localStorage.getItem('dl_prices');
+  if (raw) savedPriceData = JSON.parse(raw);
+} catch(e) {}
+
+/* ─── 입력 패널 열기/닫기 ─── */
+let inputPanelOpen = false;
+function toggleInputPanel() {
+  inputPanelOpen = !inputPanelOpen;
+  document.getElementById('inputPanelBody').classList.toggle('open', inputPanelOpen);
+  document.getElementById('inputPanelToggle').classList.toggle('open', inputPanelOpen);
+  document.getElementById('inputPanelSub').textContent = inputPanelOpen ? '클릭해서 접기' : '클릭해서 펼치기';
+  if (inputPanelOpen && !document.getElementById('inputSections').hasChildNodes()) {
+    buildInputSections();
+  }
+}
+
+function switchInputMode(btn, mode) {
+  document.querySelectorAll('.imode-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('discordMode').style.display = mode === 'discord' ? '' : 'none';
+  document.getElementById('manualMode').style.display  = mode === 'manual'  ? '' : 'none';
+  if (mode === 'manual' && !document.getElementById('inputSections').hasChildNodes()) {
+    buildInputSections();
+  }
+}
+
+/* ─── 디스코드 메시지 파싱 ─── */
+// 아이템명 → (grade, groupIdx, itemIdx) 역색인
+function buildNameIndex() {
+  const idx = {};
+  ['plain','silver','gold'].forEach(grade => {
+    COOK_DATA[grade].forEach((group, gi) => {
+      group.items.forEach((item, ii) => {
+        // 이모지 제거한 이름으로 인덱싱
+        const clean = item.name.replace(/^[🩶🌟⬜]\s*/u, '').trim();
+        idx[clean] = { grade, gi, ii };
+        // 원본도 인덱싱 (이모지 포함)
+        idx[item.name.trim()] = { grade, gi, ii };
+      });
+    });
+  });
+  return idx;
+}
+
+function parseDiscordMessage(text) {
+  // 패턴: 🍳[아이템명] | 숫자 → 숫자
+  // → 뒤 숫자가 현재 시세
+  const nameIdx = buildNameIndex();
+  const matched = {};
+  const unmatched = [];
+
+  const lines = text.split('\n');
+  for (const line of lines) {
+    // 🍳[이름] | x → y  또는  🍳[이름] | x→y
+    const m = line.match(/🍳\[([^\]]+)\]\s*\|\s*[\d]+\s*→\s*([\d]+)/u);
+    if (!m) continue;
+    const rawName = m[1].trim();
+    const price   = parseInt(m[2], 10);
+    if (isNaN(price)) continue;
+
+    // 이름 정규화: 이모지 + 공백 제거
+    const cleanName = rawName.replace(/^[🩶🌟⬜🍳]\s*/u, '').trim();
+    const entry = nameIdx[cleanName] || nameIdx[rawName];
+    if (entry) {
+      const key = `${entry.grade}_${entry.gi}_${entry.ii}`;
+      matched[key] = price;
+    } else {
+      unmatched.push(rawName);
+    }
+  }
+  return { matched, unmatched };
+}
+
+function previewDiscordParse() {
+  const text = document.getElementById('discordPaste').value;
+  const preview = document.getElementById('parsePreview');
+  const note    = document.getElementById('discordNote');
+  if (!text.trim()) { preview.style.display = 'none'; note.textContent = '붙여넣으면 자동 인식됩니다'; return; }
+
+  const { matched, unmatched } = parseDiscordMessage(text);
+  const total = Object.keys(matched).length;
+  preview.style.display = 'block';
+
+  let html = `<span class="pr-count">✓ ${total}개 아이템 인식됨</span>`;
+  if (unmatched.length) {
+    html += `<br><span class="pr-miss">인식 안됨 (${unmatched.length}개): ${unmatched.slice(0,5).join(', ')}${unmatched.length>5?' …':''}</span>`;
+  }
+  preview.innerHTML = html;
+  note.textContent = `${total}개 인식 완료`;
+}
+
+function submitDiscord() {
+  const text = document.getElementById('discordPaste').value;
+  const { matched } = parseDiscordMessage(text);
+  if (!Object.keys(matched).length) return;
+
+  // 기존 savedPriceData와 병합 (새 값으로 덮어씀)
+  const prevPrices = (savedPriceData && savedPriceData.prices) ? { ...savedPriceData.prices } : {};
+  const merged = { ...prevPrices, ...matched };
+  const now = Date.now();
+  savedPriceData = { prices: merged, savedAt: now };
+  try { localStorage.setItem('dl_prices', JSON.stringify(savedPriceData)); } catch(e) {}
+
+  // 패널 닫고 재렌더
+  toggleInputPanel();
+  renderPriceContent(currentGrade);
+  updateStaleWarning();
+  renderHomeSellRec();
+  // 붙여넣기 칸 초기화
+  document.getElementById('discordPaste').value = '';
+  document.getElementById('parsePreview').style.display = 'none';
+}
+
+function buildInputSections() {
+  const container = document.getElementById('inputSections');
+  container.innerHTML = '';
+  const gradeLabel = {plain:'⬜ 무별', silver:'🩶 은별', gold:'🌟 금별'};
+  ['plain','silver','gold'].forEach(grade => {
+    const sec = document.createElement('div');
+    sec.className = 'input-section';
+    let html = `<div class="input-section-title">${gradeLabel[grade]}</div><div class="input-grid">`;
+    COOK_DATA[grade].forEach((group, gi) => {
+      group.items.forEach((item, ii) => {
+        const key = `${grade}_${gi}_${ii}`;
+        const savedVal = (savedPriceData && savedPriceData.prices && savedPriceData.prices[key]) || '';
+        const displayName = item.name.replace(/^[🩶🌟]\s*/u, '');
+        html += `<div class="input-row">
+          <span class="input-row-name" title="${displayName}">${displayName}</span>
+          <input class="price-input" type="number" min="0" max="9999"
+            data-key="${key}" data-base="${item.base}"
+            placeholder="${item.base}" value="${savedVal}">
+        </div>`;
+      });
+    });
+    html += '</div>';
+    sec.innerHTML = html;
+    container.appendChild(sec);
+  });
+}
+
+function submitPrices() {
+  const inputs = document.querySelectorAll('.price-input');
+  const prices = {};
+  inputs.forEach(inp => {
+    const v = parseInt(inp.value, 10);
+    if (!isNaN(v) && v > 0) prices[inp.dataset.key] = v;
+  });
+  const now = Date.now();
+  savedPriceData = { prices, savedAt: now };
+  try { localStorage.setItem('dl_prices', JSON.stringify(savedPriceData)); } catch(e) {}
+  // 패널 닫고 재렌더
+  toggleInputPanel();
+  renderPriceContent(currentGrade);
+  updateStaleWarning();
+  renderHomeSellRec();
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = '✓ 저장됨';
+  setTimeout(() => { btn.textContent = '✓ 시세 저장'; }, 2000);
+}
+
+/* ─── 현재 가격 가져오기 ─── */
+// 저장된 값 우선, 없으면 기본값 사용
+function getPrice(grade, groupIdx, itemIdx) {
+  if (savedPriceData && savedPriceData.prices) {
+    const key = `${grade}_${groupIdx}_${itemIdx}`;
+    const v = savedPriceData.prices[key];
+    if (v !== undefined) return v;
+  }
+  return COOK_DATA[grade][groupIdx].items[itemIdx].base;
+}
+
+/* ─── 갱신 필요 경고 ─── */
+function formatKST(ts) {
+  const d = new Date(ts);
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  const h = d.getHours();
+  const m = d.getMinutes();
+  const ampm = h < 12 ? '오전' : '오후';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${month}월 ${day}일 ${ampm} ${h12}시 ${String(m).padStart(2,'0')}분`;
+}
+
+function getPeriodStart(ts) {
+  // 해당 timestamp가 속하는 3시간 주기의 시작 timestamp (KST 기준)
+  const d = new Date(ts);
+  const periodH = Math.floor(d.getHours() / 3) * 3;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), periodH, 0, 0, 0).getTime();
+}
+
+function updateStaleWarning() {
+  const el = document.getElementById('staleWarning');
+  const txt = document.getElementById('staleText');
+  const info = document.getElementById('lastUpdatedInfo');
+  if (!savedPriceData || !savedPriceData.savedAt) {
+    el.style.display = 'none';
+    info.textContent = '마지막 입력: 없음';
+    return;
+  }
+  const savedAt = savedPriceData.savedAt;
+  const savedPeriodStart = getPeriodStart(savedAt);
+  const nowPeriodStart   = getPeriodStart(Date.now());
+  info.textContent = `마지막 입력: ${formatKST(savedAt)}`;
+
+  if (nowPeriodStart > savedPeriodStart) {
+    // 저장된 시세가 이전 주기 것
+    const savedPeriodH = Math.floor(new Date(savedAt).getHours() / 3) * 3;
+    const savedD = new Date(savedAt);
+    const mo = savedD.getMonth()+1, da = savedD.getDate();
+    const ampm = savedPeriodH < 12 ? '오전' : '오후';
+    const h12 = savedPeriodH % 12 === 0 ? 12 : savedPeriodH % 12;
+    const periodLabel = `${mo}월 ${da}일 ${ampm} ${h12}시`;
+    txt.innerHTML = `<strong>「${periodLabel} 변동시세」</strong>가 입력된 상태입니다.<br>최신 시세로 변동이 필요합니다.`;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+/* ─── 최고가 5원 이내 추천 ─── */
+// 모든 아이템 현재가 수집 → 최고가 기준 -5원 이내 목록
+// tierOrder: 고로케=0, 1차=1 ... 5차=5 (정렬)
+function getTierOrder(tierStr) {
+  if (tierStr.includes('고로케')) return 0;
+  const m = tierStr.match(/(\d)차/);
+  return m ? parseInt(m[1]) : 99;
+}
+
+function buildAllItems() {
+  const all = [];
+  ['plain','silver','gold'].forEach(grade => {
+    COOK_DATA[grade].forEach((group, gi) => {
+      group.items.forEach((item, ii) => {
+        const price = getPrice(grade, gi, ii);
+        const cleanName = item.name.replace(/^[🩶🌟]\s*/u, '');
+        const tierOrder = getTierOrder(group.tier);
+        all.push({ grade, gi, ii, price, cleanName, group, tierOrder });
+      });
+    });
+  });
+  return all;
+}
+
+function getSellRecommendations() {
+  const all = buildAllItems();
+  const maxPrice = Math.max(...all.map(a => a.price));
+  const threshold = maxPrice - 5;
+  return all
+    .filter(a => a.price >= threshold)
+    .sort((a, b) => {
+      // 차수 오름차순, 같으면 grade plain→silver→gold, 같으면 이름
+      if (a.tierOrder !== b.tierOrder) return a.tierOrder - b.tierOrder;
+      const gOrder = {plain:0, silver:1, gold:2};
+      if (a.grade !== b.grade) return gOrder[a.grade] - gOrder[b.grade];
+      return a.cleanName.localeCompare(b.cleanName);
+    });
+}
+
+function renderSellNow() {
+  const recs = getSellRecommendations();
+  const card = document.getElementById('sellNowCard');
+  const list = document.getElementById('sellNowList');
+  if (recs.length === 0) { card.style.display = 'none'; return; }
+  const gradeIcon = {plain:'⬜', silver:'🩶', gold:'🌟'};
+  const gradeColor = {plain:'var(--txt)', silver:'var(--silver)', gold:'var(--gold)'};
+  const maxP = Math.max(...recs.map(r=>r.price));
+  list.innerHTML = recs.map((r, idx) => {
+    const diff = r.price - maxP;
+    const diffStr = diff === 0 ? '최고가' : `최고가 -${Math.abs(diff)}원`;
+    return `<div class="sell-now-row">
+      <span class="sn-rank">${idx+1}</span>
+      <span class="sn-grade" style="color:${gradeColor[r.grade]}">${gradeIcon[r.grade]} ${r.grade==='plain'?'무별':r.grade==='silver'?'은별':'금별'}</span>
+      <span class="sn-name">${r.cleanName}</span>
+      <span class="sn-price">${r.price.toLocaleString()}</span>
+      <span class="sn-diff">${diffStr}</span>
+    </div>`;
+  }).join('');
+  card.style.display = 'block';
+}
+
+/* ─── 홈 팔면 좋은 요리 ─── */
+function renderHomeSellRec() {
+  const recs = getSellRecommendations();
+  const el = document.getElementById('homeSellRec');
+  if (recs.length === 0) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--txt3);padding:10px 0;">변동시세 탭에서 시세를 입력해주세요</div>';
+    return;
+  }
+  const gradeIcon = {plain:'🍳', silver:'🩶', gold:'🌟'};
+  const gradeColor = {plain:'var(--txt)', silver:'var(--silver)', gold:'var(--gold)'};
+  const maxP = Math.max(...recs.map(r=>r.price));
+  el.innerHTML = recs.map((r, idx) => {
+    const diff = r.price - maxP;
+    const diffStr = diff === 0 ? '' : `-${Math.abs(diff)}`;
+    return `<div class="sell-rec-row">
+      <span class="src-rank">${idx+1}</span>
+      <span class="src-star" style="color:${gradeColor[r.grade]}">${gradeIcon[r.grade]}</span>
+      <span class="src-name">${r.cleanName}</span>
+      <span class="src-price">${r.price.toLocaleString()}</span>
+      ${diffStr ? `<span class="src-diff">${diffStr}</span>` : ''}
+    </div>`;
+  }).join('');
+}
+
+/* ─── 변동시세 렌더 ─── */
+let currentGrade = 'plain';
+
+function renderPriceContent(grade) {
+  const groups = COOK_DATA[grade];
+  const gradeColor = {plain:'var(--txt)', silver:'var(--silver)', gold:'var(--gold)'};
+  const gc = gradeColor[grade];
+
+  let html = `<div class="card" style="padding:0;overflow:hidden;">
+    <div class="price-table-wrap">
+    <table class="price-table">
+      <thead><tr>
+        <th>아이템</th>
+        <th class="r">현재가</th>
+        <th class="r">기준가</th>
+      </tr></thead>
+      <tbody>`;
+
+  const allItems = buildAllItems().filter(a => a.grade === grade);
+  const maxPrice = allItems.length ? Math.max(...allItems.map(a=>a.price)) : 0;
+  const threshold = maxPrice - 5;
+
+  groups.forEach((group, gi) => {
+    const rangeStr = group.range ? ` (${group.range})` : '';
+    html += `<tr>
+      <td colspan="3" style="background:var(--bg3);padding:8px 14px;border-bottom:1px solid var(--border);">
+        <span style="font-size:11px;font-weight:700;color:${gc};">${group.tier}</span>
+        <span style="font-size:11px;color:var(--txt3);font-family:var(--mono);">${rangeStr}</span>
+      </td>
+    </tr>`;
+    group.items.forEach((item, ii) => {
+      const cur  = getPrice(grade, gi, ii);
+      const base = item.base;
+      const isBest = cur >= threshold;
+      const cleanName = item.name.replace(/^[🩶🌟]\s*/u, '');
+      html += `<tr class="${isBest ? 'best-row' : ''}">
+        <td class="bold">🍳 ${cleanName}${isBest ? '<span class="best-badge">추천</span>' : ''}</td>
+        <td class="r bold" style="color:${isBest?'var(--green)':gc}">${cur.toLocaleString()}</td>
+        <td class="r" style="color:var(--txt3)">${base.toLocaleString()}</td>
+      </tr>`;
+    });
+  });
+
+  html += '</tbody></table></div></div>';
+  document.getElementById('priceContent').innerHTML = html;
+  renderSellNow();
+}
+
+function switchGrade(el) {
+  document.querySelectorAll('.gtab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentGrade = el.dataset.grade;
+  renderPriceContent(currentGrade);
+}
+
+/* ─── 타이머 ─── */
+function updateTimer() {
+  const now = new Date();
+  const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+  const totalSec = h * 3600 + m * 60 + s;
+  const periodSec = 10800;
+  const elapsed = totalSec % periodSec;
+  const remain  = periodSec - elapsed;
+  const rh = Math.floor(remain / 3600);
+  const rm = Math.floor((remain % 3600) / 60);
+  const rs = remain % 60;
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('timerCountdown').textContent = `${pad(rh)}:${pad(rm)}:${pad(rs)}`;
+  const nextH = (Math.floor(h / 3) + 1) * 3;
+  const nextLabel = nextH >= 24 ? '00:00' : `${String(nextH).padStart(2,'0')}:00`;
+  document.getElementById('timerNext').textContent = `다음 갱신: ${nextLabel}`;
+  document.getElementById('timerFill').style.width = ((elapsed / periodSec) * 100) + '%';
+  updateStaleWarning();
+}
+
+/* ─── Firebase 초기화 ─── */
+const FB_CONFIG = {
+  apiKey: "AIzaSyCbZ-_HkKqkHscvWy4zgJAgag6zZlyMmVQ",
+  authDomain: "dongle-1436f.firebaseapp.com",
+  databaseURL: "https://dongle-1436f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "dongle-1436f",
+  storageBucket: "dongle-1436f.firebasestorage.app",
+  messagingSenderId: "661261809386",
+  appId: "1:661261809386:web:5307363298365732bbc8993"
+};
+firebase.initializeApp(FB_CONFIG);
+const db   = firebase.database();
+const auth = firebase.auth();
+
+/* ─── 인증 ─── */
+let currentUser = null;
+let isAdmin = false;
+
+auth.onAuthStateChanged(user => {
+  currentUser = user;
+  isAdmin = !!user; // 로그인한 사람 = 관리자
+  const loginBtn  = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const nameEl    = document.getElementById('authUserName');
+  const writeBtn  = document.getElementById('newNoticeBtn');
+  if (user) {
+    nameEl.textContent = user.displayName || user.email;
+    loginBtn.style.display  = 'none';
+    logoutBtn.style.display = '';
+    writeBtn.style.display  = '';
+    document.getElementById('detailAdminBtns').style.display = 'flex';
+  } else {
+    nameEl.textContent = '';
+    loginBtn.style.display  = '';
+    logoutBtn.style.display = 'none';
+    writeBtn.style.display  = 'none';
+    document.getElementById('detailAdminBtns').style.display = 'none';
+  }
+});
+
+function signInGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e => alert('로그인 실패: ' + e.message));
+}
+function signOutUser() {
+  auth.signOut();
+}
+
+/* ─── 공지사항 Firebase ─── */
+let allNotices = [];
+let currentNoticeId = null;
+let currentCatFilter = 'all';
+let editingId = null;
+
+function catClass(cat) { return {patch:'np-patch', notice:'np-notice'}[cat] || 'np-notice'; }
+function catLabel(cat) { return {patch:'패치노트', notice:'공지사항'}[cat] || cat; }
+
+// 실시간 구독
+db.ref('dongle_notices').orderByChild('createdAt').on('value', snap => {
+  allNotices = [];
+  snap.forEach(child => {
+    allNotices.push({ id: child.key, ...child.val() });
+  });
+  // 최신순 + 핀 우선
+  allNotices.sort((a, b) => {
+    if (a.pin && !b.pin) return -1;
+    if (!a.pin && b.pin) return 1;
+    return (b.createdAt || 0) - (a.createdAt || 0);
+  });
+  document.getElementById('noticeLoading').style.display = 'none';
+  renderNotices(currentCatFilter);
+  updateHomeNotices();
+});
+
+function renderNotices(cat) {
+  currentCatFilter = cat;
+  const list = document.getElementById('noticeList');
+  const items = allNotices.filter(n => cat === 'all' || n.cat === cat);
+  if (!items.length) {
+    list.innerHTML = '<div style="font-size:13px;color:var(--txt3);padding:20px 0;">공지사항이 없습니다.</div>';
+    return;
+  }
+  list.innerHTML = items.map(n => `
+    <div class="notice-card${n.pin?' pinned':''}" onclick="openNotice('${n.id}')">
+      <span class="notice-cat-pill ${catClass(n.cat)}">${n.pin?'📌 ':''}${catLabel(n.cat)}</span>
+      <div class="notice-card-body">
+        <div class="notice-card-title">${escHtml(n.title)}</div>
+        <div class="notice-card-preview">${escHtml(n.preview||'')}</div>
+        <div class="notice-card-meta"><span>${n.date||''}</span><span>${escHtml(n.author||'')}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function updateHomeNotices() {
+  // 홈 공지 최신 3개
+  const top3 = allNotices.slice(0, 3);
+  const dotColor = {patch:'', notice:'yellow', urgent:'green'};
+  document.querySelector('#page-home .notice-list').innerHTML = top3.map(n => `
+    <div class="notice-item" onclick="switchPage('notice')">
+      <span class="notice-dot ${dotColor[n.cat]||''}"></span>
+      <div>
+        <div class="notice-item-title">${escHtml(n.title)}</div>
+        <div class="notice-item-date">${n.date||''} · ${catLabel(n.cat)}</div>
+      </div>
+    </div>`).join('') || '<div style="font-size:12px;color:var(--txt3);padding:8px 0;">공지사항이 없습니다.</div>';
+}
+
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function openNotice(id) {
+  const n = allNotices.find(x => x.id === id);
+  if (!n) return;
+  currentNoticeId = id;
+  document.getElementById('detailCatPill').textContent = catLabel(n.cat);
+  document.getElementById('detailCatPill').className = `notice-cat-pill ${catClass(n.cat)}`;
+  document.getElementById('detailTitle').textContent = n.title;
+  document.getElementById('detailMeta').innerHTML = `<span>${n.date||''}</span><span>작성: ${escHtml(n.author||'')}</span>`;
+  document.getElementById('detailBody').innerHTML = n.body || '';
+  document.getElementById('noticeListView').style.display = 'none';
+  document.getElementById('noticeDetailView').classList.add('open');
+  if (isAdmin) document.getElementById('detailAdminBtns').style.display = 'flex';
+}
+
+function closeNoticeDetail() {
+  document.getElementById('noticeDetailView').classList.remove('open');
+  document.getElementById('noticeListView').style.display = '';
+  currentNoticeId = null;
+  editingId = null;
+}
+
+function filterNotice(el, cat) {
+  document.querySelectorAll('#page-notice .pcat').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderNotices(cat);
+}
+
+/* ─── 공지 작성/수정/삭제 ─── */
+function openWrite(prefill) {
+  editingId = prefill ? prefill.id : null;
+  document.getElementById('writePanel').style.display = 'block';
+  document.getElementById('newNoticeBtn').style.display = 'none';
+  document.getElementById('wTitle').value   = prefill ? prefill.title   : '';
+  document.getElementById('wPreview').value = prefill ? prefill.preview : '';
+  document.getElementById('wBody').value    = prefill ? prefill.body    : '';
+  document.getElementById('wCat').value     = prefill ? prefill.cat     : 'notice';
+  document.getElementById('wPin').checked   = prefill ? !!prefill.pin   : false;
+  document.getElementById('writeStatus').textContent = '';
+  document.getElementById('wTitle').focus();
+}
+
+function cancelWrite() {
+  document.getElementById('writePanel').style.display = 'none';
+  document.getElementById('newNoticeBtn').style.display = '';
+  editingId = null;
+}
+
+function saveNotice() {
+  const title   = document.getElementById('wTitle').value.trim();
+  const preview = document.getElementById('wPreview').value.trim();
+  const body    = document.getElementById('wBody').value.trim();
+  const cat     = document.getElementById('wCat').value;
+  const pin     = document.getElementById('wPin').checked;
+  if (!title) { document.getElementById('writeStatus').textContent = '제목을 입력해주세요'; return; }
+  if (!currentUser) { document.getElementById('writeStatus').textContent = '로그인이 필요합니다'; return; }
+
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
+  const data = {
+    title, preview, body, cat, pin,
+    author: currentUser.displayName || currentUser.email,
+    date: dateStr,
+    createdAt: editingId
+      ? (allNotices.find(n=>n.id===editingId)?.createdAt || Date.now())
+      : Date.now(),
+    updatedAt: Date.now()
+  };
+
+  const ref = editingId
+    ? db.ref('dongle_notices/' + editingId)
+    : db.ref('dongle_notices').push();
+
+  document.getElementById('writeStatus').textContent = '저장 중...';
+  ref.set(data)
+    .then(() => {
+      cancelWrite();
+    })
+    .catch(e => {
+      document.getElementById('writeStatus').textContent = '저장 실패: ' + e.message;
+    });
+}
+
+function editCurrentNotice() {
+  const n = allNotices.find(x => x.id === currentNoticeId);
+  if (!n) return;
+  closeNoticeDetail();
+  openWrite(n);
+}
+
+function deleteCurrentNotice() {
+  if (!currentNoticeId) return;
+  const n = allNotices.find(x => x.id === currentNoticeId);
+  if (!n) return;
+  if (!confirm(`"${n.title}" 공지를 삭제할까요?`)) return;
+  db.ref('dongle_notices/' + currentNoticeId).remove()
+    .then(() => closeNoticeDetail())
+    .catch(e => alert('삭제 실패: ' + e.message));
+}
+
+/* ─── 페이지 전환 ─── */
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelector(`.nav-tab[data-page="${id}"]`).classList.add('active');
+  if (id !== 'notice') closeNoticeDetail();
+}
+document.querySelectorAll('.nav-tab').forEach(tab=>{
+  tab.addEventListener('click', () => switchPage(tab.dataset.page));
+});
+
+/* ─── 초기화 ─── */
+renderPriceContent('plain');
+renderHomeSellRec();
+updateTimer();
+setInterval(updateTimer, 1000);
+</script>
+
+</body></html>

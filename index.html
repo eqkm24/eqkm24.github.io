@@ -4,7 +4,7 @@
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>미루의 공간</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Inter:wght@400;500;600;700&family=DM+Mono:wght@400;500&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-app-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-auth-compat.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/10.12.2/firebase-database-compat.min.js"></script>
@@ -296,13 +296,14 @@ body::before{
 .sn-diff {font-family:var(--mono);font-size:10px;color:var(--txt3);flex-shrink:0;}
 
 .price-table-wrap{overflow-x:auto;position:relative;z-index:1;}
-.price-table{width:100%;border-collapse:collapse;min-width:540px;}
+.price-table{width:100%;border-collapse:collapse;min-width:460px;font-family:'Rajdhani','DM Mono','Noto Sans KR',sans-serif;}
 .price-table th{
-  font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.6px;
+  font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;
   padding:0 14px 10px;text-align:left;border-bottom:1.5px solid var(--border);white-space:nowrap;
+  font-family:'Inter',sans-serif;
 }
 .price-table th.r{text-align:right;}
-.price-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+.price-table td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;vertical-align:middle;font-family:'Rajdhani','DM Mono',sans-serif;letter-spacing:.2px;}
 .price-table tr:last-child td{border-bottom:none;}
 .price-table tr:hover td{background:rgba(212,113,76,.03);}
 .price-table td.r{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;}
@@ -786,16 +787,22 @@ function switchInputMode(btn, mode) {
 
 /* ─── 디스코드 메시지 파싱 ─── */
 // 아이템명 → (grade, groupIdx, itemIdx) 역색인
+// 은별/금별은 이모지 prefix로 grade 구분
 function buildNameIndex() {
   const idx = {};
   ['plain','silver','gold'].forEach(grade => {
     COOK_DATA[grade].forEach((group, gi) => {
       group.items.forEach((item, ii) => {
-        // 이모지 제거한 이름으로 인덱싱
-        const clean = item.name.replace(/^[🩶🌟⬜]\s*/u, '').trim();
-        idx[clean] = { grade, gi, ii };
-        // 원본도 인덱싱 (이모지 포함)
+        // 원본 이름 그대로 인덱싱 (🩶 아스파라거스 샐러드 등)
         idx[item.name.trim()] = { grade, gi, ii };
+        // 이모지+공백 제거한 순수 이름 (grade prefix로 구분)
+        const bare = item.name.replace(/^[🩶🌟]\s*/u, '').trim();
+        // grade별 키 (충돌 방지: plain은 bare 그대로, silver/gold는 grade_bare)
+        if (grade === 'plain') {
+          idx[bare] = { grade, gi, ii };
+        } else {
+          idx[`${grade}::${bare}`] = { grade, gi, ii };
+        }
       });
     });
   });
@@ -807,15 +814,28 @@ function parseDiscordMessage(text) {
   const matched = {}, unmatched = [];
   const lines = text.split('\n');
   for (const line of lines) {
-    // 🍳[이름] | x → y  또는  🍳[이름] | x→y
     const m = line.match(/🍳\[([^\]]+)\]\s*\|\s*[\d]+\s*→\s*([\d]+)/u);
     if (!m) continue;
-    const rawName = m[1].trim();
+    const rawName = m[1].trim();  // 예: '🩶 아스파라거스 샐러드'
     const price   = parseInt(m[2], 10);
     if (isNaN(price)) continue;
-    // 이름 정규화: 이모지 + 공백 제거
-    const cleanName = rawName.replace(/^[🩶🌟⬜🍳]\s*/u, '').trim();
-    const entry = nameIdx[cleanName] || nameIdx[rawName];
+
+    // 1) 원본 이름으로 먼저 찾기 (이모지 포함한 은별/금별 아이템)
+    let entry = nameIdx[rawName];
+
+    if (!entry) {
+      // 2) 이모지로 grade 판별 후 grade::bare 키로 찾기
+      const gradePrefix = rawName.match(/^(🩶|🌟)/u);
+      const bare = rawName.replace(/^[🩶🌟]\s*/u, '').trim();
+      if (gradePrefix) {
+        const g = gradePrefix[1] === '🩶' ? 'silver' : 'gold';
+        entry = nameIdx[`${g}::${bare}`];
+      } else {
+        // 3) 이모지 없으면 무별(plain) bare 이름으로 찾기
+        entry = nameIdx[bare];
+      }
+    }
+
     if (entry) {
       const key = `${entry.grade}_${entry.gi}_${entry.ii}`;
       matched[key] = price;
@@ -1021,9 +1041,8 @@ function renderPriceContent(grade) {
 
   let html = `<div class="card" style="padding:0;overflow:hidden;"><div class="price-table-wrap"><table class="price-table">
   <thead><tr>
-    <th style="width:35%">품목</th>
+    <th style="width:40%">품목</th>
     <th class="r">현재 판매가</th>
-    <th class="r">공식 최고가 대비</th>
     <th class="r">최고가까지</th>
     <th class="r">마지막 기록</th>
   </tr></thead><tbody>`;
@@ -1063,13 +1082,12 @@ function renderPriceContent(grade) {
         : `<span class="price-neutral">-${toMax}</span>`;
 
       const curStr = hasCustom
-        ? `<span style="color:${isBest?'#6aaa7c':'#c8c8d8'};font-weight:700;">${cur.toLocaleString()}냥</span>`
+        ? `<span style="color:${isBest?'var(--green)':'var(--accent)'};font-weight:700;">${cur.toLocaleString()}냥</span>`
         : `<span class="price-not-set">미등록</span>`;
 
       html += `<tr class="${isBest ? 'best-row' : ''}">
         <td class="bold">${cleanName}${isBest ? '<span class="best-badge">추천</span>' : ''}</td>
         <td class="r">${curStr}</td>
-        <td class="r">${hasCustom ? vsMinStr : '<span class="price-not-set">—</span>'}</td>
         <td class="r">${hasCustom ? toMaxStr : '<span class="price-not-set">—</span>'}</td>
         <td class="r" style="font-size:11px;">${hasCustom ? fmtLastSaved(savedAt) : '<span class="price-not-set">—</span>'}</td>
       </tr>`;

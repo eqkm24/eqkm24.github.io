@@ -269,16 +269,47 @@ body::before{
 .parse-preview .pr-miss{color:var(--txt3);}
 .parse-preview .pr-count{font-weight:700;color:var(--green);}
 
-.grade-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.gtab{
-  display:flex;align-items:center;gap:5px;
-  padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;
+.tier-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.ttab{
+  padding:6px 18px;border-radius:20px;font-size:12px;font-weight:700;
   cursor:pointer;border:1.5px solid var(--border2);background:var(--cream);color:var(--txt2);
-  transition:all .12s;
+  font-family:inherit;transition:all .12s;
 }
-.gtab.active.g-plain {background:rgba(100,116,139,.1);border-color:var(--txt2);color:var(--txt);}
-.gtab.active.g-silver{background:rgba(140,154,170,.15);border-color:var(--silver);color:var(--silver);}
-.gtab.active.g-gold  {background:rgba(201,146,42,.12);border-color:var(--gold);color:var(--gold);}
+.ttab:hover{background:var(--bg3);color:var(--txt);}
+.ttab.active{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(212,113,76,.3);}
+
+/* 차수별 카드 그리드 */
+.tier-cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:700px){.tier-cards-grid{grid-template-columns:1fr;}}
+.tier-grade-card{
+  background:var(--cream);border:1.5px solid var(--border);border-radius:14px;
+  overflow:hidden;box-shadow:0 2px 10px rgba(168,152,130,.08);
+}
+.tier-grade-hd{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 16px;border-bottom:1px solid var(--border);
+}
+.tier-grade-icon{font-size:18px;}
+.tier-grade-label{font-size:14px;font-weight:800;letter-spacing:-.3px;}
+.tier-grade-range{margin-left:auto;font-size:11px;font-weight:600;color:var(--txt3);font-family:var(--mono);}
+.tier-item-header{
+  display:grid;grid-template-columns:1fr auto auto;gap:8px;
+  padding:8px 14px 6px;border-bottom:1px solid var(--border);
+}
+.tier-item-row{
+  display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  font-family:'Rajdhani','DM Mono','Noto Sans KR',sans-serif;
+}
+.tier-item-row:last-of-type{border-bottom:none;}
+.tier-item-row.tier-item-best{background:rgba(106,170,124,.06);}
+.tier-item-name{font-size:13px;font-weight:500;color:var(--txt);}
+.tier-item-price{font-size:14px;font-weight:700;text-align:right;font-family:'Rajdhani','DM Mono',sans-serif;min-width:56px;}
+.tier-item-tomax{font-size:12px;text-align:right;min-width:44px;font-family:'Rajdhani','DM Mono',sans-serif;}
+.tier-grade-footer{
+  padding:8px 14px;font-size:11px;color:var(--txt2);
+  border-top:1px solid var(--border);background:var(--bg2);
+}
 
 .sell-now-card{
   background:rgba(106,170,124,.06);border:1.5px solid rgba(106,170,124,.3);
@@ -598,10 +629,12 @@ body::before{
       <div class="sell-now-list" id="sellNowList"></div>
     </div>
 
-    <div class="grade-tabs">
-      <div class="gtab active g-plain"  data-grade="plain"  onclick="switchGrade(this)">⬜ 무별</div>
-      <div class="gtab g-silver" data-grade="silver" onclick="switchGrade(this)">🩶 은별</div>
-      <div class="gtab g-gold"   data-grade="gold"   onclick="switchGrade(this)">🌟 금별</div>
+    <div class="tier-tabs">
+      <div class="ttab active" data-tier="1차" onclick="switchTier(this)">1차</div>
+      <div class="ttab" data-tier="2차" onclick="switchTier(this)">2차</div>
+      <div class="ttab" data-tier="3차" onclick="switchTier(this)">3차</div>
+      <div class="ttab" data-tier="4차" onclick="switchTier(this)">4차</div>
+      <div class="ttab" data-tier="5차" onclick="switchTier(this)">5차</div>
     </div>
     <div id="priceContent"></div>
   </div>
@@ -1029,81 +1062,124 @@ function renderHomeSellRec() {
   }).join('');
 }
 
-/* ─── 변동시세 렌더 ─── */
-let currentGrade = 'plain';
-function renderPriceContent(grade) {
-  const groups = COOK_DATA[grade];
-  const gradeColor = {plain:'#a0a0c0', silver:'var(--silver)', gold:'var(--gold)'};
-  const gc = gradeColor[grade];
-  const allItems = buildAllItems().filter(a => a.grade === grade);
+/* ─── 변동시세 렌더 (차수 기반) ─── */
+let currentTier = '1차';
+
+function fmtLastSaved(ts) {
+  if (!ts) return '<span class="price-not-set">기록 없음</span>';
+  const d = new Date(ts);
+  const mo = d.getMonth()+1, da = d.getDate(), h = d.getHours(), mi = d.getMinutes();
+  const hh = String(h).padStart(2,'0'), mm = String(mi).padStart(2,'0');
+  const elapsed = Math.floor((Date.now()-ts)/60000);
+  const eStr = elapsed < 60 ? `${elapsed}분 전` : elapsed < 1440 ? `${Math.floor(elapsed/60)}시간 전` : `${Math.floor(elapsed/1440)}일 전`;
+  return `${mo}.${da} ${hh}:${mm} <span style="font-size:10px;color:var(--txt3)">(${eStr})</span>`;
+}
+
+function renderPriceContent(tier) {
+  const savedAt = (savedPriceData && savedPriceData.savedAt) ? savedPriceData.savedAt : null;
+  const allItems = buildAllItems();
   const maxPrice = allItems.length ? Math.max(...allItems.map(a=>a.price)) : 0;
   const threshold = maxPrice - 5;
 
-  let html = `<div class="card" style="padding:0;overflow:hidden;"><div class="price-table-wrap"><table class="price-table">
-  <thead><tr>
-    <th style="width:40%">품목</th>
-    <th class="r">현재 판매가</th>
-    <th class="r">최고가까지</th>
-    <th class="r">마지막 기록</th>
-  </tr></thead><tbody>`;
+  // 차수에 해당하는 그룹을 grade별로 찾기
+  const grades = ['plain','silver','gold'];
+  const gradeLabel = {plain:'무별', silver:'은별', gold:'금별'};
+  const gradeIcon  = {plain:'⬜', silver:'🩶', gold:'🌟'};
+  const gradeColor = {plain:'var(--txt2)', silver:'var(--silver)', gold:'var(--gold)'};
+  const gradeBg    = {plain:'rgba(168,152,130,.07)', silver:'rgba(140,154,170,.08)', gold:'rgba(201,146,42,.07)'};
 
-  const savedAt = (savedPriceData && savedPriceData.savedAt) ? savedPriceData.savedAt : null;
-  function fmtLastSaved(ts) {
-    if (!ts) return '<span class="price-not-set">기록 없음</span>';
-    const d = new Date(ts);
-    const mo = d.getMonth()+1, da = d.getDate(), h = d.getHours(), m = d.getMinutes();
-    const hh = String(h).padStart(2,'0'), mm = String(m).padStart(2,'0');
-    const elapsed = Math.floor((Date.now()-ts)/60000);
-    const eStr = elapsed < 60 ? `${elapsed}분 전` : elapsed < 1440 ? `${Math.floor(elapsed/60)}시간 전 회차` : `${Math.floor(elapsed/1440)}일 전 회차`;
-    return `<span style="color:#8888a8">${mo}. ${da}. ${hh}:${mm}</span><br><span style="font-size:10px;color:#55556a">(${eStr})</span>`;
-  }
+  // tier 매칭: tier 문자열이 group.tier에 포함되는 것
+  let html = '<div class="tier-cards-grid">';
 
-  groups.forEach((group, gi) => {
+  grades.forEach(grade => {
+    const groups = COOK_DATA[grade];
+    // 1차일 때 고로케(special)도 포함
+    const matchedGroups = groups.filter(g =>
+      tier === '1차' ? (g.special || g.tier.startsWith('1차')) : (!g.special && g.tier.startsWith(tier))
+    );
+    if (!matchedGroups.length) return;
+
+    const specialGroup = matchedGroups.find(g => g.special);
+    const normalGroup  = matchedGroups.find(g => !g.special);
+    const group = normalGroup || matchedGroups[0];
+    const gi = groups.indexOf(group);
     const rangeStr = group.range || '';
-    html += `<tr class="tier-row"><td colspan="5"><span style="color:${gc}">${group.tier}</span><span style="color:#44445a;font-family:var(--mono);margin-left:8px;">· ${rangeStr}냥</span></td></tr>`;
+
+    // 카드 내 아이템 행들
+    let rows = '';
+
+    // 고로케(special) 먼저 출력
+    if (specialGroup) {
+      const sgi = groups.indexOf(specialGroup);
+      specialGroup.items.forEach((item, ii) => {
+        const cur = getPrice(grade, sgi, ii);
+        const max = item.max || item.base;
+        const isBest = cur >= threshold && maxPrice > 0;
+        const hasCustom = savedPriceData && savedPriceData.prices && savedPriceData.prices[`${grade}_${sgi}_${ii}`] !== undefined;
+        const cleanName = item.name.replace(/^[🩶🌟]\s*/u, '');
+        const toMax = max - cur;
+        const toMaxStr = toMax <= 0 ? `<span style="color:var(--green);font-weight:700;">MAX</span>` : `<span style="color:var(--txt3)">-${toMax}</span>`;
+        const curStr = hasCustom
+          ? `<span style="color:${isBest?'var(--green)':'var(--accent)'};font-weight:700;">${cur.toLocaleString()}</span>`
+          : `<span style="color:var(--txt3);font-size:11px;">미등록</span>`;
+        rows += `<div class="tier-item-row${isBest?' tier-item-best':''}" style="opacity:.8;">
+          <span class="tier-item-name" style="font-size:12px;">${cleanName}${isBest?'<span class="best-badge">추천</span>':''}</span>
+          <span class="tier-item-price">${curStr}</span>
+          <span class="tier-item-tomax">${hasCustom ? toMaxStr : '<span style="color:var(--txt3)">—</span>'}</span>
+        </div>`;
+      });
+      rows += `<div style="height:1px;background:var(--border);margin:2px 0;"></div>`;
+    }
+
     group.items.forEach((item, ii) => {
-      const cur  = getPrice(grade, gi, ii);
-      const max  = item.max || item.base;
+      const cur = getPrice(grade, gi, ii);
+      const max = item.max || item.base;
       const isBest = cur >= threshold && maxPrice > 0;
-      const cleanName = item.name.replace(/^[🩶🌟]\s*/u, '');
       const hasCustom = savedPriceData && savedPriceData.prices && savedPriceData.prices[`${grade}_${gi}_${ii}`] !== undefined;
-
-      // 공식 최고가 대비: 현재가 - 범위 최소값
-      const rangeMin = parseInt(group.range ? group.range.split('~')[0] : item.base);
-      const vsMin = cur - rangeMin;
-      const vsMinStr = vsMin >= 0
-        ? `<span class="price-up">+${vsMin}</span>`
-        : `<span class="price-down">${vsMin}</span>`;
-
-      // 최고가까지: 최고가 - 현재가
+      const cleanName = item.name.replace(/^[🩶🌟]\s*/u, '');
       const toMax = max - cur;
-      const toMaxStr = toMax <= 0
-        ? `<span class="price-up">최고가</span>`
-        : `<span class="price-neutral">-${toMax}</span>`;
-
+      const toMaxStr = toMax <= 0 ? `<span style="color:var(--green);font-weight:700;">MAX</span>` : `<span style="color:var(--txt3)">-${toMax}</span>`;
       const curStr = hasCustom
-        ? `<span style="color:${isBest?'var(--green)':'var(--accent)'};font-weight:700;">${cur.toLocaleString()}냥</span>`
-        : `<span class="price-not-set">미등록</span>`;
+        ? `<span style="color:${isBest?'var(--green)':'var(--accent)'};font-weight:700;">${cur.toLocaleString()}</span>`
+        : `<span style="color:var(--txt3);font-size:11px;">미등록</span>`;
 
-      html += `<tr class="${isBest ? 'best-row' : ''}">
-        <td class="bold">${cleanName}${isBest ? '<span class="best-badge">추천</span>' : ''}</td>
-        <td class="r">${curStr}</td>
-        <td class="r">${hasCustom ? toMaxStr : '<span class="price-not-set">—</span>'}</td>
-        <td class="r" style="font-size:11px;">${hasCustom ? fmtLastSaved(savedAt) : '<span class="price-not-set">—</span>'}</td>
-      </tr>`;
+      rows += `<div class="tier-item-row${isBest?' tier-item-best':''}">
+        <span class="tier-item-name">${cleanName}${isBest?'<span class="best-badge">추천</span>':''}</span>
+        <span class="tier-item-price">${curStr}</span>
+        <span class="tier-item-tomax">${hasCustom ? toMaxStr : '<span style="color:var(--txt3)">—</span>'}</span>
+      </div>`;
     });
+
+    html += `<div class="tier-grade-card" style="border-top:3px solid ${gradeColor[grade]};">
+      <div class="tier-grade-hd" style="background:${gradeBg[grade]};">
+        <span class="tier-grade-icon">${gradeIcon[grade]}</span>
+        <span class="tier-grade-label" style="color:${gradeColor[grade]}">${gradeLabel[grade]}</span>
+        <span class="tier-grade-range">${rangeStr}냥</span>
+      </div>
+      <div class="tier-item-header">
+        <span class="tier-item-name" style="color:var(--txt3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">품목</span>
+        <span class="tier-item-price" style="color:var(--txt3);font-size:10px;font-weight:700;text-align:right;">현재가</span>
+        <span class="tier-item-tomax" style="color:var(--txt3);font-size:10px;font-weight:700;text-align:right;">최고가까지</span>
+      </div>
+      ${rows}
+      <div class="tier-grade-footer">${savedAt ? fmtLastSaved(savedAt) : '<span style="color:var(--txt3);font-size:11px;">기록 없음</span>'}</div>
+    </div>`;
   });
 
-  html += '</tbody></table></div></div></div>';
+  html += '</div>';
   document.getElementById('priceContent').innerHTML = html;
   renderSellNow();
 }
-function switchGrade(el) {
-  document.querySelectorAll('.gtab').forEach(t => t.classList.remove('active'));
+
+function switchTier(el) {
+  document.querySelectorAll('.ttab').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
-  currentGrade = el.dataset.grade;
-  renderPriceContent(currentGrade);
+  currentTier = el.dataset.tier;
+  renderPriceContent(currentTier);
 }
+
+// 기존 호환용
+function renderPriceContentGrade(grade) { renderPriceContent(currentTier); }
 
 /* ─── 타이머 ─── */
 function updateTimer() {
@@ -1153,7 +1229,7 @@ function saveMemo() {
 }
 
 /* ─── 초기화 ─── */
-renderPriceContent('plain');
+renderPriceContent('1차');
 renderHomeSellRec();
 updateTimer();
 setInterval(updateTimer, 1000);

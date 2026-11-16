@@ -233,18 +233,18 @@ export function tickAlarm() {
     $('#ringTitle').textContent = items.map(a => a.label || '알람').join(', ') || '알람';
     $('#ringSub').textContent = items.map(describe).join(' · ');
     banner.hidden = false;
-    document.title = (Math.floor(now / 1000) % 2 ? '⏰ ' : '') + '미루의 작업대';
+    document.title = (Math.floor(now / 1000) % 2 ? '⏰ ' : '') + '김미루네 작업실';
     if (now - lastBeep > 1800) { chime(); lastBeep = now; }
   } else if (!banner.hidden) {
     banner.hidden = true;
-    document.title = '미루의 작업대';
+    document.title = '김미루네 작업실';
   }
 }
 
 function stopRinging() {
   ringing.clear();
   $('#ringBanner').hidden = true;
-  document.title = '미루의 작업대';
+  document.title = '김미루네 작업실';
   renderAlarm();
 }
 

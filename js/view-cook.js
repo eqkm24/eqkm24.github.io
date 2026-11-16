@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { cookEfficiency, recipeIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, cookOpts, patch, clampLv, stepper, wireSteppers, cookContext,
-  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon,
+  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions,
 } from './ui.js';
 
 let selected = null;   // 선택한 요리 이름
@@ -31,7 +31,7 @@ export function initCook() {
     if (t.id === 'ckStations') patch(KEYS.profile, { cookStations: Math.max(0, Math.round(+t.value || 0)) || null });
     if (t.id === 'ckHearth') patch(KEYS.cookOpts, { hearth: +t.value });
     if (t.id === 'ckGourmet') patch(KEYS.cookOpts, { gourmet: +t.value });
-    if (t.id === 'ckBonus') patch(KEYS.cookOpts, { bonusPct: Math.max(0, +t.value || 0) });
+    if (t.id === 'ckKnife') patch(KEYS.profile, { tools: { ...profile().tools, knife: +t.value } });
     if (t.id === 'ckPrep') patch(KEYS.cookOpts, { prepAll: t.checked });
     if (t.id === 'ckScale') patch(KEYS.cookOpts, { scaleIngredients: t.checked });
     if (t.id === 'ckUnlocked') patch(KEYS.cookOpts, { unlockedOnly: t.checked });
@@ -100,8 +100,8 @@ function renderOptions(ctx, o) {
         <input class="input num" id="ckStations" type="number" min="1" max="7" placeholder="${ctx.autoStations}" value="${p.cookStations ?? ''}"></div>
       <div class="field"><label for="ckHearth">화덕의 비약 · 요리 시간</label><select class="select" id="ckHearth">${gradeOptions('화덕', o.hearth)}</select></div>
       <div class="field"><label for="ckGourmet">미식의 비약 · 재료 손실 방지</label><select class="select" id="ckGourmet">${gradeOptions('미식', o.gourmet)}</select></div>
-      <div class="field"><label for="ckBonus">추가 획득 확률 % (식칼 강화)</label>
-        <input class="input num" id="ckBonus" type="number" min="0" step="0.5" value="${o.bonusPct}"></div>
+      <div class="field"><label for="ckKnife">식칼 강화 · 데메테르의 축복</label>
+        <select class="select" id="ckKnife">${toolOptions('knife', p.tools.knife)}</select></div>
     </div>
     <div class="row" style="gap:18px">
       <label class="check"><input type="checkbox" id="ckPrep" ${o.prepAll ? 'checked' : ''}> 물고기 · 농부 작물 전부 손질</label>

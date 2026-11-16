@@ -174,3 +174,26 @@ export const ICONS = {
   '순수한 청금석': 'gf_mineral_pure_lapis.png', '순수한 구리': 'gf_mineral_pure_copper.png',
   '순수한 레드스톤': 'gf_mineral_pure_redstone.png', '순수한 석탄': 'gf_mineral_pure_coal.png',
 };
+
+/* ── 캐릭터 스펙: 직업 · 도구 강화 (위키 '도구별 강화 효과') ──
+   https://giraffemc.com/wiki/life/enhance/tool-effects */
+export const JOBS = [
+  { key: 'cookLv',      name: '요리사',   tool: 'knife',   tiers: true },
+  { key: 'alchLv',      name: '연금술사', tool: 'pestle',  tiers: true },
+  { key: 'farmerLv',    name: '농부',     tool: 'hoe' },
+  { key: 'fisherLv',    name: '어부',     tool: 'rod' },
+  { key: 'minerLv',     name: '광부',     tool: 'pickaxe' },
+  { key: 'carpenterLv', name: '목수',     tool: 'axe' },
+];
+export const TOOL_MAX = 20;
+/* chance[강화] = 축복 발동 확률 %. 위키에 일부 단계만 있는 도구는 points 로 */
+export const TOOLS = {
+  knife:   { name: '식칼',   bless: '데메테르의 축복', desc: '요리 1개 더',
+             chance: [0, 2.3, 3.4, 4.4, 5.2, 5.9, 6.6, 7.3, 7.9, 8.4, 9, 9.5, 10, 10.5, 11, 11.5, 11.9, 12.3, 12.8, 13.2, 31.1] },
+  pestle:  { name: '막자',   bless: '토트의 축복', desc: '비약 1병 더',
+             chance: [0, 2.6, 3.9, 5, 5.9, 6.7, 7.5, 8.2, 8.9, 9.6, 10.2, 10.8, 11.4, 11.9, 12.5, 13, 13.5, 14, 14.5, 15, 34.2] },
+  hoe:     { name: '괭이',   bless: '가이아의 축복', points: { 1: 6.2, 5: 16.2, 10: 24.5, 15: 31.2, 20: 50 } },
+  rod:     { name: '낚싯대', bless: '트리톤의 축복', points: { 1: 6.2, 5: 16.2, 10: 24.5, 15: 31.2, 20: 50 } },
+  pickaxe: { name: '곡괭이', bless: '볼칸의 축복',   points: { 1: 6.2, 5: 16.2, 10: 24.5, 15: 31.2, 20: 50 } },
+  axe:     { name: '도끼',   bless: '고다마의 축복', points: { 1: 4.7, 5: 12.1, 10: 18.4, 15: 23.4, 20: 40 } },
+};

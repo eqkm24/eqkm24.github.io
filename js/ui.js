@@ -3,8 +3,8 @@
    ========================================================================== */
 import * as store from './store.js';
 import { KEYS, DEFAULTS } from './store.js';
-import { cycleInfo, stationsFor, tierFor, elixirValue, queueFor, alchLvEffects } from './calc.js';
-import { MAX_LV, ICONS, ICON_BASE } from './data.js';
+import { cycleInfo, stationsFor, tierFor, elixirValue, queueFor, alchLvEffects, toolBless } from './calc.js';
+import { MAX_LV, ICONS, ICON_BASE, TOOLS, TOOL_MAX } from './data.js';
 
 export const $  = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -46,7 +46,10 @@ export function toast(msg) {
 }
 
 /* ── 프로필 · 옵션 ── */
-export const profile  = () => ({ ...DEFAULTS.profile,  ...store.get(KEYS.profile,  {}) });
+export const profile  = () => {
+  const s = store.get(KEYS.profile, {});
+  return { ...DEFAULTS.profile, ...s, tools: { ...DEFAULTS.profile.tools, ...(s.tools || {}) } };
+};
 export const cookOpts = () => ({ ...DEFAULTS.cookOpts, ...store.get(KEYS.cookOpts, {}) });
 export const alchOpts = () => ({ ...DEFAULTS.alchOpts, ...store.get(KEYS.alchOpts, {}) });
 
@@ -67,7 +70,7 @@ export function cookContext() {
     prepAll: o.prepAll,
     hearthPct: elixirValue('화덕', o.hearth),
     gourmetPct: elixirValue('미식', o.gourmet),
-    bonusPct: o.bonusPct,
+    bonusPct: toolBless('knife', p.tools.knife),     // 식칼 강화 → 데메테르의 축복
     scaleIngredients: o.scaleIngredients,
     tier: tierFor(p.cookLv),
   };
@@ -80,7 +83,7 @@ export function alchContext() {
     autoStations: stationsFor(p.alchLv),
     queue: queueFor(p.alchLv),
     powders: o.powders,
-    bonusPct: o.bonusPct,
+    bonusPct: toolBless('pestle', p.tools.pestle),   // 막자 강화 → 토트의 축복
     scaleIngredients: o.scaleIngredients,
     tier: tierFor(p.alchLv),
     lvFx: alchLvEffects(p.alchLv),
@@ -167,4 +170,13 @@ export function armButton(btn, label, onConfirm) {
   }
   btn.textContent = '한 번 더 누르면 실행';
   btn.dataset.armed = setTimeout(() => { delete btn.dataset.armed; btn.textContent = label; }, 3000);
+}
+
+/* 도구 강화 +0 ~ +20 선택지 (축복 확률 함께 표시) */
+export function toolOptions(tool, current) {
+  return Array.from({ length: TOOL_MAX + 1 }, (_, lv) => {
+    const c = toolBless(tool, lv);
+    const tail = lv === 0 ? '강화 안 함' : c == null ? '확률 정보 없음' : `${c}%`;
+    return `<option value="${lv}"${+current === lv ? ' selected' : ''}>+${lv} · ${tail}</option>`;
+  }).join('');
 }

@@ -43,7 +43,7 @@ export function on(key, fn) {
 
 /* ── 앱에서 쓰는 키와 기본값 한 곳에 모음 ── */
 export const KEYS = {
-  profile:      'profile',       // { cookLv, alchLv, cookStations, alchStations }
+  profile:      'profile',       // 캐릭터 스펙 { nickname, mcUuid, 직업Lv, 설비 수, tools } → spec.js
   cookOpts:     'cookOpts',      // 요리 계산 옵션
   alchOpts:     'alchOpts',      // 연금 계산 옵션
   ingPrices:    'ingPrices',     // { 재료명: 단가 }
@@ -54,7 +54,9 @@ export const KEYS = {
 };
 
 export const DEFAULTS = {
-  profile:  { cookLv: 1, alchLv: 1, cookStations: null, alchStations: null },
+  profile:  { nickname: '', mcUuid: '', cookLv: 1, alchLv: 1, farmerLv: 1, fisherLv: 1, minerLv: 1, carpenterLv: 1,
+              cookStations: null, alchStations: null,
+              tools: { knife: 0, pestle: 0, hoe: 0, rod: 0, pickaxe: 0, axe: 0 } },
   cookOpts: { prepAll: true, hearth: -1, gourmet: -1, bonusPct: 0, scaleIngredients: true, stage: 'all', unlockedOnly: false, sort: 'hourly' },
   alchOpts: { powders: 2, bonusPct: 0, scaleIngredients: true, tier: 'all', unlockedOnly: false, sort: 'hourly' },
 };

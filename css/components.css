@@ -650,3 +650,65 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .detail-hero { display: flex; align-items: center; gap: 14px; }
 .dh-name { font-size: var(--fs-l); font-weight: 700; color: var(--ink); line-height: 1.25; }
 .dh-sub { font-size: var(--fs-xs); color: var(--txt-2); }
+
+/* ── 캐릭터 상세 스펙 (홈 카드) ── */
+.char-head { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.char-avatar {
+  width: 56px; height: 56px; flex: none; border-radius: 16px;
+  display: grid; place-items: center;
+  background: linear-gradient(160deg, var(--y-1), var(--y-2) 70%, var(--y-3));
+  border: var(--bw) solid var(--ink); box-shadow: 0 3px 0 var(--ink);
+  font-size: 26px; font-weight: 700; color: var(--ink);
+  transform: rotate(-3deg);
+}
+.char-avatar.is-empty { color: var(--panel); text-shadow: 0 2px 0 var(--ink); }
+.char-id { flex: 1; min-width: 140px; display: grid; gap: 5px; }
+.char-name { font-size: var(--fs-xl); font-weight: 700; color: var(--ink); line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.job-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+@media (max-width: 1000px) and (min-width: 901px), (max-width: 520px) { .job-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.job {
+  display: grid; gap: 3px; padding: 10px 11px 9px;
+  background: var(--panel-2); border: 2px solid var(--line); border-radius: var(--r-s);
+  min-width: 0;
+}
+.job.is-main { background: var(--panel); border-color: var(--ink); box-shadow: 0 2px 0 var(--ink); }
+.job-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.job-name { font-weight: 700; font-size: var(--fs-s); color: var(--txt-2); }
+.job-lv { font-size: var(--fs-s); color: var(--txt-2); }
+.job-lv b { font-size: var(--fs-xl); color: var(--ink); margin-left: 2px; }
+.job .bar { margin-top: 0; height: 6px; }
+.job-tool { font-size: 10.5px; color: var(--txt-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.job-tool b { color: var(--txt-2); }
+
+/* ── 스펙 입력 팝업 ── */
+.pop-wide { width: min(470px, calc(100vw - 110px)); }
+.spec-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.set-group h3 .faint { font-weight: 300; font-size: var(--fs-xs); margin-left: 4px; }
+.pop .stepper .input { font-size: var(--fs-m); }
+@media (max-width: 560px) { .pop-wide { width: auto; } }
+
+/* 홈 시세 시계: 옆 카드 높이에 맞춰 가운데 정렬 */
+.win.hero { display: flex; flex-direction: column; }
+.win.hero > .win-body { flex: 1; align-content: center; }
+
+/* ── 마인크래프트 머리 아바타 ── */
+.char-avatar, .nick-ava { position: relative; overflow: hidden; }
+.char-avatar::after, .nick-ava::after { content: attr(data-ch); }
+.char-avatar.has-head::after, .nick-ava.has-head::after { content: none; }
+.char-avatar.has-head { background: var(--panel); transform: rotate(-3deg); }
+.ava-img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; display: block; }
+.nick-row { display: flex; align-items: flex-end; gap: 12px; }
+.nick-ava {
+  width: 48px; height: 48px; flex: none; border-radius: 12px;
+  display: grid; place-items: center;
+  background: linear-gradient(160deg, var(--y-1), var(--y-2));
+  border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink);
+  font-weight: 700; font-size: 20px; color: var(--ink);
+}
+.nick-ava.has-head { background: var(--panel); }
+.nick-msg { font-size: var(--fs-xs); padding: 7px 10px; border-radius: var(--r-s); background: var(--panel-2); color: var(--txt-2); line-height: 1.6; }
+.nick-msg.is-ok { background: var(--gain-bg); color: var(--gain); font-weight: 700; }
+.nick-msg.is-notfound, .nick-msg.is-invalid { background: #fff0dc; color: var(--warn); }
+.nick-msg.is-loading { color: var(--sky); background: var(--sky-bg); }
+.btn[disabled] { opacity: .55; pointer-events: none; }

@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { elixirEfficiency, elixirIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, alchOpts, patch, clampLv, stepper, wireSteppers, alchContext,
-  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon,
+  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions,
 } from './ui.js';
 
 let selected = null;
@@ -20,7 +20,7 @@ export function initAlchemy() {
     const t = e.target;
     if (t.id === 'alLv') patch(KEYS.profile, { alchLv: clampLv(t.value) });
     if (t.id === 'alStations') patch(KEYS.profile, { alchStations: Math.max(0, Math.round(+t.value || 0)) || null });
-    if (t.id === 'alBonus') patch(KEYS.alchOpts, { bonusPct: Math.max(0, +t.value || 0) });
+    if (t.id === 'alPestle') patch(KEYS.profile, { tools: { ...profile().tools, pestle: +t.value } });
     if (t.id === 'alScale') patch(KEYS.alchOpts, { scaleIngredients: t.checked });
     if (t.id === 'alUnlocked') patch(KEYS.alchOpts, { unlockedOnly: t.checked });
   });
@@ -87,8 +87,8 @@ function renderOptions(ctx, o) {
         <div class="seg" role="group" aria-label="가루 종류">
           ${[0, 1, 2].map(n => `<button type="button" data-powders="${n}" class="${o.powders === n ? 'is-on' : ''}">${['없음', '1종', '심재+광물'][n]}</button>`).join('')}
         </div></div>
-      <div class="field"><label for="alBonus">추가 획득 확률 % (막자 강화)</label>
-        <input class="input num" id="alBonus" type="number" min="0" step="0.5" value="${o.bonusPct}"></div>
+      <div class="field"><label for="alPestle">막자 강화 · 토트의 축복</label>
+        <select class="select" id="alPestle">${toolOptions('pestle', p.tools.pestle)}</select></div>
     </div>
     <div class="row" style="gap:18px">
       <label class="check"><input type="checkbox" id="alScale" ${o.scaleIngredients ? 'checked' : ''}> 작업당 개수만큼 재료 소모</label>

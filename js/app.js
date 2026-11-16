@@ -16,6 +16,7 @@ import { initAlarm, renderAlarm, tickAlarm } from './view-alarm.js';
 import { initDock } from './dock.js';
 import { initSettings, renderSettings } from './settings.js';
 import { initSync } from './sync.js';
+import { initSpec } from './spec.js';
 import { initPrices, renderPrices } from './view-prices.js';
 
 const VIEWS = {
@@ -57,6 +58,7 @@ Object.values(VIEWS).forEach(v => v.init());
 initDock();
 initAlarm();
 initSettings();
+initSpec();
 renderSettings();
 renderAlarm();
 initSync();   // firebase-config.js 가 채워져 있으면 DB 연동 시작

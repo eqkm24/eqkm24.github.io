@@ -3,8 +3,16 @@
    ========================================================================== */
 import {
   TIERS, STATIONS_BY_LV, QUEUE_BY_LV, COOK_TIME, COOK_EXP, COOK_RULES,
-  ALCH_TIME, ALCH_EXP, ALCH_RULES, ALCH_LV_CURVE, ELIXIRS,
+  ALCH_TIME, ALCH_EXP, ALCH_RULES, ALCH_LV_CURVE, ELIXIRS, TOOLS,
 } from './data.js';
+
+/* 도구 강화 → 축복 발동 확률 % (위키에 없는 단계는 null) */
+export function toolBless(tool, lv) {
+  const t = TOOLS[tool];
+  if (!t || !lv) return 0;
+  if (t.chance) return t.chance[lv] ?? null;
+  return t.points[lv] ?? null;
+}
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const num = v => (Number.isFinite(+v) ? +v : 0);

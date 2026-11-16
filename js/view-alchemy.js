@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { elixirEfficiency, elixirIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, alchOpts, patch, clampLv, stepper, wireSteppers, alchContext,
-  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip,
+  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon,
 } from './ui.js';
 
 let selected = null;
@@ -116,7 +116,7 @@ function renderTable(rows, sort) {
       return `
       <tr data-name="${esc(x.e.name)}" class="${x.locked ? 'is-locked' : ''}${x.e.name === selected ? ' is-selected' : ''}">
         <td class="rank">${ok ? `<span class="medal num${rank <= 3 ? ' m' + rank : ''}">${rank}</span>` : ''}</td>
-        <td>
+        <td><div class="item-cell">${icon(x.e.name)}<div class="item-body">
           <div class="name">${esc(x.e.name)}의 비약</div>
           <div class="faint" style="font-size:11px">${esc(x.e.effect)}</div>
           <div class="row" style="gap:4px;margin-top:3px">
@@ -124,7 +124,7 @@ function renderTable(rows, sort) {
             ${x.locked ? `<span class="chip lock">Lv ${x.e.lv} 해금</span>` : ''}
             ${freshChip(x.entry)}
           </div>
-        </td>
+        </div></div></td>
         <td class="r"><input class="input num price-in" data-price="${esc(x.e.name)}" type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.e.name)}의 비약 판매가"></td>
         <td class="r num">${fmtNum(x.cost / x.perTask)}</td>
         <td class="r num ${x.hasPrice ? (x.perUnit >= 0 ? 'gain' : 'loss') : 'faint'}">${x.hasPrice ? fmtSigned(x.perUnit) : '—'}</td>
@@ -146,6 +146,7 @@ function renderDetail(e, ctx, ep, ip) {
 
   $('#alchDetailTitle').textContent = `${e.name}의 비약`;
   $('#alchDetail').innerHTML = `
+    <div class="detail-hero">${icon(e.name, 'l')}<div><div class="dh-name">${esc(e.name)}의 비약</div><div class="dh-sub">${esc(e.effect)}</div></div></div>
     <div class="row" style="gap:4px">
       <span class="chip stage">${e.vanilla ? '바닐라' : '숙련도 ' + e.lv}</span>
       <span class="chip">${esc(e.effect)}</span>
@@ -156,7 +157,7 @@ function renderDetail(e, ctx, ep, ip) {
       <input class="input num" id="alDetailPrice" data-price="${esc(e.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
     <div class="slots">${ings.map(i => `
       <div class="slot">
-        <span class="nm">${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
+        <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
         <span class="kind">${kindOf(i.name)}</span>
         <input class="input num" data-ing="${esc(i.name)}" type="number" min="0" step="any" placeholder="단가" value="${ip[i.name] ?? ''}" aria-label="${esc(i.name)} 단가">
       </div>`).join('')}
@@ -188,7 +189,7 @@ function renderIngPrices(ip) {
       <div class="price-group">
         <h3>${title} <span class="chip">${list.length}</span></h3>
         ${list.map(n => `
-          <div class="price-row"><span>${esc(n)}</span>
+          <div class="price-row"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
             <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"></div>`).join('')}
       </div>`).join('')
   }</div>`;

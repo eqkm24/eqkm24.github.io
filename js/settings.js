@@ -6,6 +6,7 @@ import * as store from './store.js';
 import { KEYS } from './store.js';
 import { setCompact } from './calc.js';
 import { $, esc, toast, armButton } from './ui.js';
+import { syncState, onSyncState } from './sync.js';
 
 const DEFAULT = { accent: 'yellow', font: 'm', compact: false, dots: true, motion: true };
 
@@ -38,6 +39,7 @@ function patch(p) {
 export function initSettings() {
   applySettings();
   store.on(KEYS.settings, () => { applySettings(); renderSettings(); });
+  onSyncState(() => renderSettings());
 
   const body = $('#settingsBody');
   body.addEventListener('click', e => {
@@ -54,6 +56,23 @@ export function initSettings() {
       toast('시세와 재료 단가를 모두 지웠어요');
     });
   });
+}
+
+const SYNC_TEXT = {
+  off:        ['chip', '이 브라우저에만 저장', '시세와 단가가 이 브라우저에만 저장돼요. js/firebase-config.js 를 채우면 연동돼요.'],
+  connecting: ['chip season', '연결 중…', 'Firebase 에 연결하고 있어요.'],
+  online:     ['chip fresh', '실시간 연동 중', '판매가 · 재료 단가가 다른 PC와 공유받은 사람에게 바로 반영돼요. 숙련도 · 알람 · 화면 설정은 각자 저장돼요.'],
+  offline:    ['chip stale', '연결 끊김', '다시 연결되면 그동안 고친 값을 자동으로 올려요.'],
+  error:      ['chip stale', '연동 안 됨', ''],
+};
+function syncRow() {
+  const { state, detail } = syncState();
+  const [cls, label, desc] = SYNC_TEXT[state];
+  return `
+    <div class="set-row">
+      <div class="set-text"><div class="set-title">DB 연동</div><div class="set-desc">${esc(detail || desc)}</div></div>
+      <span class="${cls}">${label}</span>
+    </div>`;
 }
 
 function toggleRow(key, title, desc, on) {
@@ -91,7 +110,7 @@ export function renderSettings() {
 
     <div class="set-group">
       <h3>데이터</h3>
-      <p class="note">모든 값은 이 브라우저에만 저장돼요. 다른 기기와는 공유되지 않아요.</p>
+      ${syncRow()}
       <div class="row">
         <button class="btn btn-sm" type="button" id="setReset">설정 처음으로</button>
         <button class="btn btn-sm btn-danger" type="button" id="setWipe">입력한 시세·단가 지우기</button>

@@ -16,9 +16,16 @@ export function get(key, fallback) {
   return key in memory ? memory[key] : fallback;
 }
 
-export function set(key, value) {
+/* 저장할 때마다 불리는 바깥 훅 (Firebase 연동이 씀 → sync.js) */
+let writeHook = null;
+export function setWriteHook(fn) { writeHook = fn; }
+
+/** opts.fromRemote: 서버에서 받은 값이면 true → 다시 서버로 보내지 않음 */
+export function set(key, value, opts = {}) {
+  const prev = get(key, undefined);
   memory[key] = value;
   try { localStorage.setItem(PREFIX + key, JSON.stringify(value)); } catch (e) { /* 무시 */ }
+  if (!opts.fromRemote && writeHook) writeHook(key, value, prev);
   (listeners.get(key) || []).forEach(fn => fn(value));
 }
 

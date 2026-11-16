@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { cookEfficiency, recipeIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, cookOpts, patch, clampLv, stepper, wireSteppers, cookContext,
-  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip,
+  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon,
 } from './ui.js';
 
 let selected = null;   // 선택한 요리 이름
@@ -126,7 +126,7 @@ function renderTable(rows, sort) {
       return `
       <tr data-name="${esc(x.r.name)}" class="${x.locked ? 'is-locked' : ''}${x.r.name === selected ? ' is-selected' : ''}">
         <td class="rank">${ok ? `<span class="medal num${rank <= 3 ? ' m' + rank : ''}">${rank}</span>` : ''}</td>
-        <td>
+        <td><div class="item-cell">${icon(x.r.name)}<div class="item-body">
           <div class="name">${esc(x.r.name)}</div>
           <div class="row" style="gap:4px;margin-top:3px">
             <span class="chip stage">${x.r.vanilla ? '바닐라' : x.r.stage + '단계'}</span>
@@ -134,7 +134,7 @@ function renderTable(rows, sort) {
             ${x.locked ? `<span class="chip lock">Lv ${x.r.lv} 해금</span>` : ''}
             ${freshChip(x.entry)}
           </div>
-        </td>
+        </div></div></td>
         <td class="r"><input class="input num price-in" data-price="${esc(x.r.name)}" type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.r.name)} 판매가"></td>
         <td class="r num">${fmtNum(x.cost / x.perTask)}</td>
         <td class="r num ${x.hasPrice ? (x.perDish >= 0 ? 'gain' : 'loss') : 'faint'}">${x.hasPrice ? fmtSigned(x.perDish) : '—'}</td>
@@ -156,6 +156,7 @@ function renderDetail(recipe, ctx, cp, ip) {
 
   $('#cookDetailTitle').textContent = recipe.name;
   $('#cookDetail').innerHTML = `
+    <div class="detail-hero">${icon(recipe.name, 'l')}<div><div class="dh-name">${esc(recipe.name)}</div><div class="dh-sub">${recipe.fish ? esc(recipe.fish[0]) + ' 요리' : '바닐라 재료 요리'}</div></div></div>
     <div class="row" style="gap:4px">
       <span class="chip stage">${recipe.vanilla ? '바닐라' : recipe.stage + '단계'}</span>
       <span class="chip">숙련도 ${recipe.lv}</span>
@@ -166,7 +167,7 @@ function renderDetail(recipe, ctx, cp, ip) {
       <input class="input num" id="ckDetailPrice" data-price="${esc(recipe.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
     <div class="slots">${ings.map(i => `
       <div class="slot ${i.kind}">
-        <span class="nm">${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
+        <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
         <span class="kind">${kindLabel[i.kind]}</span>
         <input class="input num" data-ing="${esc(i.name)}" type="number" min="0" step="any" placeholder="단가" value="${ip[i.name] ?? ''}" aria-label="${esc(i.name)} 단가">
       </div>`).join('')}
@@ -193,7 +194,7 @@ function renderIngPrices(ip) {
       <div class="price-group">
         <h3>${titles[k]} <span class="chip">${set.size}</span></h3>
         ${[...set].map(n => `
-          <div class="price-row"><span>${esc(n)}</span>
+          <div class="price-row"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
             <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"></div>`).join('')}
       </div>`).join('')
   }</div>`;

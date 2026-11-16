@@ -122,3 +122,55 @@ export const WIKI = {
   elixir: 'https://giraffemc.com/wiki/life/proficiency/alchemist/elixir',
   shop: 'https://giraffemc.com/wiki/economy/shop',
 };
+
+/* ── 아이콘 이미지 (기린월드 위키) ──
+   이름 → 파일명. 주소를 통째로 바꾸려면 ICON_BASE 만 고치면 됩니다.
+   목록에 없거나 불러오지 못하면 첫 글자 배지로 대신 보여줍니다.
+   다른 이미지를 쓰고 싶으면 파일명 대신 전체 URL(https://...)을 넣어도 됩니다. */
+export const ICON_BASE = 'https://giraffemc.com/wiki-assets/.gitbook/assets/icons/';
+
+export const ICONS = {
+  /* 요리 */
+  '감자 수프': 'gf_dish_potato_soup.png',     '호박죽': 'gf_dish_pumpkin_porridge.png',
+  '송어 버터구이': 'gf_dish_trout.png',        '무조림': 'gf_dish_mackerel.png',
+  '우렁 쌈밥': 'gf_dish_seasnail.png',         '옥수수전': 'gf_dish_northern_pike.png',
+  '피라니아 튀김': 'gf_dish_piranha.png',      '비트 샐러드': 'gf_dish_moorish_idol.png',
+  '해마 맑은국': 'gf_dish_seahorse.png',       '애호박볶음': 'gf_dish_squid.png',
+  '오이냉국': 'gf_dish_flying_fish.png',       '양배추찜': 'gf_dish_cowfish.png',
+  '레몬구이': 'gf_dish_ocean_sunfish.png',     '호박전': 'gf_dish_bass.png',
+  '오이 샐러드': 'gf_dish_salmon.png',         '양배추전골': 'gf_dish_koi.png',
+  '레몬 세비체': 'gf_dish_pterois.png',        '레몬에이드': 'gf_dish_lemonade.png',
+  '쑤기미 매운탕': 'gf_dish_stonefish.png',    '토마토 파스타': 'gf_dish_king_crab.png',
+  '고구마 조림': 'gf_dish_sea_cucumber.png',   '키위 소스 구이': 'gf_dish_sturgeon.png',
+  '청새치 스테이크': 'gf_dish_swordfish.png',  '고추튀김': 'gf_dish_pufferfish.png',
+  '키위 카르파초': 'gf_dish_coelacanth.png',   '바다거북 수프': 'gf_dish_sea_turtle.png',
+
+  /* 비약 (비약 이름 키) */
+  '이슬': 'gf_elixir_dew.png',        '산들바람': 'gf_elixir_breeze.png',   '활력': 'gf_elixir_vitality.png',
+  '풍요': 'gf_elixir_abundance.png',  '물결': 'gf_elixir_ripple.png',       '숲': 'gf_elixir_forest.png',
+  '화덕': 'gf_elixir_hearth.png',     '흐름': 'gf_elixir_flow.png',         '파도': 'gf_elixir_wave.png',
+  '나이테': 'gf_elixir_growth_ring.png', '볼칸': 'gf_elixir_vulcan.png',    '담금질': 'gf_elixir_tempering.png',
+  '미식': 'gf_elixir_gourmet.png',    '결실': 'gf_elixir_fruition.png',     '제련': 'gf_elixir_smelting.png',
+  '지혜': 'gf_elixir_wisdom.png',     '토트': 'gf_elixir_thoth.png',
+
+  /* 작물 · 바닐라 재료 */
+  '호박': 'mc_pumpkin.png', '밀': 'mc_wheat.png', '사탕수수': 'mc_sugar_cane.png',
+  '양파': 'crop_onion.png', '상추': 'crop_lettuce.png', '무': 'crop_radish.png', '옥수수': 'crop_corn.png',
+  '애호박': 'crop_zucchini.png', '오이': 'crop_cucumber.png', '양배추': 'crop_cabbage.png', '레몬': 'crop_lemon.png',
+  '고추': 'crop_pepper.png', '토마토': 'crop_tomato.png', '고구마': 'crop_sweet_potato.png', '키위': 'crop_kiwi.png',
+  '수박 조각': 'mc_melon_slice.png', '설탕': 'mc_sugar.png', '말린 켈프': 'mc_dried_kelp.png', '뼛가루': 'mc_bone_meal.png',
+  '발광 열매': 'mc_glow_berries.png', '코코아 콩': 'mc_cocoa_beans.png', '꿀병': 'mc_honey_bottle.png', '꿀이 든 병': 'mc_honey_bottle.png',
+
+  /* 심재 */
+  '참나무 심재': 'oak_heartwood.png', '참나무 심재(등급무관)': 'oak_heartwood.png', '자작나무 심재': 'birch_heartwood.png',
+  '가문비나무 심재': 'spruce_heartwood.png', '정글나무 심재': 'jungle_heartwood.png', '아카시아나무 심재': 'acacia_heartwood.png',
+  '짙은 참나무 심재': 'dark_oak_heartwood.png', '벚나무 심재': 'cherry_heartwood.png', '맹그로브나무 심재': 'mangrove_heartwood.png',
+  '창백한 참나무 심재': 'pale_oak_heartwood.png',
+
+  /* 광물 */
+  '강화된 다이아몬드 이상': 'gf_mineral_hardened_diamond.png', '강화된 구리 이상': 'gf_mineral_hardened_copper.png',
+  '강화된 청금석 이상': 'gf_mineral_hardened_lapis.png', '강화된 레드스톤 이상': 'gf_mineral_hardened_redstone.png',
+  '강화된 석탄 이상': 'gf_mineral_hardened_coal.png', '순수한 다이아몬드': 'gf_mineral_pure_diamond.png',
+  '순수한 청금석': 'gf_mineral_pure_lapis.png', '순수한 구리': 'gf_mineral_pure_copper.png',
+  '순수한 레드스톤': 'gf_mineral_pure_redstone.png', '순수한 석탄': 'gf_mineral_pure_coal.png',
+};

@@ -616,3 +616,37 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
   .pop-head { cursor: default; touch-action: auto; }
   .pop-grip { display: none; }
 }
+
+/* ── 아이템 아이콘 (위키 이미지 · 실패하면 첫 글자 배지) ── */
+.ico {
+  --ico: 30px;
+  position: relative; flex: none;
+  display: inline-grid; place-items: center;
+  width: var(--ico); height: var(--ico);
+  border-radius: 9px;
+  background: var(--panel-2);
+  border: 2px solid var(--line);
+  vertical-align: middle;
+  overflow: hidden;
+}
+.ico-s { --ico: 22px; border-radius: 6px; border-width: 1.5px; margin-right: 6px; }
+.ico-l { --ico: 54px; border-radius: 14px; border: var(--bw) solid var(--ink); box-shadow: 0 3px 0 var(--ink); background: var(--y-1); }
+.ico-img {
+  width: 82%; height: 82%; object-fit: contain;
+  image-rendering: pixelated;          /* 마인크래프트 도트 아이콘을 또렷하게 */
+}
+.ico.is-fallback { background: var(--ico-bg, var(--y-2)); border-color: var(--ink); }
+.ico.is-fallback::after {
+  content: attr(data-ch);
+  font-weight: 700; color: var(--ink);
+  font-size: calc(var(--ico) * .5); line-height: 1;
+}
+
+.item-cell { display: flex; align-items: center; gap: 10px; }
+.item-body { min-width: 0; }
+.slot .nm, .pr-name, .mini-rank .nm { display: flex; align-items: center; min-width: 0; }
+.pr-name { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.detail-hero { display: flex; align-items: center; gap: 14px; }
+.dh-name { font-size: var(--fs-l); font-weight: 700; color: var(--ink); line-height: 1.25; }
+.dh-sub { font-size: var(--fs-xs); color: var(--txt-2); }

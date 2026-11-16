@@ -4,7 +4,7 @@
 import * as store from './store.js';
 import { KEYS, DEFAULTS } from './store.js';
 import { cycleInfo, stationsFor, tierFor, elixirValue, queueFor, alchLvEffects } from './calc.js';
-import { MAX_LV } from './data.js';
+import { MAX_LV, ICONS, ICON_BASE } from './data.js';
 
 export const $  = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -12,6 +12,29 @@ export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 export function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
+
+/* ── 아이콘 ──
+   size: 's'(22) · 'm'(30) · 'l'(52). 이미지가 없거나 못 불러오면 첫 글자 배지. */
+const ICON_HUE = ['#ffd84a', '#ffb88a', '#9ee0b8', '#9fd0ff', '#d2b8ff', '#ffc2d6'];
+export function iconUrl(name) {
+  const f = ICONS[name];
+  return f ? (/^https?:/.test(f) ? f : ICON_BASE + f) : '';
+}
+export function icon(name, size = 'm') {
+  const url = iconUrl(name);
+  const ch = esc(String(name).replace(/^(강화된|순수한|짙은|창백한)\s*/, '').trim().charAt(0));
+  const hue = ICON_HUE[[...String(name)].reduce((a, c) => a + c.charCodeAt(0), 0) % ICON_HUE.length];
+  return `<span class="ico ico-${size}${url ? '' : ' is-fallback'}" style="--ico-bg:${hue}" data-ch="${ch}" aria-hidden="true">${
+    url ? `<img class="ico-img" src="${esc(url)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">` : ''}</span>`;
+}
+/* 이미지 실패 → 배지로 (캡처 단계에서 한 번에 처리) */
+document.addEventListener('error', e => {
+  const img = e.target;
+  if (img instanceof HTMLImageElement && img.classList.contains('ico-img')) {
+    img.parentElement.classList.add('is-fallback');
+    img.remove();
+  }
+}, true);
 
 let toastTimer;
 export function toast(msg) {

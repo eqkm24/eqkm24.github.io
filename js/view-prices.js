@@ -5,7 +5,7 @@ import { RECIPES, ELIXIRS } from './data.js';
 import * as store from './store.js';
 import { KEYS } from './store.js';
 import { parsePriceText, fmtNum } from './calc.js';
-import { $, esc, toast, cookPrices, elixirPrices, setProductPrice, freshness, freshChip, armButton } from './ui.js';
+import { $, esc, icon, toast, cookPrices, elixirPrices, setProductPrice, freshness, freshChip, armButton } from './ui.js';
 
 const NAMES = [
   ...RECIPES.map(r => ({ key: r.name, type: 'cook', label: r.name })),
@@ -51,7 +51,7 @@ export function renderPrices() {
 
   const row = (kind, name, label, entry) => `
     <div class="price-row" style="grid-template-columns:minmax(0,1fr) auto 96px">
-      <span>${esc(label)}</span>${freshChip(entry) || '<span></span>'}
+      <span class="pr-name">${icon(name, 's')}${esc(label)}</span>${freshChip(entry) || '<span></span>'}
       <input class="input num" data-kind="${kind}" data-name="${esc(name)}" type="number" min="0" placeholder="—" value="${entry?.price ?? ''}" aria-label="${esc(label)} 판매가">
     </div>`;
 

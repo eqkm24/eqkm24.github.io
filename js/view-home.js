@@ -5,7 +5,7 @@ import { RECIPES, ELIXIRS } from './data.js';
 import { KEYS } from './store.js';
 import { tierFor, stationsFor, queueFor, cookEfficiency, elixirEfficiency, fmtSigned, fmtDuration, cycleInfo } from './calc.js';
 import {
-  $, esc, profile, patch, clampLv, stepper, wireSteppers, cookContext, alchContext,
+  $, esc, icon, profile, patch, clampLv, stepper, wireSteppers, cookContext, alchContext,
   cookPrices, elixirPrices, ingPrices, priceOf, renderCycleStrip,
 } from './ui.js';
 
@@ -63,7 +63,7 @@ function topList(rows) {
     <div class="it">
       <span class="n num">${i + 1}</span>
       <div style="min-width:0">
-        <div class="nm">${esc(r.name)}</div>
+        <div class="nm">${icon(r.key, 's')}${esc(r.name)}</div>
         <div class="bar${r.hourly < 0 ? ' neg' : ''}"><i style="width:${Math.max(4, Math.abs(r.hourly) / max * 100)}%"></i></div>
       </div>
       <span class="num ${r.hourly >= 0 ? 'gain' : 'loss'}">${fmtSigned(r.hourly)}<span class="faint"> /시간</span></span>
@@ -75,14 +75,14 @@ function renderTop() {
   const ip = ingPrices(), cp = cookPrices(), ep = elixirPrices();
 
   const cook = RECIPES
-    .map(r => ({ name: r.name, ...cookEfficiency(r, priceOf(cp, r.name), ip, cctx) }))
+    .map(r => ({ name: r.name, key: r.name, ...cookEfficiency(r, priceOf(cp, r.name), ip, cctx) }))
     .filter(r => r.hasPrice && !r.locked)
     .sort((a, b) => b.hourly - a.hourly).slice(0, 5);
   $('#homeCookTop').innerHTML = cook.length ? topList(cook)
     : `<div class="empty"><b>아직 요리 판매가가 없어요.</b><br>시세 입력에서 붙여넣거나 요리 순차익 표에서 바로 적어 주세요.</div>`;
 
   const alch = ELIXIRS
-    .map(e => ({ name: `${e.name}의 비약`, ...elixirEfficiency(e, priceOf(ep, e.name), ip, actx) }))
+    .map(e => ({ name: `${e.name}의 비약`, key: e.name, ...elixirEfficiency(e, priceOf(ep, e.name), ip, actx) }))
     .filter(r => r.hasPrice && !r.locked)
     .sort((a, b) => b.hourly - a.hourly).slice(0, 5);
   $('#homeAlchTop').innerHTML = alch.length ? topList(alch)

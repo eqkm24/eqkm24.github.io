@@ -1,0 +1,142 @@
+/* ==========================================================================
+   base.css — 폰트 · 색 토큰 · 기본 레이아웃
+   레이아웃: 노란 HUD 바 + 말랑한 게임 메뉴 + 스티커처럼 테두리 진 창(window) 패널
+   버터 노랑 + 코코아 갈색 한 가지 톤으로 고정한 단일 테마입니다.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Maplestory';
+  src: url('../fonts/Maplestory_OTF_Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Maplestory';
+  src: url('../fonts/Maplestory_OTF_Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  /* 바탕 */
+  --bg:        #fff4cf;   /* 버터 */
+  --bg-dot:    #ffe79a;
+  --panel:     #fffdf6;   /* 창 몸통 */
+  --panel-2:   #fff6d8;   /* 창 안쪽 칸 */
+  --slot:      #fff9e8;   /* 입력 · 인벤토리 칸 */
+  --line:      #f1dc9f;   /* 안쪽 구분선 */
+
+  /* 노랑 */
+  --y-1:       #fff1a8;
+  --y-2:       #ffd84a;   /* 메인 노랑 */
+  --y-3:       #ffbf1f;
+  --y-4:       #e89a00;   /* 그림자 노랑 */
+
+  /* 코코아 (글자 · 외곽선) */
+  --ink:       #3d2a12;
+  --txt:       #3d2a12;
+  --txt-2:     #7a5f37;
+  --txt-3:     #ad956b;
+
+  /* 의미 색 (노랑과 별개) */
+  --gain:      #1d9a57;
+  --gain-bg:   #dff5e6;
+  --loss:      #e14d38;
+  --loss-bg:   #fde3dc;
+  --sky:       #3b8fd9;
+  --sky-bg:    #e0f0ff;
+  --warn:      #d9770b;
+
+  /* 글꼴 */
+  --font-game: 'Maplestory', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+
+  /* 크기 */
+  --r:   16px;
+  --r-s: 10px;
+  --bw:  2.5px;            /* 외곽선 두께 */
+  --fs-xs: 11.5px;
+  --fs-s:  13px;
+  --fs-m:  14.5px;
+  --fs-l:  18px;
+  --fs-xl: 24px;
+  --fs-xxl: 46px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body { background: var(--bg); }
+body {
+  margin: 0;
+  color: var(--txt);
+  font-family: var(--font-game);
+  font-weight: 300;
+  font-size: var(--fs-m);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 56px;
+  background-color: var(--bg);
+  background-image: radial-gradient(var(--bg-dot) 1.6px, transparent 1.8px);
+  background-size: 22px 22px;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 60;
+  background: var(--y-2);
+}
+
+b, strong, h1, h2, h3, h4, th, button, .bold { font-weight: 700; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--sky); }
+input, select, button, textarea { font: inherit; color: inherit; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--txt-2); }
+.faint { color: var(--txt-3); }
+.gain { color: var(--gain); }
+.loss { color: var(--loss); }
+.cookie { color: var(--y-4); }
+
+:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+
+/* ── 페이지 틀 ── */
+.shell { max-width: 1120px; margin: 0 auto; }
+
+.view { display: none; }
+.view.is-active { display: grid; gap: 20px; animation: view-in .25s cubic-bezier(.2,.9,.3,1.2); }
+@keyframes view-in { from { opacity: .3; transform: translateY(6px) scale(.995); } to { opacity: 1; transform: none; } }
+
+.grid-2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+.grid-side { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 20px; align-items: start; }
+@media (max-width: 900px) {
+  .grid-2, .grid-side { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ── 설정: 포인트 색 ── */
+[data-accent="mint"]  { --bg:#eaf8f0; --bg-dot:#c4ecd6; --panel-2:#eefaf3; --slot:#f5fcf8; --line:#bfe6cf;
+  --y-1:#cdf3e0; --y-2:#5fd6a8; --y-3:#36c28f; --y-4:#1f9e70; }
+[data-accent="peach"] { --bg:#fff1eb; --bg-dot:#ffd8c9; --panel-2:#fff4ef; --slot:#fff8f5; --line:#f6cdbd;
+  --y-1:#ffe0d6; --y-2:#ff9f86; --y-3:#ff8466; --y-4:#e0613f; }
+[data-accent="sky"]   { --bg:#eaf5ff; --bg-dot:#c9e4fb; --panel-2:#eef6ff; --slot:#f5faff; --line:#c3dcf3;
+  --y-1:#d4ebff; --y-2:#6cbcff; --y-3:#47a6f5; --y-4:#2482d6; }
+[data-accent="grape"] { --bg:#f4efff; --bg-dot:#e0d4fd; --panel-2:#f6f2ff; --slot:#faf8ff; --line:#dccff7;
+  --y-1:#e9e0ff; --y-2:#b79cff; --y-3:#a07ef7; --y-4:#7c58d8; }
+
+/* ── 설정: 글자 크기 ── */
+[data-font="s"] { --fs-xs: 10.5px; --fs-s: 12px; --fs-m: 13.5px; --fs-l: 16.5px; --fs-xl: 21px; --fs-xxl: 40px; }
+[data-font="l"] { --fs-xs: 12.5px; --fs-s: 14.5px; --fs-m: 16px; --fs-l: 20px; --fs-xl: 27px; --fs-xxl: 52px; }
+
+/* ── 설정: 배경 무늬 · 움직임 ── */
+[data-dots="off"] body { background-image: none; }
+[data-motion="off"] *, [data-motion="off"] *::before, [data-motion="off"] *::after { animation: none !important; transition: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

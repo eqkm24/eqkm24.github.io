@@ -176,7 +176,24 @@
 
     <!-- ═══════════ 시세 입력 ═══════════ -->
     <section class="view" data-view="prices">
-      <div class="grid-2">
+      <div class="cat-cards" id="catCards" role="tablist" aria-label="시세 · 단가 종류"></div>
+
+      <div class="grid-side prices-grid">
+        <article class="win">
+          <div class="win-title">
+            <h2 id="catTitle">시세 · 단가 모아보기</h2>
+            <span class="spacer"></span>
+            <label class="check"><input type="checkbox" id="onlyEmpty"> 빈 칸만</label>
+          </div>
+          <div class="win-body">
+            <div class="row">
+              <input class="input grow" id="priceSearch" type="search" placeholder="이름으로 찾기 (예: 심재, 파스타)" autocomplete="off">
+            </div>
+            <div id="priceList"></div>
+          </div>
+          <div class="win-foot" id="catFoot"></div>
+        </article>
+
         <article class="win">
           <div class="win-title"><h2>디스코드 시세 붙여넣기</h2></div>
           <div class="win-body">
@@ -188,11 +205,6 @@
             </div>
             <div id="pasteResult"></div>
           </div>
-        </article>
-
-        <article class="win">
-          <div class="win-title"><h2>입력된 시세</h2><span class="spacer"></span><span class="sub" id="priceCount"></span></div>
-          <div class="win-body" id="priceBoard"></div>
         </article>
       </div>
     </section>

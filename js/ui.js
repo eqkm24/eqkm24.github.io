@@ -91,7 +91,17 @@ export function alchContext() {
 }
 
 /* ── 시세 ── */
-export const ingPrices    = () => store.get(KEYS.ingPrices, {});
+export const ingPricesRaw = () => store.get(KEYS.ingPrices, {});
+export const selfSupply   = () => store.get(KEYS.selfSupply, {});
+/* 계산용: 직접 수급으로 표시한 재료는 0원 */
+export const ingPrices    = () => {
+  const m = { ...ingPricesRaw() };
+  Object.keys(selfSupply()).forEach(k => { m[k] = 0; });
+  return m;
+};
+export function toggleSelf(name) {
+  store.update(KEYS.selfSupply, {}, m => { if (m[name]) delete m[name]; else m[name] = true; return m; });
+}
 export const cookPrices   = () => store.get(KEYS.cookPrices, {});
 export const elixirPrices = () => store.get(KEYS.elixirPrices, {});
 export const priceOf = (map, name) => map[name]?.price ?? 0;

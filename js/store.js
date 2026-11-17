@@ -49,6 +49,8 @@ export const KEYS = {
   ingPrices:    'ingPrices',     // { 재료명: 단가 }
   cookPrices:   'cookPrices',    // { 요리명: { price, at } }
   elixirPrices: 'elixirPrices',  // { 비약명: { price, at } }
+  history:      'priceHistory',  // 시세 기록 → history.js
+  selfSupply:   'selfSupply',    // 직접 수급 재료 { 이름: true }
   settings:     'settings',      // 화면 설정 → settings.js
   alarms:       'alarms',        // [{ id, label, mode, nextAt, on, ... }] → view-alarm.js
 };

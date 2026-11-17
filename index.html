@@ -36,12 +36,15 @@
     <a class="menu-btn" href="#home"    data-view="home">홈</a>
     <a class="menu-btn" href="#cook"    data-view="cook">요리 순차익</a>
     <a class="menu-btn" href="#alchemy" data-view="alchemy">비약 효율</a>
+    <a class="menu-btn" href="#history" data-view="history">시세 기록 <span class="new-tag">NEW</span></a>
     <a class="menu-btn" href="#prices"  data-view="prices">시세 입력</a>
   </nav>
 
   <main>
     <!-- ═══════════ 홈 ═══════════ -->
     <section class="view" data-view="home">
+      <div class="home-side">
+        <div class="home-main">
         <article class="win hero mini-clock-win">
           <div class="mini-clock">
             <div class="mc-label"><span class="mc-title">변동 시세</span><span class="mc-sub" id="homeClockCap">다음 갱신</span></div>
@@ -55,11 +58,11 @@
         </article>
         <div class="grid-2">
         <article class="win">
-          <div class="win-title"><h2>지금 판매해야 할 요리</h2><span class="spacer"></span><a class="btn btn-sm" href="#cook">전체 보기</a></div>
+          <div class="win-title"><h2>지금 만들면 좋은 요리</h2><span class="spacer"></span><a class="btn btn-sm" href="#cook">전체 보기</a></div>
           <div class="win-body" id="homeCookTop"></div>
         </article>
         <article class="win">
-          <div class="win-title"><h2>지금 판매해야 할 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#alchemy">전체 보기</a></div>
+          <div class="win-title"><h2>지금 만들면 좋은 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#alchemy">전체 보기</a></div>
           <div class="win-body" id="homeAlchTop"></div>
         </article>
         </div>
@@ -74,6 +77,18 @@
             </div>
           </div>
         </article>
+        </div>
+        <aside class="home-aside" aria-label="판매 신호">
+        <article class="win">
+          <div class="win-title"><h2>지금 팔면 좋은 요리</h2><span class="spacer"></span><a class="btn btn-sm" href="#history">기록</a></div>
+          <div class="win-body" id="homeSellCook"></div>
+        </article>
+        <article class="win">
+          <div class="win-title"><h2>지금 팔면 좋은 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#history">기록</a></div>
+          <div class="win-body" id="homeSellAlch"></div>
+        </article>
+        </aside>
+      </div>
     </section>
 
     <!-- ═══════════ 요리 ═══════════ -->
@@ -137,6 +152,25 @@
       <article class="win">
         <div class="win-title"><h2>비약 재료 단가</h2><span class="sub">쿠키 / 1개 · 물병은 모든 비약에 1개씩 들어가요</span></div>
         <div class="win-body" id="alchIngPrices"></div>
+      </article>
+    </section>
+
+    <!-- ═══════════ 시세 기록 ═══════════ -->
+    <section class="view" data-view="history">
+      <article class="win">
+        <div class="win-title"><h2>주간 시세 그래프</h2><span class="sub">3시간마다 한 점 · 최근 7일</span><span class="spacer"></span>
+          <div class="seg" id="histRange" role="group" aria-label="기간"><button type="button" data-days="1">1일</button><button type="button" data-days="3">3일</button><button type="button" data-days="7" class="is-on">7일</button></div></div>
+        <div class="win-body" id="histDetail"></div>
+      </article>
+
+      <article class="win">
+        <div class="win-title"><h2>시세 기록</h2><span class="sub">줄을 누르면 위 그래프가 바뀌어요</span><span class="spacer"></span>
+          <div class="seg" id="histSeg" role="group" aria-label="종류"><button type="button" data-kind="cook" class="is-on">요리</button><button type="button" data-kind="elixir">비약</button></div></div>
+        <div class="win-body tight">
+          <div class="table-wrap"><table class="table" id="histTable"></table></div>
+          <div class="empty" id="histEmpty" style="margin:16px">아직 기록이 없어요. 시세를 넣을 때마다 주기별로 쌓여요.<br>위쪽 시세 입력 탭에서 디스코드 시세를 붙여넣으면 바로 첫 점이 생겨요.</div>
+        </div>
+        <div class="win-foot">신호 기준: 이번 시세가 최근 24시간 최고가의 97% 이상이면 지금 팔기, 90% 이상이면 괜찮음, 그 아래는 기다리기.</div>
       </article>
     </section>
 

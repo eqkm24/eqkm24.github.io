@@ -17,12 +17,15 @@ import { initDock } from './dock.js';
 import { initSettings, renderSettings } from './settings.js';
 import { initSync } from './sync.js';
 import { initSpec } from './spec.js';
+import { initHistory } from './history.js';
+import { initHistoryView, renderHistoryView } from './view-history.js';
 import { initPrices, renderPrices } from './view-prices.js';
 
 const VIEWS = {
   home:    { init: initHome,    render: renderHome,    tick: tickHome },
   cook:    { init: initCook,    render: renderCook },
   alchemy: { init: initAlchemy, render: renderAlchemy },
+  history: { init: initHistoryView, render: renderHistoryView },
   prices:  { init: initPrices,  render: renderPrices },
 };
 
@@ -59,6 +62,7 @@ initDock();
 initAlarm();
 initSettings();
 initSpec();
+initHistory();
 renderSettings();
 renderAlarm();
 initSync();   // firebase-config.js 가 채워져 있으면 DB 연동 시작

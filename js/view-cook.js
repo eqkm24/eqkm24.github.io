@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { cookEfficiency, recipeIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, cookOpts, patch, clampLv, stepper, wireSteppers, cookContext,
-  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions,
+  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, ingPricesRaw, selfSupply, toggleSelf,
 } from './ui.js';
 
 let selected = null;   // 선택한 요리 이름
@@ -61,6 +61,7 @@ export function initCook() {
   };
   $('#cookDetail').addEventListener('change', onIng);
   $('#cookIngPrices').addEventListener('change', onIng);
+  $('#cookIngPrices').addEventListener('click', e => { const b = e.target.closest('[data-self]'); if (b) toggleSelf(b.dataset.self); });
   $('#cookDetail').addEventListener('change', e => {
     const inp = e.target.closest('input[data-price]');
     if (inp) setProductPrice(KEYS.cookPrices, inp.dataset.price, inp.value);
@@ -87,7 +88,7 @@ export function renderCook() {
   $('#cookStageSeg').innerHTML = STAGES.map(([k, l]) => `<button type="button" data-stage="${k}" class="${o.stage === k ? 'is-on' : ''}">${l}</button>`).join('');
   renderTable(rows, o.sort);
   renderDetail(RECIPES.find(r => r.name === selected), ctx, cp, ip);
-  renderIngPrices(ip);
+  renderIngPrices(ingPricesRaw(), selfSupply());
 }
 
 function renderOptions(ctx, o) {
@@ -185,7 +186,7 @@ function renderDetail(recipe, ctx, cp, ip) {
     <p class="note">손질하면 재료 종류마다 시간 −${COOK_RULES.timePerPrep}% (최대 ${COOK_RULES.timePrepMax}%), 탄 요리 확률 10% → 7%. 희귀 요리 확률과 차수에 따른 탄 요리 감소는 위키에 수치가 없어 계산에서 뺐어요.</p>`;
 }
 
-function renderIngPrices(ip) {
+function renderIngPrices(ip, self) {
   const groups = { fish: new Set(), veg: new Set(), farm: new Set() };
   RECIPES.forEach(r => recipeIngredients(r).forEach(i => groups[i.kind].add(i.name)));
   const titles = { fish: '물고기 (희귀)', veg: '바닐라 작물', farm: '농부 작물 (희귀)' };
@@ -194,8 +195,9 @@ function renderIngPrices(ip) {
       <div class="price-group">
         <h3>${titles[k]} <span class="chip">${set.size}</span></h3>
         ${[...set].map(n => `
-          <div class="price-row"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
-            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"></div>`).join('')}
+          <div class="price-row has-self${self[n] ? ' is-self' : ''}"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
+            <button class="self-tog${self[n] ? ' is-on' : ''}" type="button" data-self="${esc(n)}" aria-pressed="${!!self[n]}" title="직접 캐거나 기른 재료는 0원으로 계산">직접</button>
+            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"${self[n] ? ' disabled' : ''}></div>`).join('')}
       </div>`).join('')
   }</div>`;
 }

@@ -1,12 +1,13 @@
 /* ==========================================================================
    sync.js — Firebase Realtime Database 연동
-   공유하는 값: 요리 판매가 · 비약 판매가 · 재료 단가
+   공유하는 값: 요리 판매가 · 비약 판매가 · 재료 단가 · 시세 기록
    (숙련도 · 알람 · 화면 설정은 사람마다 다르니 각자 브라우저에 둡니다)
 
    DB 구조
      {DB_ROOT}/cookPrices/{요리명}   = { price, at }
      {DB_ROOT}/elixirPrices/{비약명} = { price, at }
      {DB_ROOT}/ingPrices/{재료명}    = 단가
+     {DB_ROOT}/priceHistory/{cook|elixir}/{이름}/{주기 시작 ms} = 가격
    바뀐 항목만 골라 보내므로 두 사람이 다른 항목을 동시에 고쳐도 서로 덮어쓰지 않습니다.
    ========================================================================== */
 import * as store from './store.js';
@@ -14,7 +15,9 @@ import { KEYS } from './store.js';
 import { FIREBASE_CONFIG, DB_ROOT } from './firebase-config.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
-const SHARED = [KEYS.cookPrices, KEYS.elixirPrices, KEYS.ingPrices];
+const SHARED = [KEYS.cookPrices, KEYS.elixirPrices, KEYS.ingPrices, KEYS.history];
+const HIST = KEYS.history;
+const HIST_KEEP = 56;   // 7일
 
 /* 상태: off(설정 없음) · connecting · online · offline · error */
 let state = FIREBASE_CONFIG ? 'connecting' : 'off';
@@ -35,6 +38,27 @@ function diff(prev = {}, next = {}) {
     if (JSON.stringify(a) !== JSON.stringify(b)) out[encodeKey(k)] = b ?? null;   // null = 삭제
   }
   return out;
+}
+
+/* 시세 기록: 화면은 { cook: { 이름: [{c, p}] } }, DB는 주기별 칸 → 바뀐 칸만 보냄 */
+function histFlat(h) {
+  const out = {};
+  for (const kind of ['cook', 'elixir'])
+    for (const [name, arr] of Object.entries(h?.[kind] || {}))
+      for (const { c, p } of arr || []) out[`${kind}/${encodeKey(name)}/${c}`] = p;
+  return out;
+}
+function flatDiff(a, b) {
+  const out = {};
+  for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) if (a[k] !== b[k]) out[k] = b[k] ?? null;
+  return out;
+}
+function histFromRemote(v) {
+  const h = { cook: {}, elixir: {} };
+  for (const kind of ['cook', 'elixir'])
+    for (const [en, byCycle] of Object.entries(v?.[kind] || {}))
+      h[kind][decodeKey(en)] = Object.entries(byCycle).map(([c, p]) => ({ c: +c, p })).sort((x, y) => x.c - y.c).slice(-HIST_KEEP);
+  return h;
 }
 
 export async function initSync() {
@@ -69,7 +93,7 @@ export async function initSync() {
   // 내가 고친 값 → 서버 (바뀐 항목만)
   store.setWriteHook((key, value, prev) => {
     if (!SHARED.includes(key)) return;
-    const patch = diff(prev, value);
+    const patch = key === HIST ? flatDiff(histFlat(prev), histFlat(value)) : diff(prev, value);
     if (!Object.keys(patch).length) return;
     fb.update(fb.ref(db, `${DB_ROOT}/${key}`), patch)
       .catch(err => setState('error', err?.code === 'PERMISSION_DENIED' ? 'DB 규칙에서 쓰기가 막혀 있어요' : '저장하지 못했어요'));
@@ -79,12 +103,14 @@ export async function initSync() {
   let first = true;
   SHARED.forEach(key => {
     fb.onValue(fb.ref(db, `${DB_ROOT}/${key}`), snap => {
-      const remote = {};
-      Object.entries(snap.val() || {}).forEach(([k, v]) => { remote[decodeKey(k)] = v; });
+      let remote = {};
+      if (key === HIST) remote = histFromRemote(snap.val());
+      else Object.entries(snap.val() || {}).forEach(([k, v]) => { remote[decodeKey(k)] = v; });
       // 처음 연결했는데 서버가 비어 있고 내 브라우저에 값이 있으면 → 올려줌
       const local = store.get(key, {});
-      if (first && !snap.exists() && Object.keys(local).length) {
-        fb.update(fb.ref(db, `${DB_ROOT}/${key}`), diff({}, local)).catch(() => {});
+      const hasLocal = key === HIST ? Object.keys(histFlat(local)).length : Object.keys(local).length;
+      if (first && !snap.exists() && hasLocal) {
+        fb.update(fb.ref(db, `${DB_ROOT}/${key}`), key === HIST ? histFlat(local) : diff({}, local)).catch(() => {});
         return;
       }
       if (JSON.stringify(remote) !== JSON.stringify(local)) store.set(key, remote, { fromRemote: true });

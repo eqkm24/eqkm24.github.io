@@ -3,7 +3,8 @@
    ========================================================================== */
 import { RECIPES, ELIXIRS } from './data.js';
 import { renderSpecCard } from './spec.js';
-import { cookEfficiency, elixirEfficiency, fmtSigned, fmtDuration, cycleInfo } from './calc.js';
+import { stats, sparkline, LEVEL } from './history.js';
+import { fmtNum, cookEfficiency, elixirEfficiency, fmtSigned, fmtDuration, cycleInfo } from './calc.js';
 import {
   $, esc, icon, cookContext, alchContext,
   cookPrices, elixirPrices, ingPrices, priceOf, renderCycleStrip,
@@ -39,7 +40,30 @@ function topList(rows) {
     </div>`).join('')}</div>`;
 }
 
+/* 사이드: 지금 팔면 좋은 것 (시세 기록 기준) */
+function sellList(kind, items) {
+  const rows = items.map(x => ({ ...x, s: stats(kind, x.key) }))
+    .filter(x => x.s && x.s.level !== 'stale')
+    .sort((a, b) => b.s.ratio - a.s.ratio || b.s.cur - a.s.cur).slice(0, 5);
+  if (!rows.length) return `<div class="empty">이번 주기 시세가 들어오면<br>최고가에 가까운 순서로 보여줘요.</div>`;
+  return `<div class="sell-list">${rows.map(x => `
+    <div class="sell-it">
+      ${icon(x.key, 'm')}
+      <div class="sell-main">
+        <div class="sell-top"><span class="nm">${esc(x.label)}</span><span class="sig ${LEVEL[x.s.level].cls}">${LEVEL[x.s.level].label}</span></div>
+        <div class="sell-bot">
+          <span class="num"><b>${fmtNum(x.s.cur)}</b>${x.s.change == null ? '' : ` <span class="${x.s.change >= 0 ? 'gain' : 'loss'}">${x.s.change >= 0 ? '▲' : '▼'}${Math.abs(x.s.change).toFixed(0)}%</span>`}</span>
+          ${sparkline(x.s.series, 64, 20)}
+        </div>
+        <div class="sell-meter"><i style="width:${(x.s.ratio * 100).toFixed(0)}%"></i><span>최고가의 ${(x.s.ratio * 100).toFixed(0)}%</span></div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
 function renderTop() {
+  $('#homeSellCook').innerHTML = sellList('cook', RECIPES.map(r => ({ key: r.name, label: r.name })));
+  $('#homeSellAlch').innerHTML = sellList('elixir', ELIXIRS.map(e => ({ key: e.name, label: `${e.name}의 비약` })));
+
   const cctx = cookContext(), actx = alchContext();
   const ip = ingPrices(), cp = cookPrices(), ep = elixirPrices();
 

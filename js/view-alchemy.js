@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { elixirEfficiency, elixirIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, alchOpts, patch, clampLv, stepper, wireSteppers, alchContext,
-  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions,
+  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, ingPricesRaw, selfSupply, toggleSelf,
 } from './ui.js';
 
 let selected = null;
@@ -52,6 +52,7 @@ export function initAlchemy() {
   table.addEventListener('change', onChange);
   $('#alchDetail').addEventListener('change', onChange);
   $('#alchIngPrices').addEventListener('change', onChange);
+  $('#alchIngPrices').addEventListener('click', e => { const b = e.target.closest('[data-self]'); if (b) toggleSelf(b.dataset.self); });
 }
 
 export function renderAlchemy() {
@@ -72,7 +73,7 @@ export function renderAlchemy() {
   $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
   renderTable(rows, o.sort);
   renderDetail(ELIXIRS.find(e => e.name === selected), ctx, ep, ip);
-  renderIngPrices(ip);
+  renderIngPrices(ingPricesRaw(), selfSupply());
 }
 
 function renderOptions(ctx, o) {
@@ -175,7 +176,7 @@ function renderDetail(e, ctx, ep, ip) {
     <p class="note">기본 시간은 바닐라 30초, 그 외 56초예요. 숙련도 시간 감소와 재료 손실 방지는 위키 구간표를 레벨별로 나눠 근사했어요. 희귀 비약으로 나오는 확률은 판매가 차이를 알 수 없어 뺐어요. 판매기한은 ${ALCH_RULES.sellDeadlineH}시간이에요.</p>`;
 }
 
-function renderIngPrices(ip) {
+function renderIngPrices(ip, self) {
   const all = new Set();
   ELIXIRS.forEach(e => elixirIngredients(e).forEach(i => all.add(i.name)));
   const groups = { 심재: [], 광물: [], '기타 재료': [] };
@@ -189,8 +190,9 @@ function renderIngPrices(ip) {
       <div class="price-group">
         <h3>${title} <span class="chip">${list.length}</span></h3>
         ${list.map(n => `
-          <div class="price-row"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
-            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"></div>`).join('')}
+          <div class="price-row has-self${self[n] ? ' is-self' : ''}"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
+            <button class="self-tog${self[n] ? ' is-on' : ''}" type="button" data-self="${esc(n)}" aria-pressed="${!!self[n]}" title="직접 캐거나 기른 재료는 0원으로 계산">직접</button>
+            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"${self[n] ? ' disabled' : ''}></div>`).join('')}
       </div>`).join('')
   }</div>`;
 }

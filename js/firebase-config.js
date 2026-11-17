@@ -10,7 +10,15 @@
      소스에 들어가도 괜찮습니다. 보안은 Realtime Database 규칙으로 지킵니다.
    ========================================================================== */
 
-export const FIREBASE_CONFIG = null;
+export const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBZ-J537fGnyKOHXAnnuEK6Je0-GuMu-Lg",
+  authDomain: "miru-0802.firebaseapp.com",
+  databaseURL: "https://miru-0802-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "miru-0802",
+  storageBucket: "miru-0802.firebasestorage.app",
+  messagingSenderId: "931790847553",
+  appId: "1:931790847553:web:d16c46138ed7189b8b90c0",
+};
 /* 예시
 export const FIREBASE_CONFIG = {
   apiKey: "AIza...",

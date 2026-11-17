@@ -1,9 +1,16 @@
-<title>김미루네 작업실</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="icon" type="image/svg+xml" href="img/star.svg">
-<link rel="stylesheet" href="css/base.css">
-<link rel="stylesheet" href="css/components.css">
-
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>김미루네 작업실</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="icon" type="image/svg+xml" href="img/star.svg">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}</style>
+</head>
+<body>
 <!-- ═══════════ HUD ═══════════ -->
 <header class="hud">
   <div class="hud-inner">
@@ -35,48 +42,38 @@
   <main>
     <!-- ═══════════ 홈 ═══════════ -->
     <section class="view" data-view="home">
-      <div class="grid-2">
-        <article class="win hero">
-          <div class="win-title"><h2>변동 시세 시계</h2><span class="sub">매일 0시부터 3시간마다 정각 갱신</span></div>
-          <div class="win-body">
-            <div class="clock">
-              <div>
-                <div class="clock-big num" id="homeClock">--:--:--</div>
-                <div class="clock-cap" id="homeClockCap">다음 갱신</div>
-              </div>
-              <div class="cycle-strip" id="homeCycle"></div>
-            </div>
+        <article class="win hero mini-clock-win">
+          <div class="mini-clock">
+            <div class="mc-label"><span class="mc-title">변동 시세</span><span class="mc-sub" id="homeClockCap">다음 갱신</span></div>
+            <div class="mc-time num" id="homeClock">--:--:--</div>
+            <div class="cycle-strip mc-strip" id="homeCycle"></div>
           </div>
         </article>
-
         <article class="win">
           <div class="win-title"><h2>내 캐릭터 상세 스펙</h2><span class="sub">계산기 전체에 적용돼요</span></div>
           <div class="win-body" id="profilePanel"></div>
         </article>
-      </div>
-
-      <div class="grid-2">
+        <div class="grid-2">
         <article class="win">
-          <div class="win-title"><h2>지금 요리하면 좋은 것</h2><span class="spacer"></span><a class="btn btn-sm" href="#cook">전체 보기</a></div>
+          <div class="win-title"><h2>지금 판매해야 할 요리</h2><span class="spacer"></span><a class="btn btn-sm" href="#cook">전체 보기</a></div>
           <div class="win-body" id="homeCookTop"></div>
         </article>
         <article class="win">
-          <div class="win-title"><h2>지금 만들면 좋은 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#alchemy">전체 보기</a></div>
+          <div class="win-title"><h2>지금 판매해야 할 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#alchemy">전체 보기</a></div>
           <div class="win-body" id="homeAlchTop"></div>
         </article>
-      </div>
-
-      <article class="win">
-        <div class="win-title"><h2>바로가기</h2></div>
-        <div class="win-body">
-          <div class="tiles">
-            <a class="tile" href="#cook" data-ico="요"><span class="t">요리 순차익 계산기</span><span class="d">26가지 요리의 재료비, 개당·시간당 순익과 경험치</span></a>
-            <a class="tile" href="#alchemy" data-ico="비"><span class="t">비약 효율 계산기</span><span class="d">17가지 비약의 제작 시간, 재료비, 시간당 순익</span></a>
-            <button class="tile tile-alarm" type="button" data-open="alarm" data-ico=""><span class="t">알람</span><span class="d">오른쪽 아래 버튼으로 언제든 열 수 있어요</span></button>
-            <a class="tile" href="#prices" data-ico="시"><span class="t">시세 입력</span><span class="d">디스코드 시세 메시지를 붙여넣으면 한 번에 반영</span></a>
-          </div>
         </div>
-      </article>
+        <article class="win">
+          <div class="win-title"><h2>바로가기</h2></div>
+          <div class="win-body">
+            <div class="tiles">
+              <a class="tile" href="#cook" data-ico="요"><span class="t">요리 순차익 계산기</span><span class="d">26가지 요리의 재료비, 개당·시간당 순익과 경험치</span></a>
+              <a class="tile" href="#alchemy" data-ico="비"><span class="t">비약 효율 계산기</span><span class="d">17가지 비약의 제작 시간, 재료비, 시간당 순익</span></a>
+              <button class="tile tile-alarm" type="button" data-open="alarm" data-ico=""><span class="t">알람</span><span class="d">오른쪽 아래 버튼으로 언제든 열 수 있어요</span></button>
+              <a class="tile" href="#prices" data-ico="시"><span class="t">시세 입력</span><span class="d">디스코드 시세 메시지를 붙여넣으면 한 번에 반영</span></a>
+            </div>
+          </div>
+        </article>
     </section>
 
     <!-- ═══════════ 요리 ═══════════ -->
@@ -284,3 +281,5 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script type="module" src="js/app.js"></script>
+</body>
+</html>

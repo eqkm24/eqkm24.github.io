@@ -712,3 +712,44 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .nick-msg.is-notfound, .nick-msg.is-invalid { background: #fff0dc; color: var(--warn); }
 .nick-msg.is-loading { color: var(--sky); background: var(--sky-bg); }
 .btn[disabled] { opacity: .55; pointer-events: none; }
+
+/* ── 홈: 얇은 시세 시계 띠 ── */
+.mini-clock {
+  display: flex; align-items: center; gap: 10px 20px; flex-wrap: wrap;
+  padding: 12px 18px;
+}
+.mc-label { display: grid; gap: 1px; min-width: 0; }
+.mc-title { font-weight: 700; font-size: var(--fs-m); color: var(--ink); }
+.mc-sub { font-size: var(--fs-xs); color: var(--txt-2); }
+.mc-time {
+  font-size: 30px; font-weight: 700; color: var(--ink); line-height: 1;
+  text-shadow: 2px 2px 0 var(--y-1);
+}
+.mc-strip { flex: 1; min-width: 260px; }
+.mc-strip .cycle-cell { height: 30px; border-radius: 8px; font-size: 10.5px; }
+@media (max-width: 560px) { .mc-strip { min-width: 100%; } }
+
+/* 스펙 카드가 넓을 때 직업 6칸 한 줄 */
+@media (min-width: 1000px) {
+  .view[data-view="home"] > .win .job-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* ── 홈: 판매 추천 사이드 배치 (예시) ── */
+.home-side { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
+.home-main { display: grid; gap: 20px; min-width: 0; }
+.home-aside {
+  display: grid; gap: 20px; min-width: 0;
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px);
+}
+.home-aside .win-body { padding: 12px 14px; }
+@media (max-width: 900px) {
+  .home-side { grid-template-columns: minmax(0, 1fr); }
+  .home-aside { position: static; order: -1; }   /* 좁은 화면에서는 위로 */
+}
+
+/* 지금 시간대 칸: 글자는 또렷하게, 진행도는 아래 띠로 */
+.cycle-cell.now { background: var(--ink); color: var(--y-2); box-shadow: 0 3px 0 rgba(61,42,18,.35); }
+.cycle-cell.now > i { inset: auto auto 0 0; height: 4px; background: var(--y-2); }
+/* 사이드 배치일 때 바로가기 2×2 */
+.home-main .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 560px) { .home-main .tiles { grid-template-columns: minmax(0, 1fr); } }

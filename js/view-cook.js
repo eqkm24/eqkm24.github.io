@@ -60,8 +60,6 @@ export function initCook() {
     if (inp) setIngPrice(inp.dataset.ing, inp.value);
   };
   $('#cookDetail').addEventListener('change', onIng);
-  $('#cookIngPrices').addEventListener('change', onIng);
-  $('#cookIngPrices').addEventListener('click', e => { const b = e.target.closest('[data-self]'); if (b) toggleSelf(b.dataset.self); });
   $('#cookDetail').addEventListener('change', e => {
     const inp = e.target.closest('input[data-price]');
     if (inp) setProductPrice(KEYS.cookPrices, inp.dataset.price, inp.value);
@@ -88,7 +86,6 @@ export function renderCook() {
   $('#cookStageSeg').innerHTML = STAGES.map(([k, l]) => `<button type="button" data-stage="${k}" class="${o.stage === k ? 'is-on' : ''}">${l}</button>`).join('');
   renderTable(rows, o.sort);
   renderDetail(RECIPES.find(r => r.name === selected), ctx, cp, ip);
-  renderIngPrices(ingPricesRaw(), selfSupply());
 }
 
 function renderOptions(ctx, o) {
@@ -152,6 +149,7 @@ function renderDetail(recipe, ctx, cp, ip) {
   const price = priceOf(cp, recipe.name);
   const x = cookEfficiency(recipe, price, ip, ctx);
   const ings = recipeIngredients(recipe);
+  const raw = ingPricesRaw(), self = selfSupply();
   const kindLabel = { fish: '물고기 · 희귀', veg: '바닐라 작물', farm: '농부 작물 · 희귀' };
   const tasksPerHour = 3600 / x.cycle * ctx.stations;
 
@@ -170,9 +168,10 @@ function renderDetail(recipe, ctx, cp, ip) {
       <div class="slot ${i.kind}">
         <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
         <span class="kind">${kindLabel[i.kind]}</span>
-        <input class="input num" data-ing="${esc(i.name)}" type="number" min="0" step="any" placeholder="단가" value="${ip[i.name] ?? ''}" aria-label="${esc(i.name)} 단가">
+        <span class="slot-price${self[i.name] ? ' is-self' : raw[i.name] ? '' : ' is-empty'}">${self[i.name] ? '직접 수급 · 0원' : raw[i.name] ? fmtNum(raw[i.name]) + ' 쿠키' : '단가 없음'}</span>
       </div>`).join('')}
     </div>
+    <div class="row" style="justify-content:flex-end"><a class="btn btn-sm" href="#prices" data-goto-cat="cookIng">재료 단가 수정하기 →</a></div>
     <div class="calc-lines">
       <div class="calc-line"><span class="k">1회 작업 시간${x.preps ? ` (손질 ${x.preps}종)` : ''}</span><span class="num">${fmtSec(x.cycle)}</span></div>
       <div class="calc-line"><span class="k">작업당 결과 (탄 요리 ${fmtNum(x.burn * 100, 0)}% 제외)</span><span class="num">${fmtNum(x.made, 2)}개</span></div>
@@ -186,21 +185,6 @@ function renderDetail(recipe, ctx, cp, ip) {
     <p class="note">손질하면 재료 종류마다 시간 −${COOK_RULES.timePerPrep}% (최대 ${COOK_RULES.timePrepMax}%), 탄 요리 확률 10% → 7%. 희귀 요리 확률과 차수에 따른 탄 요리 감소는 위키에 수치가 없어 계산에서 뺐어요.</p>`;
 }
 
-function renderIngPrices(ip, self) {
-  const groups = { fish: new Set(), veg: new Set(), farm: new Set() };
-  RECIPES.forEach(r => recipeIngredients(r).forEach(i => groups[i.kind].add(i.name)));
-  const titles = { fish: '물고기 (희귀)', veg: '바닐라 작물', farm: '농부 작물 (희귀)' };
-  $('#cookIngPrices').innerHTML = `<div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">${
-    Object.entries(groups).map(([k, set]) => `
-      <div class="price-group">
-        <h3>${titles[k]} <span class="chip">${set.size}</span></h3>
-        ${[...set].map(n => `
-          <div class="price-row has-self${self[n] ? ' is-self' : ''}"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
-            <button class="self-tog${self[n] ? ' is-on' : ''}" type="button" data-self="${esc(n)}" aria-pressed="${!!self[n]}" title="직접 캐거나 기른 재료는 0원으로 계산">직접</button>
-            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"${self[n] ? ' disabled' : ''}></div>`).join('')}
-      </div>`).join('')
-  }</div>`;
-}
 
 /* 타이머 프리셋에서 쓰는 선택 요리의 작업 시간 */
 export function selectedCookCycle() {

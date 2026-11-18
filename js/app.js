@@ -20,12 +20,14 @@ import { initSpec } from './spec.js';
 import { initHistory } from './history.js';
 import { initHistoryView, renderHistoryView } from './view-history.js';
 import { initPrices, renderPrices } from './view-prices.js';
+import { initTrade, renderTrade } from './view-trade.js';
 
 const VIEWS = {
   home:    { init: initHome,    render: renderHome,    tick: tickHome },
   cook:    { init: initCook,    render: renderCook },
   alchemy: { init: initAlchemy, render: renderAlchemy },
   history: { init: initHistoryView, render: renderHistoryView },
+  trade:   { init: initTrade,   render: renderTrade },
   prices:  { init: initPrices,  render: renderPrices },
 };
 

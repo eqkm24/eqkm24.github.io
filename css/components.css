@@ -870,3 +870,42 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .pl-row.is-self .input { opacity: .45; text-decoration: line-through; }
 .pl-row .pr-name { overflow: hidden; }
 @media (min-width: 901px) { .prices-grid > .win:last-child { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 84px); } }
+
+/* ══ 거래 계산기 ══ */
+.tq-qty { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; align-items: end; }
+.tq-count { grid-column: 1 / -1; font-size: var(--fs-s); color: var(--txt-2); padding: 6px 12px; background: var(--y-1); border-radius: var(--r-s); }
+.tq-count b { font-size: var(--fs-l); color: var(--ink); }
+.tq-ref { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: var(--fs-s); padding: 8px 12px; border-radius: var(--r-s); background: var(--panel-2); border: 2px dashed var(--line); }
+.tq-ref b { color: var(--ink); }
+
+.bt-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
+@media (max-width: 900px) { .bt-cols { grid-template-columns: minmax(0, 1fr); } }
+.bt-side { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.bt-side h3 { font-size: var(--fs-m); color: var(--ink); display: flex; justify-content: space-between; }
+.bt-side > .btn { justify-self: start; margin-top: 4px; }
+.bt-head, .bt-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 80px 72px 32px; gap: 6px; align-items: center; }
+.bt-head { font-size: var(--fs-xs); color: var(--txt-3); padding: 0 2px; }
+.bt-row .input { padding: 6px 8px; font-size: var(--fs-s); min-width: 0; }
+.bt-sub { text-align: right; font-size: var(--fs-s); color: var(--ink); font-weight: 700; }
+@media (max-width: 520px) {
+  .bt-head { display: none; }
+  .bt-row { grid-template-columns: minmax(0, 1fr) 56px 72px 32px; }
+  .bt-row .input:first-child { grid-column: 1 / -1; }
+  .bt-sub { display: none; }
+}
+.bt-bars { display: grid; gap: 6px; margin-top: 6px; }
+.bt-bar { position: relative; display: grid; grid-template-columns: 90px 1fr auto; gap: 10px; align-items: center; font-size: var(--fs-xs); color: var(--txt-2); }
+.bt-bar > i { height: 14px; border-radius: 99px; border: 1.5px solid var(--ink); background: var(--y-2); min-width: 4px; }
+.bt-bar.get > i { background: var(--gain); }
+.bt-bar b { color: var(--ink); font-size: var(--fs-s); }
+.bt-verdict { margin-top: 8px; padding: 10px 14px; border-radius: var(--r-s); background: var(--panel-2); color: var(--txt-2); font-size: var(--fs-s); line-height: 1.6; border: 2px solid var(--line); }
+.bt-verdict b { color: var(--ink); font-size: var(--fs-m); }
+.bt-verdict.even { background: var(--gain-bg); color: var(--gain); border-color: #a9e2bf; font-weight: 700; }
+.bt-verdict.me { background: var(--y-1); border-color: var(--y-3); }
+.bt-verdict.them { background: var(--loss-bg); border-color: #f4b4a8; }
+.tq-diff { color: var(--txt-2); } .tq-diff b { color: var(--ink); }
+
+/* 계산 내역 재료 칸: 단가 보기 전용 (입력은 시세 입력 탭) */
+.slot-price { grid-column: 1 / -1; font-size: var(--fs-s); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.slot-price.is-self { color: var(--gain); }
+.slot-price.is-empty { color: var(--warn); font-weight: 300; }

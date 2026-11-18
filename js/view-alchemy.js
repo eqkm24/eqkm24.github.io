@@ -51,8 +51,6 @@ export function initAlchemy() {
   };
   table.addEventListener('change', onChange);
   $('#alchDetail').addEventListener('change', onChange);
-  $('#alchIngPrices').addEventListener('change', onChange);
-  $('#alchIngPrices').addEventListener('click', e => { const b = e.target.closest('[data-self]'); if (b) toggleSelf(b.dataset.self); });
 }
 
 export function renderAlchemy() {
@@ -73,7 +71,6 @@ export function renderAlchemy() {
   $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
   renderTable(rows, o.sort);
   renderDetail(ELIXIRS.find(e => e.name === selected), ctx, ep, ip);
-  renderIngPrices(ingPricesRaw(), selfSupply());
 }
 
 function renderOptions(ctx, o) {
@@ -142,6 +139,7 @@ function renderDetail(e, ctx, ep, ip) {
   const price = priceOf(ep, e.name);
   const x = elixirEfficiency(e, price, ip, ctx);
   const ings = elixirIngredients(e);
+  const raw = ingPricesRaw(), self = selfSupply();
   const tasksPerHour = 3600 / x.cycle * ctx.stations;
   const kindOf = n => n.includes('심재') ? '심재' : /강화된|순수한/.test(n) ? '광물' : n === '물병' ? '공통' : '재료';
 
@@ -160,9 +158,10 @@ function renderDetail(e, ctx, ep, ip) {
       <div class="slot">
         <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
         <span class="kind">${kindOf(i.name)}</span>
-        <input class="input num" data-ing="${esc(i.name)}" type="number" min="0" step="any" placeholder="단가" value="${ip[i.name] ?? ''}" aria-label="${esc(i.name)} 단가">
+        <span class="slot-price${self[i.name] ? ' is-self' : raw[i.name] ? '' : ' is-empty'}">${self[i.name] ? '직접 수급 · 0원' : raw[i.name] ? fmtNum(raw[i.name]) + ' 쿠키' : '단가 없음'}</span>
       </div>`).join('')}
     </div>
+    <div class="row" style="justify-content:flex-end"><a class="btn btn-sm" href="#prices" data-goto-cat="alchIng">재료 단가 수정하기 →</a></div>
     <div class="calc-lines">
       <div class="calc-line"><span class="k">1회 제작 시간</span><span class="num">${fmtSec(x.cycle)}</span></div>
       <div class="calc-line"><span class="k">작업당 결과</span><span class="num">${fmtNum(x.made, 2)}병</span></div>
@@ -176,26 +175,6 @@ function renderDetail(e, ctx, ep, ip) {
     <p class="note">기본 시간은 바닐라 30초, 그 외 56초예요. 숙련도 시간 감소와 재료 손실 방지는 위키 구간표를 레벨별로 나눠 근사했어요. 희귀 비약으로 나오는 확률은 판매가 차이를 알 수 없어 뺐어요. 판매기한은 ${ALCH_RULES.sellDeadlineH}시간이에요.</p>`;
 }
 
-function renderIngPrices(ip, self) {
-  const all = new Set();
-  ELIXIRS.forEach(e => elixirIngredients(e).forEach(i => all.add(i.name)));
-  const groups = { 심재: [], 광물: [], '기타 재료': [] };
-  [...all].forEach(n => {
-    if (n.includes('심재')) groups['심재'].push(n);
-    else if (/강화된|순수한/.test(n)) groups['광물'].push(n);
-    else groups['기타 재료'].push(n);
-  });
-  $('#alchIngPrices').innerHTML = `<div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">${
-    Object.entries(groups).map(([title, list]) => `
-      <div class="price-group">
-        <h3>${title} <span class="chip">${list.length}</span></h3>
-        ${list.map(n => `
-          <div class="price-row has-self${self[n] ? ' is-self' : ''}"><span class="pr-name">${icon(n, 's')}${esc(n)}</span>
-            <button class="self-tog${self[n] ? ' is-on' : ''}" type="button" data-self="${esc(n)}" aria-pressed="${!!self[n]}" title="직접 캐거나 기른 재료는 0원으로 계산">직접</button>
-            <input class="input num" data-ing="${esc(n)}" type="number" min="0" step="any" placeholder="0" value="${ip[n] ?? ''}" aria-label="${esc(n)} 단가"${self[n] ? ' disabled' : ''}></div>`).join('')}
-      </div>`).join('')
-  }</div>`;
-}
 
 export function selectedAlchCycle() {
   const e = ELIXIRS.find(x => x.name === selected) || ELIXIRS[6];

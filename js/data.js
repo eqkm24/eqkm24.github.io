@@ -126,7 +126,8 @@ export const WIKI = {
 /* ── 아이콘 이미지 (기린월드 위키) ──
    이름 → 파일명. 주소를 통째로 바꾸려면 ICON_BASE 만 고치면 됩니다.
    목록에 없거나 불러오지 못하면 첫 글자 배지로 대신 보여줍니다.
-   다른 이미지를 쓰고 싶으면 파일명 대신 전체 URL(https://...)을 넣어도 됩니다. */
+   다른 이미지를 쓰고 싶으면 파일명 대신 전체 URL(https://...)을 넣어도 됩니다.
+   'img/' 로 시작하면 페이지에 같이 들어 있는 파일입니다 (마인크래프트 바닐라 아이템, 1.21.11 텍스처). */
 export const ICON_BASE = 'https://giraffemc.com/wiki-assets/.gitbook/assets/icons/';
 
 export const ICONS = {
@@ -154,12 +155,14 @@ export const ICONS = {
   '지혜': 'gf_elixir_wisdom.png',     '토트': 'gf_elixir_thoth.png',
 
   /* 작물 · 바닐라 재료 */
-  '호박': 'mc_pumpkin.png', '밀': 'mc_wheat.png', '사탕수수': 'mc_sugar_cane.png',
+  '호박': 'mc_pumpkin.png', '밀': 'img/items/wheat.png', '사탕수수': 'img/items/sugar_cane.png',
+  '감자': 'img/items/potato.png', '당근': 'img/items/carrot.png', '비트': 'img/items/beetroot.png',
+  '달콤한 열매': 'img/items/sweet_berries.png', '물병': 'img/items/water_bottle.png', '연어': 'img/items/salmon.png',
   '양파': 'crop_onion.png', '상추': 'crop_lettuce.png', '무': 'crop_radish.png', '옥수수': 'crop_corn.png',
   '애호박': 'crop_zucchini.png', '오이': 'crop_cucumber.png', '양배추': 'crop_cabbage.png', '레몬': 'crop_lemon.png',
   '고추': 'crop_pepper.png', '토마토': 'crop_tomato.png', '고구마': 'crop_sweet_potato.png', '키위': 'crop_kiwi.png',
-  '수박 조각': 'mc_melon_slice.png', '설탕': 'mc_sugar.png', '말린 켈프': 'mc_dried_kelp.png', '뼛가루': 'mc_bone_meal.png',
-  '발광 열매': 'mc_glow_berries.png', '코코아 콩': 'mc_cocoa_beans.png', '꿀병': 'mc_honey_bottle.png', '꿀이 든 병': 'mc_honey_bottle.png',
+  '수박 조각': 'img/items/melon_slice.png', '설탕': 'img/items/sugar.png', '말린 켈프': 'img/items/dried_kelp.png', '뼛가루': 'img/items/bone_meal.png',
+  '발광 열매': 'img/items/glow_berries.png', '코코아 콩': 'img/items/cocoa_beans.png', '꿀병': 'img/items/honey_bottle.png', '꿀이 든 병': 'img/items/honey_bottle.png',
 
   /* 심재 */
   '참나무 심재': 'oak_heartwood.png', '참나무 심재(등급무관)': 'oak_heartwood.png', '자작나무 심재': 'birch_heartwood.png',

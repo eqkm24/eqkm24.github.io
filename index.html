@@ -37,6 +37,7 @@
     <a class="menu-btn" href="#cook"    data-view="cook">요리 순차익</a>
     <a class="menu-btn" href="#alchemy" data-view="alchemy">비약 효율</a>
     <a class="menu-btn" href="#history" data-view="history">시세 기록 <span class="new-tag">NEW</span></a>
+    <a class="menu-btn" href="#trade"   data-view="trade">거래 계산기</a>
     <a class="menu-btn" href="#prices"  data-view="prices">시세 입력</a>
   </nav>
 
@@ -117,10 +118,6 @@
         </article>
       </div>
 
-      <article class="win">
-        <div class="win-title"><h2>요리 재료 단가</h2><span class="sub">쿠키 / 1개 · 비워두면 0으로 계산</span></div>
-        <div class="win-body" id="cookIngPrices"></div>
-      </article>
     </section>
 
     <!-- ═══════════ 연금술 ═══════════ -->
@@ -149,10 +146,6 @@
         </article>
       </div>
 
-      <article class="win">
-        <div class="win-title"><h2>비약 재료 단가</h2><span class="sub">쿠키 / 1개 · 물병은 모든 비약에 1개씩 들어가요</span></div>
-        <div class="win-body" id="alchIngPrices"></div>
-      </article>
     </section>
 
     <!-- ═══════════ 시세 기록 ═══════════ -->
@@ -171,6 +164,81 @@
           <div class="empty" id="histEmpty" style="margin:16px">아직 기록이 없어요. 시세를 넣을 때마다 주기별로 쌓여요.<br>위쪽 시세 입력 탭에서 디스코드 시세를 붙여넣으면 바로 첫 점이 생겨요.</div>
         </div>
         <div class="win-foot">신호 기준: 이번 시세가 최근 24시간 최고가의 97% 이상이면 지금 팔기, 90% 이상이면 괜찮음, 그 아래는 기다리기.</div>
+      </article>
+    </section>
+
+    <!-- ═══════════ 거래 계산기 ═══════════ -->
+    <section class="view" data-view="trade">
+      <datalist id="tradeList"></datalist>
+      <div class="grid-2">
+        <article class="win">
+          <div class="win-title"><h2>수량 · 단가 계산</h2><span class="spacer"></span><button class="btn btn-sm btn-ghost" type="button" data-act="resetQty">비우기</button></div>
+          <div class="win-body">
+            <div class="field"><label for="tqName">품목 <span class="faint">(고르면 현재 시세 · 단가와 비교해요)</span></label>
+              <input class="input" id="tqName" list="tradeList" data-f="name" placeholder="예: 토마토 파스타, 왕게, 순수한 구리" autocomplete="off"></div>
+            <div class="field"><span class="label">한 칸에 쌓이는 개수</span><div class="seg" id="tqStack" role="group" aria-label="쌓이는 개수"></div></div>
+            <div class="tq-qty">
+              <div class="field"><label for="tqBox">상자 <span class="faint">27칸</span></label><input class="input num" id="tqBox" type="number" min="0" data-f="box"></div>
+              <div class="field"><label for="tqSet">세트</label><input class="input num" id="tqSet" type="number" min="0" data-f="set"></div>
+              <div class="field"><label for="tqEach">낱개</label><input class="input num" id="tqEach" type="number" min="0" data-f="each"></div>
+              <div class="tq-count" id="tqCount"></div>
+            </div>
+            <div class="spec-2">
+              <div class="field"><label for="tqUnit">개당 가격</label><input class="input num" id="tqUnit" type="number" min="0" step="any" data-f="unit"></div>
+              <div class="field"><label for="tqTotal">총액 <span class="faint">(넣으면 개당 가격 계산)</span></label><input class="input num" id="tqTotal" type="number" min="0" data-f="total"></div>
+            </div>
+            <div id="tqRef"></div>
+            <div class="field" style="max-width:200px"><label for="tqFee">수수료 % <span class="faint">(없으면 0)</span></label><input class="input num" id="tqFee" type="number" min="0" max="99" step="0.1" data-f="fee"></div>
+            <div class="calc-lines" id="tqResult"></div>
+          </div>
+        </article>
+
+        <div style="display:grid;gap:20px;align-content:start">
+          <article class="win">
+            <div class="win-title"><h2>나눠 갖기</h2><span class="sub">같이 판 돈을 똑같이 나눠요</span></div>
+            <div class="win-body">
+              <div class="spec-2">
+                <div class="field"><label for="spTotal">총액</label><input class="input num" id="spTotal" type="number" min="0" data-f="splitTotal" placeholder="쿠키"></div>
+                <div class="field"><label for="spN">인원</label><input class="input num" id="spN" type="number" min="1" max="50" data-f="splitN"></div>
+              </div>
+              <div class="calc-lines" id="splitResult"></div>
+            </div>
+          </article>
+          <article class="win">
+            <div class="win-title"><h2>단위 참고</h2></div>
+            <div class="win-body">
+              <div class="calc-lines">
+                <div class="calc-line"><span class="k">1세트</span><span class="num">64개 (꿀병 · 눈덩이 등은 16개)</span></div>
+                <div class="calc-line"><span class="k">1상자 · 셜커 상자</span><span class="num">27칸 = 1,728개</span></div>
+                <div class="calc-line"><span class="k">큰 상자</span><span class="num">54칸 = 3,456개</span></div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <article class="win">
+        <div class="win-title"><h2>물물교환 저울</h2><span class="sub">주고받는 물건 값을 비교해 차액을 알려줘요</span><span class="spacer"></span>
+          <button class="btn btn-sm" type="button" data-act="swap">⇄ 양쪽 바꾸기</button>
+          <button class="btn btn-sm btn-ghost" type="button" data-act="resetBarter">비우기</button></div>
+        <div class="win-body">
+          <div class="bt-cols">
+            <div class="bt-side">
+              <h3>내가 주는 것 <span class="num" id="btGiveSum"></span></h3>
+              <div class="bt-head"><span>품목</span><span>개수</span><span>개당</span><span>소계</span><span></span></div>
+              <div id="bt-give"></div>
+              <button class="btn btn-sm" type="button" data-act="add" data-side="give">+ 줄 추가</button>
+            </div>
+            <div class="bt-side">
+              <h3>내가 받는 것 <span class="num" id="btGetSum"></span></h3>
+              <div class="bt-head"><span>품목</span><span>개수</span><span>개당</span><span>소계</span><span></span></div>
+              <div id="bt-get"></div>
+              <button class="btn btn-sm" type="button" data-act="add" data-side="get">+ 줄 추가</button>
+            </div>
+          </div>
+          <div id="btScale"></div>
+          <p class="note">품목을 고르면 현재 시세 · 재료 단가가 개당 가격에 자동으로 들어가요. 쿠키를 주고받을 땐 품목에 "쿠키", 개당 1로 넣으면 돼요.</p>
+        </div>
       </article>
     </section>
 

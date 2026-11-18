@@ -18,7 +18,7 @@ export function esc(s) {
 const ICON_HUE = ['#ffd84a', '#ffb88a', '#9ee0b8', '#9fd0ff', '#d2b8ff', '#ffc2d6'];
 export function iconUrl(name) {
   const f = ICONS[name];
-  return f ? (/^https?:/.test(f) ? f : ICON_BASE + f) : '';
+  return f ? (/^(https?:|img\/)/.test(f) ? f : ICON_BASE + f) : '';
 }
 export function icon(name, size = 'm') {
   const url = iconUrl(name);

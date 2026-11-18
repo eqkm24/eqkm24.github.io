@@ -39,10 +39,17 @@ const CATS = [
 ];
 
 let cat = 'cook';
+export function setPriceCat(id) { if (CATS.some(c => c.id === id)) cat = id; }
 let query = '';
 let onlyEmpty = false;
 
 export function initPrices() {
+  /* 다른 화면의 '재료 단가 수정하기' → 해당 카테고리로 열기 */
+  document.addEventListener('click', e => {
+    const a = e.target.closest('[data-goto-cat]');
+    if (a) { setPriceCat(a.dataset.gotoCat); if (location.hash === '#prices') renderPrices(); }
+  }, true);
+
   /* 붙여넣기 */
   $('#pasteApply').addEventListener('click', () => {
     const { matched, unmatched } = parsePriceText($('#pasteArea').value, NAMES);

@@ -60,6 +60,6 @@ export const DEFAULTS = {
   profile:  { nickname: '', mcUuid: '', cookLv: 1, alchLv: 1, farmerLv: 1, fisherLv: 1, minerLv: 1, carpenterLv: 1,
               cookStations: null, alchStations: null,
               tools: { knife: 0, pestle: 0, hoe: 0, rod: 0, pickaxe: 0, axe: 0 } },
-  cookOpts: { prepAll: true, hearth: -1, gourmet: -1, bonusPct: 0, scaleIngredients: true, stage: 'all', unlockedOnly: false, sort: 'hourly' },
-  alchOpts: { powders: 2, bonusPct: 0, scaleIngredients: true, tier: 'all', unlockedOnly: false, sort: 'hourly' },
+  cookOpts: { grade: 'common', prepAll: true, hearth: -1, gourmet: -1, bonusPct: 0, scaleIngredients: true, stage: 'all', unlockedOnly: false, sort: 'hourly' },
+  alchOpts: { grade: 'common', powders: 2, bonusPct: 0, scaleIngredients: true, tier: 'all', unlockedOnly: false, sort: 'hourly' },
 };

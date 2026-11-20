@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { elixirEfficiency, elixirIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, alchOpts, patch, clampLv, stepper, wireSteppers, alchContext,
-  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, ingPricesRaw, selfSupply, toggleSelf,
+  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, gradedPrices, gradeSelect, ingPricesRaw, selfSupply, toggleSelf,
 } from './ui.js';
 
 let selected = null;
@@ -20,6 +20,7 @@ export function initAlchemy() {
     const t = e.target;
     if (t.id === 'alLv') patch(KEYS.profile, { alchLv: clampLv(t.value) });
     if (t.id === 'alStations') patch(KEYS.profile, { alchStations: Math.max(0, Math.round(+t.value || 0)) || null });
+    if (t.id === 'alGrade') patch(KEYS.alchOpts, { grade: t.value });
     if (t.id === 'alPestle') patch(KEYS.profile, { tools: { ...profile().tools, pestle: +t.value } });
     if (t.id === 'alScale') patch(KEYS.alchOpts, { scaleIngredients: t.checked });
     if (t.id === 'alUnlocked') patch(KEYS.alchOpts, { unlockedOnly: t.checked });
@@ -58,7 +59,7 @@ export function renderAlchemy() {
   const o = alchOpts();
   renderOptions(ctx, o);
 
-  const ep = elixirPrices(), ip = ingPrices();
+  const ep = gradedPrices('elixir', o.grade), ip = ingPrices();
   let rows = ELIXIRS.map(e => ({ e, price: priceOf(ep, e.name), entry: ep[e.name], ...elixirEfficiency(e, priceOf(ep, e.name), ip, ctx) }));
   if (o.tier !== 'all') rows = rows.filter(x => String(x.e.lv) === o.tier);
   if (o.unlockedOnly) rows = rows.filter(x => !x.locked);
@@ -69,8 +70,8 @@ export function renderAlchemy() {
   if (!selected || !ELIXIRS.some(e => e.name === selected)) selected = rows[0]?.e.name ?? ELIXIRS[0].name;
 
   $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
-  renderTable(rows, o.sort);
-  renderDetail(ELIXIRS.find(e => e.name === selected), ctx, ep, ip);
+  renderTable(rows, o.sort, o.grade);
+  renderDetail(ELIXIRS.find(e => e.name === selected), ctx, ep, ip, o.grade);
 }
 
 function renderOptions(ctx, o) {
@@ -85,6 +86,7 @@ function renderOptions(ctx, o) {
         <div class="seg" role="group" aria-label="가루 종류">
           ${[0, 1, 2].map(n => `<button type="button" data-powders="${n}" class="${o.powders === n ? 'is-on' : ''}">${['없음', '1종', '심재+광물'][n]}</button>`).join('')}
         </div></div>
+      <div class="field"><label for="alGrade">판매 등급 (이 가격으로 계산)</label>${gradeSelect('alGrade', o.grade)}</div>
       <div class="field"><label for="alPestle">막자 강화 · 토트의 축복</label>
         <select class="select" id="alPestle">${toolOptions('pestle', p.tools.pestle)}</select></div>
     </div>
@@ -98,7 +100,7 @@ function valText(e) {
   return e.vals.map((v, i) => `${ELIXIR_GRADES[i]} ${v}${e.unit}`).join(' · ');
 }
 
-function renderTable(rows, sort) {
+function renderTable(rows, sort, grade = 'common') {
   const max = Math.max(1, ...rows.filter(x => x.hasPrice).map(x => Math.abs(x.hourly)));
   const th = (k, label) => `<th class="r${sort === k ? ' is-sorted' : ''}" data-sort="${k}">${label}</th>`;
   let rank = 0;
@@ -123,7 +125,7 @@ function renderTable(rows, sort) {
             ${freshChip(x.entry)}
           </div>
         </div></div></td>
-        <td class="r"><input class="input num price-in" data-price="${esc(x.e.name)}" type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.e.name)}의 비약 판매가"></td>
+        <td class="r"><input class="input num price-in" data-price="${esc(x.e.name)}"${grade !== 'common' ? ' readonly title="고급 · 희귀 가격은 공식 시세에서 자동으로 들어와요"' : ''} type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.e.name)}의 비약 판매가"></td>
         <td class="r num">${fmtNum(x.cost / x.perTask)}</td>
         <td class="r num ${x.hasPrice ? (x.perUnit >= 0 ? 'gain' : 'loss') : 'faint'}">${x.hasPrice ? fmtSigned(x.perUnit) : '—'}</td>
         <td class="r">
@@ -135,7 +137,7 @@ function renderTable(rows, sort) {
     }).join('')}</tbody>`;
 }
 
-function renderDetail(e, ctx, ep, ip) {
+function renderDetail(e, ctx, ep, ip, grade = 'common') {
   const price = priceOf(ep, e.name);
   const x = elixirEfficiency(e, price, ip, ctx);
   const ings = elixirIngredients(e);
@@ -153,7 +155,7 @@ function renderDetail(e, ctx, ep, ip) {
     </div>
     <p class="note">${valText(e)}</p>
     <div class="field"><label for="alDetailPrice">판매가 (쿠키 / 1병)</label>
-      <input class="input num" id="alDetailPrice" data-price="${esc(e.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
+      <input class="input num" id="alDetailPrice"${grade !== 'common' ? ' readonly' : ''} data-price="${esc(e.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
     <div class="slots">${ings.map(i => `
       <div class="slot">
         <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>

@@ -190,3 +190,19 @@ export function toolOptions(tool, current) {
     return `<option value="${lv}"${+current === lv ? ' selected' : ''}>+${lv} · ${tail}</option>`;
   }).join('');
 }
+
+/* ── 등급별 판매가 ──
+   일반: 저장된 판매가(공식 시세 일반 등급 또는 직접 입력)
+   고급 · 희귀: 공식 시세의 해당 등급 가격 (없는 품목은 빠짐) */
+export const GRADES = [['common', '일반'], ['uncommon', '고급'], ['rare', '희귀']];
+export function gradedPrices(kind, grade = 'common') {
+  const base = kind === 'cook' ? cookPrices() : elixirPrices();
+  if (grade === 'common') return base;
+  const live = (store.get(KEYS.live, {}) || {})[kind] || {};
+  const out = {};
+  for (const [n, m] of Object.entries(live)) if (m[grade]) out[n] = { price: m[grade].price, at: base[n]?.at || Date.now(), auto: true, grade };
+  return out;
+}
+export function gradeSelect(id, current) {
+  return `<select class="select" id="${id}">${GRADES.map(([g, l]) => `<option value="${g}"${current === g ? ' selected' : ''}>${l}${g === 'common' ? '' : ' (공식 시세)'}</option>`).join('')}</select>`;
+}

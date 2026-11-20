@@ -933,3 +933,16 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .paste-fold[open] > summary::before { content: "▾ "; }
 .paste-fold[open] > summary { margin-bottom: 4px; }
 .paste-fold:not([open]) { gap: 0; }
+
+/* ── 등급 칩 · 기준가 대비 순위 ── */
+.gchip { display: inline-block; margin-left: 4px; padding: 0 7px; border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 1.7; border: 1.5px solid var(--ink); vertical-align: middle; }
+.gchip.g-common { background: var(--panel); color: var(--txt-2); border-color: var(--line); }
+.gchip.g-uncommon { background: #e6f0ff; color: #3a6fc4; border-color: #a9c6f0; }
+.gchip.g-rare { background: var(--y-2); color: var(--ink); }
+.seg-sm button { padding: 3px 9px; font-size: var(--fs-xs); }
+.make-rank .it { align-items: start; }
+.make-rank .n { margin-top: 2px; }
+.mk-sub { font-size: var(--fs-xs); color: var(--txt-2); margin: 1px 0 2px; }
+.mk-sub b { color: var(--ink); }
+.mk-diff { text-align: right; font-weight: 700; font-size: var(--fs-m); display: grid; line-height: 1.2; }
+.mk-diff small { font-size: 10.5px; font-weight: 300; color: var(--txt-3); }

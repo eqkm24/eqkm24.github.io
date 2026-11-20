@@ -6,7 +6,7 @@ import { KEYS } from './store.js';
 import { cookEfficiency, recipeIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
 import {
   $, esc, profile, cookOpts, patch, clampLv, stepper, wireSteppers, cookContext,
-  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, ingPricesRaw, selfSupply, toggleSelf,
+  cookPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, gradedPrices, gradeSelect, ingPricesRaw, selfSupply, toggleSelf,
 } from './ui.js';
 
 let selected = null;   // 선택한 요리 이름
@@ -30,6 +30,7 @@ export function initCook() {
     if (t.id === 'ckLv') patch(KEYS.profile, { cookLv: clampLv(t.value) });
     if (t.id === 'ckStations') patch(KEYS.profile, { cookStations: Math.max(0, Math.round(+t.value || 0)) || null });
     if (t.id === 'ckHearth') patch(KEYS.cookOpts, { hearth: +t.value });
+    if (t.id === 'ckGrade') patch(KEYS.cookOpts, { grade: t.value });
     if (t.id === 'ckGourmet') patch(KEYS.cookOpts, { gourmet: +t.value });
     if (t.id === 'ckKnife') patch(KEYS.profile, { tools: { ...profile().tools, knife: +t.value } });
     if (t.id === 'ckPrep') patch(KEYS.cookOpts, { prepAll: t.checked });
@@ -71,7 +72,7 @@ export function renderCook() {
   const o = cookOpts();
   renderOptions(ctx, o);
 
-  const cp = cookPrices(), ip = ingPrices();
+  const cp = gradedPrices('cook', o.grade), ip = ingPrices();
   let rows = RECIPES.map(r => ({ r, price: priceOf(cp, r.name), entry: cp[r.name], ...cookEfficiency(r, priceOf(cp, r.name), ip, ctx) }));
 
   if (o.stage === 'vanilla') rows = rows.filter(x => x.r.vanilla);
@@ -84,8 +85,8 @@ export function renderCook() {
   if (!selected || !RECIPES.some(r => r.name === selected)) selected = rows[0]?.r.name ?? RECIPES[0].name;
 
   $('#cookStageSeg').innerHTML = STAGES.map(([k, l]) => `<button type="button" data-stage="${k}" class="${o.stage === k ? 'is-on' : ''}">${l}</button>`).join('');
-  renderTable(rows, o.sort);
-  renderDetail(RECIPES.find(r => r.name === selected), ctx, cp, ip);
+  renderTable(rows, o.sort, o.grade);
+  renderDetail(RECIPES.find(r => r.name === selected), ctx, cp, ip, o.grade);
 }
 
 function renderOptions(ctx, o) {
@@ -96,6 +97,7 @@ function renderOptions(ctx, o) {
       ${stepper('ckLv', p.cookLv, { label: '요리사 숙련도' })}
       <div class="field"><label for="ckStations">조리대 수 (비우면 자동 ${ctx.autoStations}개)</label>
         <input class="input num" id="ckStations" type="number" min="1" max="7" placeholder="${ctx.autoStations}" value="${p.cookStations ?? ''}"></div>
+      <div class="field"><label for="ckGrade">판매 등급 (이 가격으로 계산)</label>${gradeSelect('ckGrade', o.grade)}</div>
       <div class="field"><label for="ckHearth">화덕의 비약 · 요리 시간</label><select class="select" id="ckHearth">${gradeOptions('화덕', o.hearth)}</select></div>
       <div class="field"><label for="ckGourmet">미식의 비약 · 재료 손실 방지</label><select class="select" id="ckGourmet">${gradeOptions('미식', o.gourmet)}</select></div>
       <div class="field"><label for="ckKnife">식칼 강화 · 데메테르의 축복</label>
@@ -108,7 +110,7 @@ function renderOptions(ctx, o) {
     </div>`;
 }
 
-function renderTable(rows, sort) {
+function renderTable(rows, sort, grade = 'common') {
   const max = Math.max(1, ...rows.filter(x => x.hasPrice).map(x => Math.abs(x.hourly)));
   const th = (k, label, cls = 'r') => `<th class="${cls}${sort === k ? ' is-sorted' : ''}" data-sort="${k}">${label}</th>`;
   let rank = 0;
@@ -133,7 +135,7 @@ function renderTable(rows, sort) {
             ${freshChip(x.entry)}
           </div>
         </div></div></td>
-        <td class="r"><input class="input num price-in" data-price="${esc(x.r.name)}" type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.r.name)} 판매가"></td>
+        <td class="r"><input class="input num price-in" data-price="${esc(x.r.name)}"${grade !== 'common' ? ' readonly title="고급 · 희귀 가격은 공식 시세에서 자동으로 들어와요"' : ''} type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.r.name)} 판매가"></td>
         <td class="r num">${fmtNum(x.cost / x.perTask)}</td>
         <td class="r num ${x.hasPrice ? (x.perDish >= 0 ? 'gain' : 'loss') : 'faint'}">${x.hasPrice ? fmtSigned(x.perDish) : '—'}</td>
         <td class="r">
@@ -145,7 +147,7 @@ function renderTable(rows, sort) {
     }).join('')}</tbody>`;
 }
 
-function renderDetail(recipe, ctx, cp, ip) {
+function renderDetail(recipe, ctx, cp, ip, grade = 'common') {
   const price = priceOf(cp, recipe.name);
   const x = cookEfficiency(recipe, price, ip, ctx);
   const ings = recipeIngredients(recipe);
@@ -163,7 +165,7 @@ function renderDetail(recipe, ctx, cp, ip) {
       ${freshChip(cp[recipe.name])}
     </div>
     <div class="field"><label for="ckDetailPrice">판매가 (쿠키 / 1개)</label>
-      <input class="input num" id="ckDetailPrice" data-price="${esc(recipe.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
+      <input class="input num" id="ckDetailPrice"${grade !== 'common' ? ' readonly' : ''} data-price="${esc(recipe.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
     <div class="slots">${ings.map(i => `
       <div class="slot ${i.kind}">
         <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>

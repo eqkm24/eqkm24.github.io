@@ -244,6 +244,7 @@
 
     <!-- ═══════════ 시세 입력 ═══════════ -->
     <section class="view" data-view="prices">
+      <div class="live-band" id="liveBand"></div>
       <div class="cat-cards" id="catCards" role="tablist" aria-label="시세 · 단가 종류"></div>
 
       <div class="grid-side prices-grid">
@@ -263,8 +264,9 @@
         </article>
 
         <article class="win">
-          <div class="win-title"><h2>디스코드 시세 붙여넣기</h2></div>
-          <div class="win-body">
+          <div class="win-title"><h2>직접 입력 · 붙여넣기</h2></div>
+          <details class="win-body paste-fold" id="pasteFold">
+            <summary>공식 시세에 없는 품목이나, 자동 반영이 멈췄을 때 디스코드 시세를 붙여넣어요</summary>
             <p class="note">한 줄에 하나씩, <b>[이름] | 이전 → 지금</b> 또는 <b>이름 : 가격</b> 형식을 읽어요. 요리와 비약 이름을 모두 알아봐요. 비약은 “화덕”, “화덕의 비약” 둘 다 돼요.</p>
             <textarea class="textarea" id="pasteArea" placeholder="🍳[감자 수프] | 120 → 135&#10;🧪[화덕의 비약] | 300 → 320&#10;토마토 파스타 : 980"></textarea>
             <div class="row">
@@ -272,7 +274,7 @@
               <button class="btn btn-ghost" id="pasteClear" type="button">지우기</button>
             </div>
             <div id="pasteResult"></div>
-          </div>
+          </details>
         </article>
       </div>
     </section>

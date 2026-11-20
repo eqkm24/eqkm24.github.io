@@ -50,6 +50,7 @@ export const KEYS = {
   cookPrices:   'cookPrices',    // { 요리명: { price, at } }
   elixirPrices: 'elixirPrices',  // { 비약명: { price, at } }
   history:      'priceHistory',  // 시세 기록 → history.js
+  live:         'liveGrades',    // 공식 시세 등급별 가격 (이 브라우저만) → live.js
   selfSupply:   'selfSupply',    // 직접 수급 재료 { 이름: true }
   settings:     'settings',      // 화면 설정 → settings.js
   alarms:       'alarms',        // [{ id, label, mode, nextAt, on, ... }] → view-alarm.js

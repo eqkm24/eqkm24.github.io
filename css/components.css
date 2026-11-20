@@ -909,3 +909,27 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .slot-price { grid-column: 1 / -1; font-size: var(--fs-s); font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
 .slot-price.is-self { color: var(--gain); }
 .slot-price.is-empty { color: var(--warn); font-weight: 300; }
+
+/* ── 공식 시세 상태 띠 · 붙여넣기 접기 ── */
+.live-band {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; border-radius: var(--r);
+  border: var(--bw) solid var(--ink); background: var(--panel); box-shadow: 0 3px 0 var(--ink);
+  font-size: var(--fs-s);
+}
+.lb-dot { width: 12px; height: 12px; border-radius: 50%; flex: none; background: var(--txt-3); border: 2px solid var(--ink); }
+.live-band.is-on .lb-dot { background: var(--gain); box-shadow: 0 0 0 4px var(--gain-bg); }
+.live-band.is-wait .lb-dot { background: var(--sky); }
+.live-band.is-err .lb-dot { background: var(--warn); }
+.live-band.is-err { background: #fff6e8; }
+.lb-text { flex: 1; min-width: 220px; display: grid; gap: 2px; }
+.lb-text b { color: var(--ink); }
+.lb-text span { color: var(--txt-2); margin-left: 0; }
+.lb-text small { font-size: var(--fs-xs); color: var(--txt-3); }
+.chip.auto { color: var(--sky); background: var(--sky-bg); border-color: #b5d8f6; }
+.paste-fold > summary { cursor: pointer; font-size: var(--fs-s); color: var(--txt-2); line-height: 1.6; list-style: none; padding: 2px 0; }
+.paste-fold > summary::-webkit-details-marker { display: none; }
+.paste-fold > summary::before { content: "▸ "; color: var(--ink); }
+.paste-fold[open] > summary::before { content: "▾ "; }
+.paste-fold[open] > summary { margin-bottom: 4px; }
+.paste-fold:not([open]) { gap: 0; }

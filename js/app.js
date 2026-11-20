@@ -21,6 +21,7 @@ import { initHistory } from './history.js';
 import { initHistoryView, renderHistoryView } from './view-history.js';
 import { initPrices, renderPrices } from './view-prices.js';
 import { initTrade, renderTrade } from './view-trade.js';
+import { initLive, onLive } from './live.js';
 
 const VIEWS = {
   home:    { init: initHome,    render: renderHome,    tick: tickHome },
@@ -67,7 +68,9 @@ initSpec();
 initHistory();
 renderSettings();
 renderAlarm();
-initSync();   // firebase-config.js 가 채워져 있으면 DB 연동 시작
+initSync();
+initLive();     // 기린월드 공식 변동 시세 자동 반영
+onLive(() => { if (current === 'prices') VIEWS.prices.render(); });   // firebase-config.js 가 채워져 있으면 DB 연동 시작
 window.addEventListener('hashchange', () => show(location.hash.slice(1)));
 show(location.hash.slice(1) || 'home');
 tick();

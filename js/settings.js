@@ -7,6 +7,7 @@ import { KEYS } from './store.js';
 import { setCompact } from './calc.js';
 import { $, esc, toast, armButton } from './ui.js';
 import { syncState, onSyncState } from './sync.js';
+import { liveState, onLive } from './live.js';
 
 const DEFAULT = { accent: 'yellow', font: 'm', compact: false, dots: true, motion: true };
 
@@ -40,6 +41,7 @@ export function initSettings() {
   applySettings();
   store.on(KEYS.settings, () => { applySettings(); renderSettings(); });
   onSyncState(() => renderSettings());
+  onLive(() => renderSettings());
 
   const body = $('#settingsBody');
   body.addEventListener('click', e => {
@@ -65,6 +67,17 @@ const SYNC_TEXT = {
   offline:    ['chip stale', '연결 끊김', '다시 연결되면 그동안 고친 값을 자동으로 올려요.'],
   error:      ['chip stale', '연동 안 됨', ''],
 };
+function liveRow() {
+  const s = liveState();
+  const [cls, label] = s.status === 'online' ? ['chip fresh', '자동 반영 중'] : s.status === 'error' ? ['chip stale', '연결 안 됨'] : ['chip season', '불러오는 중…'];
+  const desc = s.status === 'online' ? `요리 ${s.counts.cook} · 비약 ${s.counts.elixir}${s.counts.ing ? ` · 재료 ${s.counts.ing}` : ''} 품목을 2분마다 확인해요` : (s.error || '기린월드 prices.json 을 불러오고 있어요');
+  return `
+    <div class="set-row">
+      <div class="set-text"><div class="set-title">기린월드 공식 시세</div><div class="set-desc">${esc(desc)}</div></div>
+      <span class="${cls}">${label}</span>
+    </div>`;
+}
+
 function syncRow() {
   const { state, detail } = syncState();
   const [cls, label, desc] = SYNC_TEXT[state];
@@ -111,6 +124,7 @@ export function renderSettings() {
     <div class="set-group">
       <h3>데이터</h3>
       ${syncRow()}
+      ${liveRow()}
       <div class="row">
         <button class="btn btn-sm" type="button" id="setReset">설정 처음으로</button>
         <button class="btn btn-sm btn-danger" type="button" id="setWipe">입력한 시세·단가 지우기</button>

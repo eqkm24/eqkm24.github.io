@@ -4,6 +4,7 @@
    요리/비약 탭 아래쪽 재료 목록과 같은 값을 쓰므로 어디서 고쳐도 함께 바뀝니다.
    ========================================================================== */
 import { RECIPES, ELIXIRS } from './data.js';
+import { liveState, liveGrades, refreshLive, GRADE_LABEL, LIVE_URL } from './live.js';
 import * as store from './store.js';
 import { KEYS } from './store.js';
 import { parsePriceText, fmtNum, recipeIngredients, elixirIngredients } from './calc.js';
@@ -66,6 +67,7 @@ export function initPrices() {
       ${matched.length ? `<p class="note" style="margin-top:8px">${matched.map(x => `${esc(x.label)} <b>${fmtNum(x.price)}</b>`).join(' · ')}</p>` : ''}`;
     toast(matched.length ? `시세 ${matched.length}개를 반영했어요` : '읽을 수 있는 줄이 없어요');
   });
+  $('#liveBand').addEventListener('click', e => { if (e.target.closest('#liveRefresh')) refreshLive(); });
   $('#pasteClear').addEventListener('click', () => { $('#pasteArea').value = ''; $('#pasteResult').innerHTML = ''; });
 
   /* 카테고리 카드 */
@@ -123,7 +125,24 @@ function summary() {
   };
 }
 
+function renderLiveBand() {
+  const st = liveState();
+  const t = ms => { const d = new Date(ms); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
+  const cls = { online: 'is-on', loading: 'is-wait', idle: 'is-wait', error: 'is-err' }[st.status];
+  const main = st.status === 'online'
+    ? `<b>기린월드 공식 시세 자동 반영 중</b><span>${t(st.at)} 기준 · 요리 ${st.counts.cook} · 비약 ${st.counts.elixir}${st.counts.ing ? ` · 재료 ${st.counts.ing}` : ''}${st.nextChangeAt ? ` · 다음 변경 ${t(st.nextChangeAt)}` : ''}</span>`
+    : st.status === 'error' ? `<b>공식 시세 연결 안 됨</b><span>${esc(st.error)}</span>`
+    : `<b>공식 시세 불러오는 중…</b><span></span>`;
+  const missing = [...RECIPES.filter(r => !liveGrades().cook[r.name]).map(r => r.name), ...ELIXIRS.filter(e => !liveGrades().elixir[e.name]).map(e => e.name + '의 비약')];
+  $('#liveBand').className = 'live-band ' + cls;
+  $('#liveBand').innerHTML = `<span class="lb-dot" aria-hidden="true"></span><div class="lb-text">${main}
+    ${st.status === 'online' && missing.length ? `<small>공식 시세에 없어서 직접 넣어야 하는 것: ${esc(missing.join(', '))}</small>` : ''}
+    ${st.unmatched?.length ? `<small>이름을 못 맞춘 품목: ${esc(st.unmatched.join(', '))} (알려주면 짝지어 둘게요)</small>` : ''}</div>
+    <button class="btn btn-sm" type="button" id="liveRefresh">새로 불러오기</button>`;
+}
+
 export function renderPrices() {
+  renderLiveBand();
   const sm = summary();
   $('#catCards').innerHTML = CATS.map(c => {
     const s = sm[c.id];
@@ -143,6 +162,14 @@ export function renderPrices() {
   renderList();
 }
 
+/* 공식 시세 등급별 가격 한 줄: "고급 279 ▲ · 희귀 349 ▼" */
+function gradeLine(kind, key) {
+  const m = liveGrades()[kind]?.[key];
+  if (!m) return '';
+  const arrow = g => g.trend === 'up' ? '▲' : g.trend === 'down' ? '▼' : '';
+  return ['common', 'uncommon', 'rare'].filter(g => m[g]).map(g => `${GRADE_LABEL[g]} ${fmtNum(m[g].price)}${arrow(m[g])}`).join(' · ');
+}
+
 function renderList() {
   const c = CATS.find(x => x.id === cat);
   $('#catTitle').textContent = c.name;
@@ -150,6 +177,7 @@ function renderList() {
   const match = name => !q || name.toLowerCase().includes(q);
   let html = '';
 
+  const live = liveGrades();
   if (cat === 'cook' || cat === 'elixir') {
     const map = cat === 'cook' ? cookPrices() : elixirPrices();
     const groups = cat === 'cook'
@@ -165,8 +193,8 @@ function renderList() {
       return `<div class="pl-group"><h3>${g} <span class="chip">${items.filter(x => map[x.key]).length}/${items.length}</span></h3>
         ${rows.map(x => `
           <div class="pl-row">
-            <span class="pr-name">${icon(x.key, 's')}<span class="pl-label">${esc(x.label)}<small>${esc(x.note)}</small></span></span>
-            ${freshChip(map[x.key]) || '<span></span>'}
+            <span class="pr-name">${icon(x.key, 's')}<span class="pl-label">${esc(x.label)}<small>${gradeLine(cat, x.key) || esc(x.note)}</small></span></span>
+            ${map[x.key]?.auto && live[cat]?.[x.key] ? '<span class="chip auto">자동</span>' : (freshChip(map[x.key]) || '<span></span>')}
             <input class="input num" data-kind="${cat}" data-name="${esc(x.key)}" type="number" min="0" inputmode="numeric" placeholder="—" value="${map[x.key]?.price ?? ''}" aria-label="${esc(x.label)} 판매가">
           </div>`).join('')}</div>`;
     }).join('');

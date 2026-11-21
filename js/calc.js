@@ -204,3 +204,18 @@ export function fmtSec(sec) {
   const m = Math.floor(s / 60), r = Math.round((s - m * 60) * 10) / 10;
   return r ? `${m}분 ${r}초` : `${m}분`;
 }
+
+/* ── 1개당 수익성 ──
+   1개당 원가   = 작업당 재료비 ÷ 작업당 실제로 나온 개수 (탄 요리 · 축복 · 손실 방지 반영)
+   1개당 이윤   = 판매가 − 1개당 원가
+   마진율 (%)  = 1개당 이윤 ÷ 판매가
+   원가율 (%)  = 1개당 원가 ÷ 판매가 */
+export function unitStats(x, price) {
+  const unitCost = x.made > 0 ? x.cost / x.made : 0;
+  const unitProfit = price - unitCost;
+  return {
+    unitCost, unitProfit,
+    margin: price > 0 ? unitProfit / price * 100 : null,
+    costRatio: price > 0 ? unitCost / price * 100 : null,
+  };
+}

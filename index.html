@@ -34,8 +34,7 @@
   <!-- ═══════════ 메뉴 ═══════════ -->
   <nav class="menu" id="menu" aria-label="메뉴">
     <a class="menu-btn" href="#home"    data-view="home">홈</a>
-    <a class="menu-btn" href="#cook"    data-view="cook">요리 순차익</a>
-    <a class="menu-btn" href="#alchemy" data-view="alchemy">비약 효율</a>
+    <a class="menu-btn" href="#cook"    data-view="calc">효율 계산기</a>
     <a class="menu-btn" href="#history" data-view="history">시세 기록 <span class="new-tag">NEW</span></a>
     <a class="menu-btn" href="#trade"   data-view="trade">거래 계산기</a>
     <a class="menu-btn" href="#prices"  data-view="prices">시세 입력</a>
@@ -71,8 +70,8 @@
           <div class="win-title"><h2>바로가기</h2></div>
           <div class="win-body">
             <div class="tiles">
-              <a class="tile" href="#cook" data-ico="요"><span class="t">요리 순차익 계산기</span><span class="d">26가지 요리의 재료비, 개당·시간당 순익과 경험치</span></a>
-              <a class="tile" href="#alchemy" data-ico="비"><span class="t">비약 효율 계산기</span><span class="d">17가지 비약의 제작 시간, 재료비, 시간당 순익</span></a>
+              <a class="tile" href="#cook" data-ico="요"><span class="t">효율 계산기 · 요리</span><span class="d">요리마다 1개당 이윤, 마진율, 원가율</span></a>
+              <a class="tile" href="#alchemy" data-ico="연"><span class="t">효율 계산기 · 연금</span><span class="d">비약마다 1병당 이윤, 마진율, 원가율</span></a>
               <button class="tile tile-alarm" type="button" data-open="alarm" data-ico=""><span class="t">알람</span><span class="d">오른쪽 아래 버튼으로 언제든 열 수 있어요</span></button>
               <a class="tile" href="#prices" data-ico="시"><span class="t">시세 입력</span><span class="d">디스코드 시세 메시지를 붙여넣으면 한 번에 반영</span></a>
             </div>
@@ -92,8 +91,13 @@
       </div>
     </section>
 
-    <!-- ═══════════ 요리 ═══════════ -->
-    <section class="view" data-view="cook">
+    <!-- ═══════════ 효율 계산기 (요리 · 연금) ═══════════ -->
+    <section class="view" data-view="calc">
+      <nav class="calc-switch" aria-label="계산기 종류">
+        <a class="calc-tab" href="#cook" data-mode="cook"><span class="ct-ico" aria-hidden="true">요</span><span><b>요리</b><small>26가지 요리</small></span></a>
+        <a class="calc-tab" href="#alchemy" data-mode="alchemy"><span class="ct-ico" aria-hidden="true">연</span><span><b>연금</b><small>17가지 비약</small></span></a>
+      </nav>
+      <div class="calc-pane" data-pane="cook">
       <article class="win">
         <div class="win-title"><h2>요리 설정</h2><span class="sub" id="cookSummary"></span></div>
         <div class="win-body" id="cookOptions"></div>
@@ -102,14 +106,14 @@
       <div class="grid-side">
         <article class="win">
           <div class="win-title">
-            <h2>요리 순위</h2>
+            <h2>요리 수익성</h2>
             <span class="spacer"></span>
             <div class="seg" id="cookStageSeg" role="group" aria-label="단계"></div>
           </div>
           <div class="win-body tight">
             <div class="table-wrap"><table class="table" id="cookTable"></table></div>
           </div>
-          <div class="win-foot">판매가는 표에서 바로 고칠 수 있어요. 줄을 누르면 오른쪽에 계산 내역이 나와요.</div>
+          <div class="win-foot">줄을 누르면 오른쪽에 1개당 이윤 · 마진율 · 원가율이 크게 나와요. 열 제목을 누르면 그 기준으로 정렬돼요.</div>
         </article>
 
         <article class="win" id="cookDetailWin">
@@ -118,10 +122,8 @@
         </article>
       </div>
 
-    </section>
-
-    <!-- ═══════════ 연금술 ═══════════ -->
-    <section class="view" data-view="alchemy">
+    </div>
+      <div class="calc-pane" data-pane="alchemy">
       <article class="win">
         <div class="win-title"><h2>연금 설정</h2><span class="sub" id="alchSummary"></span></div>
         <div class="win-body" id="alchOptions"></div>
@@ -130,7 +132,7 @@
       <div class="grid-side">
         <article class="win">
           <div class="win-title">
-            <h2>비약 순위</h2>
+            <h2>비약 수익성</h2>
             <span class="spacer"></span>
             <div class="seg" id="alchTierSeg" role="group" aria-label="해금 레벨"></div>
           </div>
@@ -146,6 +148,7 @@
         </article>
       </div>
 
+    </div>
     </section>
 
     <!-- ═══════════ 시세 기록 ═══════════ -->
@@ -194,14 +197,36 @@
         </article>
 
         <div style="display:grid;gap:20px;align-content:start">
-          <article class="win">
-            <div class="win-title"><h2>나눠 갖기</h2><span class="sub">같이 판 돈을 똑같이 나눠요</span></div>
+          <article class="win calc-win">
+            <div class="win-title"><h2>계산기</h2><span class="sub">키보드로도 입력돼요</span></div>
             <div class="win-body">
-              <div class="spec-2">
-                <div class="field"><label for="spTotal">총액</label><input class="input num" id="spTotal" type="number" min="0" data-f="splitTotal" placeholder="쿠키"></div>
-                <div class="field"><label for="spN">인원</label><input class="input num" id="spN" type="number" min="1" max="50" data-f="splitN"></div>
+              <div class="cl-screen" aria-live="polite">
+                <div class="cl-expr num" id="clExpr">&nbsp;</div>
+                <div class="cl-val num" id="clVal">0</div>
               </div>
-              <div class="calc-lines" id="splitResult"></div>
+              <div class="cl-keys" id="clKeys">
+                <button type="button" class="ck fn" data-k="C">C</button>
+                <button type="button" class="ck fn" data-k="(">(</button>
+                <button type="button" class="ck fn" data-k=")">)</button>
+                <button type="button" class="ck op" data-k="÷">÷</button>
+                <button type="button" class="ck" data-k="7">7</button><button type="button" class="ck" data-k="8">8</button><button type="button" class="ck" data-k="9">9</button>
+                <button type="button" class="ck op" data-k="×">×</button>
+                <button type="button" class="ck" data-k="4">4</button><button type="button" class="ck" data-k="5">5</button><button type="button" class="ck" data-k="6">6</button>
+                <button type="button" class="ck op" data-k="−">−</button>
+                <button type="button" class="ck" data-k="1">1</button><button type="button" class="ck" data-k="2">2</button><button type="button" class="ck" data-k="3">3</button>
+                <button type="button" class="ck op" data-k="+">+</button>
+                <button type="button" class="ck" data-k="0">0</button><button type="button" class="ck" data-k="00">00</button><button type="button" class="ck" data-k=".">.</button>
+                <button type="button" class="ck eq" data-k="=">=</button>
+                <button type="button" class="ck fn wide" data-k="⌫">⌫ 지우기</button>
+                <button type="button" class="ck fn" data-k="%">%</button>
+                <button type="button" class="ck fn" data-k="64">×64</button>
+              </div>
+              <div class="row cl-actions">
+                <button class="btn btn-sm" type="button" data-cl="toUnit">개당 가격에 넣기</button>
+                <button class="btn btn-sm" type="button" data-cl="toTotal">총액에 넣기</button>
+                <button class="btn btn-sm" type="button" data-cl="copy">결과 복사</button>
+              </div>
+              <div class="cl-hist" id="clHist"></div>
             </div>
           </article>
           <article class="win">
@@ -217,29 +242,6 @@
         </div>
       </div>
 
-      <article class="win">
-        <div class="win-title"><h2>물물교환 저울</h2><span class="sub">주고받는 물건 값을 비교해 차액을 알려줘요</span><span class="spacer"></span>
-          <button class="btn btn-sm" type="button" data-act="swap">⇄ 양쪽 바꾸기</button>
-          <button class="btn btn-sm btn-ghost" type="button" data-act="resetBarter">비우기</button></div>
-        <div class="win-body">
-          <div class="bt-cols">
-            <div class="bt-side">
-              <h3>내가 주는 것 <span class="num" id="btGiveSum"></span></h3>
-              <div class="bt-head"><span>품목</span><span>개수</span><span>개당</span><span>소계</span><span></span></div>
-              <div id="bt-give"></div>
-              <button class="btn btn-sm" type="button" data-act="add" data-side="give">+ 줄 추가</button>
-            </div>
-            <div class="bt-side">
-              <h3>내가 받는 것 <span class="num" id="btGetSum"></span></h3>
-              <div class="bt-head"><span>품목</span><span>개수</span><span>개당</span><span>소계</span><span></span></div>
-              <div id="bt-get"></div>
-              <button class="btn btn-sm" type="button" data-act="add" data-side="get">+ 줄 추가</button>
-            </div>
-          </div>
-          <div id="btScale"></div>
-          <p class="note">품목을 고르면 현재 시세 · 재료 단가가 개당 가격에 자동으로 들어가요. 쿠키를 주고받을 땐 품목에 "쿠키", 개당 1로 넣으면 돼요.</p>
-        </div>
-      </article>
     </section>
 
     <!-- ═══════════ 시세 입력 ═══════════ -->

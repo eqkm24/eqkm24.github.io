@@ -1,8 +1,7 @@
 /* ==========================================================================
    view-trade.js — 거래 계산기
    1) 수량 · 단가: 상자 / 세트 / 개 환산, 단가 ↔ 총액, 시세 대비, 수수료
-   2) 물물교환 저울: 내가 주는 것 vs 받는 것 → 누가 얼마 더 줘야 공정한지
-   3) 나눠 갖기: 총액을 N명에게
+   2) 계산기: 사칙연산 · 괄호 · % · ×64(세트) · 최근 기록, 결과를 수량·단가 칸으로 보내기
    입력값은 이 브라우저에만 저장합니다 (공유하지 않음).
    ========================================================================== */
 import { RECIPES, ELIXIRS } from './data.js';
@@ -11,11 +10,7 @@ import { recipeIngredients, elixirIngredients, fmtNum } from './calc.js';
 import { $, esc, cookPrices, elixirPrices, ingPricesRaw, toast } from './ui.js';
 
 const SAVE = 'trade';    // KEYS 에 넣지 않음 → 입력할 때마다 화면 전체를 다시 그리지 않음
-const DEF = {
-  name: '', box: 0, set: 0, each: 0, stack: 64, unit: '', total: '', fee: 0,
-  give: [{ name: '', qty: 1, price: '' }], get: [{ name: '', qty: 1, price: '' }],
-  splitTotal: '', splitN: 2,
-};
+const DEF = { name: '', box: 0, set: 0, each: 0, stack: 64, unit: '', total: '', fee: 0, calcHist: [] };
 let st = { ...DEF, ...store.get(SAVE, {}) };
 const save = () => store.set(SAVE, st);
 const num = v => (Number.isFinite(+v) ? +v : 0);
@@ -40,23 +35,11 @@ export function initTrade() {
 
   v.addEventListener('input', e => {
     const t = e.target;
-    if (t.dataset.f) {                       // 수량 · 단가 / 나눠 갖기 칸
-      st[t.dataset.f] = t.type === 'number' ? (t.value === '' ? '' : +t.value) : t.value;
-      if (t.dataset.f === 'unit') { st.total = ''; $('[data-f="total"]').value = ''; }   // 단가를 고치면 총액은 계산값으로
-      if (t.dataset.f === 'total') { st.unit = ''; $('[data-f="unit"]').value = ''; }    // 총액을 고치면 단가는 계산값으로
-      save(); calcQty(); calcSplit();
-    }
-    if (t.dataset.row) {                     // 물물교환 줄
-      const [side, i, field] = t.dataset.row.split(':');
-      const row = st[side][+i];
-      row[field] = t.value;
-      if (field === 'name') {                // 이름을 고르면 기준 가격 자동 입력
-        const p = refPrice(t.value);
-        if (p && !row.priceTouched) { row.price = p; t.closest('.bt-row').querySelector('[data-row$=":price"]').value = p; }
-      }
-      if (field === 'price') row.priceTouched = t.value !== '';
-      save(); calcBarter();
-    }
+    if (!t.dataset.f) return;                 // 수량 · 단가 칸
+    st[t.dataset.f] = t.type === 'number' ? (t.value === '' ? '' : +t.value) : t.value;
+    if (t.dataset.f === 'unit') { st.total = ''; $('[data-f="total"]').value = ''; }   // 단가를 고치면 총액은 계산값으로
+    if (t.dataset.f === 'total') { st.unit = ''; $('[data-f="unit"]').value = ''; }    // 총액을 고치면 단가는 계산값으로
+    save(); calcQty();
   });
 
   v.addEventListener('click', e => {
@@ -65,45 +48,26 @@ export function initTrade() {
     const act = b.dataset.act;
     if (act === 'stack') { st.stack = +b.dataset.v; save(); renderTrade(); }
     if (act === 'useRef') { const p = refPrice(st.name); if (p) { st.unit = p; st.total = ''; save(); renderTrade(); } }
-    if (act === 'add') { st[b.dataset.side].push({ name: '', qty: 1, price: '' }); save(); renderTrade(); }
-    if (act === 'del') { st[b.dataset.side].splice(+b.dataset.i, 1); if (!st[b.dataset.side].length) st[b.dataset.side].push({ name: '', qty: 1, price: '' }); save(); renderTrade(); }
-    if (act === 'swap') { [st.give, st.get] = [st.get, st.give]; save(); renderTrade(); }
-    if (act === 'resetQty') { Object.assign(st, { name: '', box: 0, set: 0, each: 0, unit: '', total: '', fee: st.fee }); save(); renderTrade(); }
-    if (act === 'resetBarter') { st.give = [{ name: '', qty: 1, price: '' }]; st.get = [{ name: '', qty: 1, price: '' }]; save(); renderTrade(); }
-    if (act === 'copy') {
-      const text = b.dataset.text;
-      navigator.clipboard?.writeText(text).then(() => toast('복사했어요'), () => toast(text));
-    }
+    if (act === 'resetQty') { Object.assign(st, { name: '', box: 0, set: 0, each: 0, unit: '', total: '' }); save(); renderTrade(); }
+    if (act === 'copy') copy(b.dataset.text);
   });
+
+  initCalculator();
+}
+
+function copy(text) {
+  navigator.clipboard?.writeText(text).then(() => toast('복사했어요'), () => toast(text));
 }
 
 /* ── 그리기 ── */
 export function renderTrade() {
   st = { ...DEF, ...store.get(SAVE, {}) };
   $('#tradeList').innerHTML = catalog().map(x => `<option value="${esc(x.label)}">${x.kind}${x.price ? ' · ' + fmtNum(x.price) : ''}</option>`).join('');
-
-  /* 1. 수량 · 단가 */
   $('#tqStack').innerHTML = [64, 16, 1].map(n =>
     `<button type="button" data-act="stack" data-v="${n}" class="${st.stack === n ? 'is-on' : ''}">${n === 1 ? '안 쌓임' : n + '개씩'}</button>`).join('');
   ['name', 'box', 'set', 'each', 'unit', 'total', 'fee'].forEach(f => { const el = $(`[data-f="${f}"]`); if (el) el.value = st[f] ?? ''; });
   calcQty();
-
-  /* 2. 물물교환 */
-  ['give', 'get'].forEach(side => {
-    $(`#bt-${side}`).innerHTML = st[side].map((r, i) => `
-      <div class="bt-row">
-        <input class="input" list="tradeList" data-row="${side}:${i}:name" value="${esc(r.name)}" placeholder="품목 (선택 또는 입력)" aria-label="품목">
-        <input class="input num" type="number" min="0" data-row="${side}:${i}:qty" value="${r.qty}" aria-label="개수">
-        <input class="input num" type="number" min="0" data-row="${side}:${i}:price" value="${r.price}" placeholder="단가" aria-label="개당 가격">
-        <span class="bt-sub num" data-sub="${side}:${i}"></span>
-        <button class="btn btn-sm btn-icon" type="button" data-act="del" data-side="${side}" data-i="${i}" aria-label="줄 지우기">✕</button>
-      </div>`).join('');
-  });
-  calcBarter();
-
-  /* 3. 나눠 갖기 */
-  $('[data-f="splitTotal"]').value = st.splitTotal; $('[data-f="splitN"]').value = st.splitN;
-  calcSplit();
+  drawCalc();
 }
 
 function calcQty() {
@@ -142,35 +106,122 @@ function calcQty() {
     <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn btn-sm" type="button" data-act="copy" data-text="${esc(line)}">계산 결과 복사</button></div>`;
 }
 
-function calcBarter() {
-  const sum = side => st[side].reduce((s, r, i) => {
-    const sub = num(r.qty) * num(r.price);
-    const el = document.querySelector(`[data-sub="${side}:${i}"]`);
-    if (el) el.textContent = sub ? fmtNum(sub) : '—';
-    return s + sub;
-  }, 0);
-  const give = sum('give'), get = sum('get');
-  const diff = get - give;          // + 면 내가 더 받음
-  $('#btGiveSum').textContent = fmtNum(give);
-  $('#btGetSum').textContent = fmtNum(get);
-  const max = Math.max(give, get, 1);
-  $('#btScale').innerHTML = `
-    <div class="bt-bars">
-      <div class="bt-bar give"><span>내가 주는 것</span><i style="width:${give / max * 100}%"></i><b class="num">${fmtNum(give)}</b></div>
-      <div class="bt-bar get"><span>내가 받는 것</span><i style="width:${get / max * 100}%"></i><b class="num">${fmtNum(get)}</b></div>
-    </div>
-    <div class="bt-verdict ${!give && !get ? '' : Math.abs(diff) < 1 ? 'even' : diff > 0 ? 'me' : 'them'}">${
-      !give && !get ? '양쪽에 품목과 가격을 넣으면 차액을 알려줘요'
-      : Math.abs(diff) < 1 ? '공정한 거래예요. 차액이 없어요'
-      : diff > 0 ? `내가 <b>${fmtNum(diff)}</b> 쿠키만큼 더 받아요 → 공정하게 하려면 내가 <b>${fmtNum(diff)}</b> 쿠키를 더 줘야 해요`
-      : `상대가 <b>${fmtNum(-diff)}</b> 쿠키만큼 더 받아요 → 공정하게 하려면 상대에게 <b>${fmtNum(-diff)}</b> 쿠키를 더 받아야 해요`
-    }</div>`;
+/* ══ 계산기 ══
+   식은 문자열로 들고 있다가 '=' 때 직접 만든 파서로 계산합니다 (eval 사용 안 함). */
+let expr = '';          // 입력 중인 식 (표시용 기호 × ÷ −)
+let last = null;        // 마지막 결과
+let justEval = false;   // '=' 직후인지
+
+const OPS = '+−×÷';
+function evaluate(src) {
+  const s = src.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/,/g, '');
+  let i = 0;
+  const peek = () => s[i], eat = c => (s[i] === c ? (i++, true) : false);
+  function factor() {
+    if (eat('-')) return -factor();
+    if (eat('+')) return factor();
+    let v;
+    if (eat('(')) { v = sum(); eat(')'); }
+    else {
+      const m = /^\d*\.?\d+|^\d+\./.exec(s.slice(i));
+      if (!m) throw new Error('식이 올바르지 않아요');
+      i += m[0].length; v = parseFloat(m[0]);
+    }
+    while (eat('%')) v /= 100;
+    return v;
+  }
+  function term() {
+    let v = factor();
+    for (;;) {
+      if (eat('*')) v *= factor();
+      else if (eat('/')) { const d = factor(); if (d === 0) throw new Error('0으로 나눌 수 없어요'); v /= d; }
+      else return v;
+    }
+  }
+  function sum() {
+    let v = term();
+    for (;;) { if (eat('+')) v += term(); else if (eat('-')) v -= term(); else return v; }
+  }
+  const v = sum();
+  if (i < s.length) throw new Error('식이 올바르지 않아요');
+  return Math.round(v * 1e6) / 1e6;
 }
 
-function calcSplit() {
-  const total = num(st.splitTotal), n = Math.max(1, Math.round(num(st.splitN) || 1));
-  const each = Math.floor(total / n), rest = total - each * n;
-  $('#splitResult').innerHTML = total ? `
-    <div class="calc-line total"><span class="k">한 사람당</span><span class="num">${fmtNum(each)} 쿠키</span></div>
-    ${rest ? `<div class="calc-line"><span class="k">남는 쿠키</span><span class="num">${fmtNum(rest)} (${rest}명에게 1씩 더)</span></div>` : ''}` : '<p class="note">총액과 인원을 넣어 주세요.</p>';
+function press(k) {
+  const lastCh = expr.slice(-1);
+  if (k === 'C') { expr = ''; last = null; justEval = false; }
+  else if (k === '⌫') { expr = expr.slice(0, -1); justEval = false; }
+  else if (k === '=') {
+    if (!expr) return;
+    const open = (expr.match(/\(/g) || []).length - (expr.match(/\)/g) || []).length;
+    const full = expr + ')'.repeat(Math.max(0, open));
+    try {
+      last = evaluate(full);
+      st.calcHist = [{ e: full, v: last }, ...(st.calcHist || [])].slice(0, 6); save();
+      expr = String(last); justEval = true;
+    } catch (err) { toast(err.message); return; }
+  }
+  else if (k === '64') {                          // 지금 값 × 64 (세트 → 개)
+    if (!expr) return;
+    expr = (OPS.includes(lastCh) ? expr.slice(0, -1) : expr) + '×64'; justEval = false;
+  }
+  else if (OPS.includes(k)) {
+    if (!expr && k !== '−') return;
+    expr = OPS.includes(lastCh) ? expr.slice(0, -1) + k : expr + k; justEval = false;
+  }
+  else {                                           // 숫자 · . · ( ) · %
+    if (justEval && /[\d.(]/.test(k)) expr = '';
+    if (k === '.') { const seg = expr.split(/[+−×÷()]/).pop(); if (seg.includes('.')) return; if (!seg) k = '0.'; }
+    expr += k; justEval = false;
+  }
+  drawCalc();
+}
+
+function preview() {
+  if (!expr) return null;
+  try { return evaluate(expr.replace(/[+−×÷(]+$/, '') + ')'.repeat(Math.max(0, (expr.match(/\(/g) || []).length - (expr.match(/\)/g) || []).length))); }
+  catch { return null; }
+}
+
+function drawCalc() {
+  const pv = preview();
+  $('#clExpr').textContent = justEval ? (st.calcHist?.[0]?.e ?? '') + ' =' : (expr ? expr.replace(/(\d+(?:\.\d+)?)/g, m => fmtPlain(m)) : '\u00a0');
+  $('#clVal').textContent = justEval ? fmtCalc(last) : pv == null ? (expr ? '…' : '0') : fmtCalc(pv);
+  $('#clVal').classList.toggle('is-preview', !justEval && pv != null);
+  const h = st.calcHist || [];
+  $('#clHist').innerHTML = h.length ? `<div class="cl-hist-t">최근 계산</div>${h.map((x, i) => `
+    <button type="button" class="cl-h" data-h="${i}"><span>${esc(x.e)}</span><b class="num">${fmtCalc(x.v)}</b></button>`).join('')}` : '';
+}
+const fmtCalc = v => (Number.isFinite(v) ? v.toLocaleString('ko-KR', { maximumFractionDigits: 4 }) : '—');
+const fmtPlain = m => (m.includes('.') ? m : Number(m).toLocaleString('ko-KR'));
+const current = () => (justEval ? last : preview());
+
+function initCalculator() {
+  $('#clKeys').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b) press(b.dataset.k); });
+  $('#clHist').addEventListener('click', e => {
+    const b = e.target.closest('[data-h]');
+    if (!b) return;
+    const h = st.calcHist[+b.dataset.h];
+    expr = String(h.v); last = h.v; justEval = true; drawCalc();
+  });
+  document.querySelector('.calc-win').addEventListener('click', e => {
+    const b = e.target.closest('[data-cl]');
+    if (!b) return;
+    const v = current();
+    if (v == null) { toast('먼저 계산해 주세요'); return; }
+    if (b.dataset.cl === 'copy') copy(String(v));
+    if (b.dataset.cl === 'toUnit') { st.unit = v; st.total = ''; save(); renderTrade(); toast(`개당 가격 ${fmtNum(v, 2)}`); }
+    if (b.dataset.cl === 'toTotal') { st.total = Math.round(v); st.unit = ''; save(); renderTrade(); toast(`총액 ${fmtNum(v)}`); }
+  });
+  // 키보드: 거래 계산기 화면에서 입력칸에 있지 않을 때
+  document.addEventListener('keydown', e => {
+    if (!document.querySelector('.view[data-view="trade"].is-active')) return;
+    if (e.target.closest('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+    const map = { '*': '×', '/': '÷', '-': '−', Enter: '=', '=': '=', Backspace: '⌫', Escape: 'C', Delete: 'C' };
+    const k = map[e.key] || (/^[\d.+()%]$/.test(e.key) ? e.key : null);
+    if (!k) return;
+    e.preventDefault(); press(k);
+    const btn = document.querySelector(`#clKeys [data-k="${CSS.escape(k)}"]`);
+    if (btn) { btn.classList.add('is-press'); setTimeout(() => btn.classList.remove('is-press'), 120); }
+  });
 }

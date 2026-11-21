@@ -1,13 +1,15 @@
 /* ==========================================================================
-   view-alchemy.js — 연금술 비약 효율 계산기
+   view-alchemy.js — 효율 계산기 · 연금 (비약)
+   1병당 실제 이윤 · 마진율 · 원가율
    ========================================================================== */
 import { ELIXIRS, ELIXIR_GRADES, ALCH_RULES } from './data.js';
 import { KEYS } from './store.js';
-import { elixirEfficiency, elixirIngredients, fmtNum, fmtSigned, fmtSec } from './calc.js';
+import { elixirEfficiency, elixirIngredients, unitStats, fmtNum, fmtSigned } from './calc.js';
 import {
   $, esc, profile, alchOpts, patch, clampLv, stepper, wireSteppers, alchContext,
-  elixirPrices, ingPrices, priceOf, setProductPrice, setIngPrice, freshChip, icon, toolOptions, gradedPrices, gradeSelect, ingPricesRaw, selfSupply, toggleSelf,
+  ingPrices, priceOf, setProductPrice, freshChip, icon, toolOptions, gradedPrices, gradeSelect, ingPricesRaw, selfSupply,
 } from './ui.js';
+import { tableHtml, metricsHtml, sortRows } from './calc-view.js';
 
 let selected = null;
 
@@ -19,22 +21,15 @@ export function initAlchemy() {
   opts.addEventListener('change', e => {
     const t = e.target;
     if (t.id === 'alLv') patch(KEYS.profile, { alchLv: clampLv(t.value) });
-    if (t.id === 'alStations') patch(KEYS.profile, { alchStations: Math.max(0, Math.round(+t.value || 0)) || null });
     if (t.id === 'alGrade') patch(KEYS.alchOpts, { grade: t.value });
     if (t.id === 'alPestle') patch(KEYS.profile, { tools: { ...profile().tools, pestle: +t.value } });
     if (t.id === 'alScale') patch(KEYS.alchOpts, { scaleIngredients: t.checked });
     if (t.id === 'alUnlocked') patch(KEYS.alchOpts, { unlockedOnly: t.checked });
   });
-  opts.addEventListener('click', e => {
-    const b = e.target.closest('button[data-powders]');
-    if (b) patch(KEYS.alchOpts, { powders: +b.dataset.powders });
-  });
-
   $('#alchTierSeg').addEventListener('click', e => {
     const b = e.target.closest('button[data-tier]');
     if (b) patch(KEYS.alchOpts, { tier: b.dataset.tier });
   });
-
   const table = $('#alchTable');
   table.addEventListener('click', e => {
     const th = e.target.closest('th[data-sort]');
@@ -43,15 +38,18 @@ export function initAlchemy() {
     const tr = e.target.closest('tr[data-name]');
     if (tr) { selected = tr.dataset.name; renderAlchemy(); }
   });
-
-  const onChange = e => {
+  const onPrice = e => {
     const p = e.target.closest('input[data-price]');
-    if (p) setProductPrice(KEYS.elixirPrices, p.dataset.price, p.value);
-    const i = e.target.closest('input[data-ing]');
-    if (i) setIngPrice(i.dataset.ing, i.value);
+    if (p && !p.readOnly) setProductPrice(KEYS.elixirPrices, p.dataset.price, p.value);
   };
-  table.addEventListener('change', onChange);
-  $('#alchDetail').addEventListener('change', onChange);
+  table.addEventListener('change', onPrice);
+  $('#alchDetail').addEventListener('change', onPrice);
+}
+
+function rowOf(e, ep, ip, ctx) {
+  const price = priceOf(ep, e.name);
+  const x = elixirEfficiency(e, price, ip, ctx);
+  return { e, key: e.name, price, entry: ep[e.name], ...x, ...unitStats(x, price) };
 }
 
 export function renderAlchemy() {
@@ -60,32 +58,30 @@ export function renderAlchemy() {
   renderOptions(ctx, o);
 
   const ep = gradedPrices('elixir', o.grade), ip = ingPrices();
-  let rows = ELIXIRS.map(e => ({ e, price: priceOf(ep, e.name), entry: ep[e.name], ...elixirEfficiency(e, priceOf(ep, e.name), ip, ctx) }));
+  let rows = ELIXIRS.map(e => rowOf(e, ep, ip, ctx));
   if (o.tier !== 'all') rows = rows.filter(x => String(x.e.lv) === o.tier);
   if (o.unlockedOnly) rows = rows.filter(x => !x.locked);
-
-  const key = { hourly: 'hourly', perUnit: 'perUnit', exp: 'expHourly', price: 'price' }[o.sort] || 'hourly';
-  rows.sort((a, b) => (b.hasPrice - a.hasPrice) || (a.locked - b.locked) || (b[key] - a[key]));
+  sortRows(rows, o.sort);
 
   if (!selected || !ELIXIRS.some(e => e.name === selected)) selected = rows[0]?.e.name ?? ELIXIRS[0].name;
 
   $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
-  renderTable(rows, o.sort, o.grade);
-  renderDetail(ELIXIRS.find(e => e.name === selected), ctx, ep, ip, o.grade);
+  $('#alchTable').innerHTML = tableHtml({
+    rows, sort: o.sort, grade: o.grade, selected, kindWord: '비약',
+    nameOf: x => `${x.e.name}의 비약`,
+    chipsOf: x => `<span class="chip stage">${x.e.vanilla ? '바닐라' : 'Lv ' + x.e.lv}</span>
+      <span class="chip">${esc(x.e.effect)}</span>
+      ${x.locked ? `<span class="chip lock">Lv ${x.e.lv} 해금</span>` : ''}`,
+  });
+  renderDetail(rowOf(ELIXIRS.find(e => e.name === selected), ep, ip, ctx), ctx, ep, o.grade);
 }
 
 function renderOptions(ctx, o) {
   const p = profile();
-  $('#alchSummary').textContent = `${ctx.tier.tier}차 · 작업당 ${ctx.tier.perTask}개 · 연금대 ${ctx.stations}개 · 숙련 시간 −${fmtNum(ctx.lvFx.timeCut, 1)}%`;
+  $('#alchSummary').textContent = `${ctx.tier.tier}차 · 작업당 ${ctx.tier.perTask}개 · 재료 손실 방지 ${fmtNum(ctx.lvFx.lossGuard, 1)}%`;
   $('#alchOptions').innerHTML = `
     <div class="opts">
       ${stepper('alLv', p.alchLv, { label: '연금술사 숙련도' })}
-      <div class="field"><label for="alStations">연금대 수 (비우면 자동 ${ctx.autoStations}개)</label>
-        <input class="input num" id="alStations" type="number" min="1" max="7" placeholder="${ctx.autoStations}" value="${p.alchStations ?? ''}"></div>
-      <div class="field"><span class="label">넣는 가루 (종류마다 시간 −5%)</span>
-        <div class="seg" role="group" aria-label="가루 종류">
-          ${[0, 1, 2].map(n => `<button type="button" data-powders="${n}" class="${o.powders === n ? 'is-on' : ''}">${['없음', '1종', '심재+광물'][n]}</button>`).join('')}
-        </div></div>
       <div class="field"><label for="alGrade">판매 등급 (이 가격으로 계산)</label>${gradeSelect('alGrade', o.grade)}</div>
       <div class="field"><label for="alPestle">막자 강화 · 토트의 축복</label>
         <select class="select" id="alPestle">${toolOptions('pestle', p.tools.pestle)}</select></div>
@@ -96,66 +92,20 @@ function renderOptions(ctx, o) {
     </div>`;
 }
 
-function valText(e) {
-  return e.vals.map((v, i) => `${ELIXIR_GRADES[i]} ${v}${e.unit}`).join(' · ');
-}
-
-function renderTable(rows, sort, grade = 'common') {
-  const max = Math.max(1, ...rows.filter(x => x.hasPrice).map(x => Math.abs(x.hourly)));
-  const th = (k, label) => `<th class="r${sort === k ? ' is-sorted' : ''}" data-sort="${k}">${label}</th>`;
-  let rank = 0;
-  $('#alchTable').innerHTML = `
-    <thead><tr>
-      <th class="rank">#</th><th>비약</th>
-      ${th('price', '판매가')}<th class="r">재료비/병</th>
-      ${th('perUnit', '병당 순익')}${th('hourly', '시간당 순익')}${th('exp', '경험치/시간')}
-    </tr></thead>
-    <tbody>${rows.map(x => {
-      const ok = x.hasPrice && !x.locked;
-      if (ok) rank++;
-      return `
-      <tr data-name="${esc(x.e.name)}" class="${x.locked ? 'is-locked' : ''}${x.e.name === selected ? ' is-selected' : ''}">
-        <td class="rank">${ok ? `<span class="medal num${rank <= 3 ? ' m' + rank : ''}">${rank}</span>` : ''}</td>
-        <td><div class="item-cell">${icon(x.e.name)}<div class="item-body">
-          <div class="name">${esc(x.e.name)}의 비약</div>
-          <div class="faint" style="font-size:11px">${esc(x.e.effect)}</div>
-          <div class="row" style="gap:4px;margin-top:3px">
-            <span class="chip stage">${x.e.vanilla ? '바닐라' : 'Lv ' + x.e.lv}</span>
-            ${x.locked ? `<span class="chip lock">Lv ${x.e.lv} 해금</span>` : ''}
-            ${freshChip(x.entry)}
-          </div>
-        </div></div></td>
-        <td class="r"><input class="input num price-in" data-price="${esc(x.e.name)}"${grade !== 'common' ? ' readonly title="고급 · 희귀 가격은 공식 시세에서 자동으로 들어와요"' : ''} type="number" min="0" inputmode="numeric" placeholder="판매가" value="${x.price || ''}" aria-label="${esc(x.e.name)}의 비약 판매가"></td>
-        <td class="r num">${fmtNum(x.cost / x.perTask)}</td>
-        <td class="r num ${x.hasPrice ? (x.perUnit >= 0 ? 'gain' : 'loss') : 'faint'}">${x.hasPrice ? fmtSigned(x.perUnit) : '—'}</td>
-        <td class="r">
-          ${x.hasPrice ? `<div class="num big ${x.hourly >= 0 ? 'gain' : 'loss'}">${fmtSigned(x.hourly)}</div>
-          <div class="bar${x.hourly < 0 ? ' neg' : ''}"><i style="width:${Math.max(3, Math.abs(x.hourly) / max * 100)}%"></i></div>` : '<span class="faint">판매가 입력</span>'}
-        </td>
-        <td class="r num muted">${fmtNum(x.expHourly)}</td>
-      </tr>`;
-    }).join('')}</tbody>`;
-}
-
-function renderDetail(e, ctx, ep, ip, grade = 'common') {
-  const price = priceOf(ep, e.name);
-  const x = elixirEfficiency(e, price, ip, ctx);
+function renderDetail(x, ctx, ep, grade) {
+  const e = x.e;
   const ings = elixirIngredients(e);
   const raw = ingPricesRaw(), self = selfSupply();
-  const tasksPerHour = 3600 / x.cycle * ctx.stations;
   const kindOf = n => n.includes('심재') ? '심재' : /강화된|순수한/.test(n) ? '광물' : n === '물병' ? '공통' : '재료';
 
   $('#alchDetailTitle').textContent = `${e.name}의 비약`;
   $('#alchDetail').innerHTML = `
-    <div class="detail-hero">${icon(e.name, 'l')}<div><div class="dh-name">${esc(e.name)}의 비약</div><div class="dh-sub">${esc(e.effect)}</div></div></div>
-    <div class="row" style="gap:4px">
-      <span class="chip stage">${e.vanilla ? '바닐라' : '숙련도 ' + e.lv}</span>
-      <span class="chip">${esc(e.effect)}</span>
-      ${freshChip(ep[e.name])}
-    </div>
-    <p class="note">${valText(e)}</p>
-    <div class="field"><label for="alDetailPrice">판매가 (쿠키 / 1병)</label>
-      <input class="input num" id="alDetailPrice"${grade !== 'common' ? ' readonly' : ''} data-price="${esc(e.name)}" type="number" min="0" placeholder="판매가" value="${price || ''}"></div>
+    <div class="detail-hero">${icon(e.name, 'l')}<div><div class="dh-name">${esc(e.name)}의 비약</div>
+      <div class="dh-sub">${esc(e.effect)} · ${e.vals.map((v, i) => `${ELIXIR_GRADES[i]} ${v}${e.unit}`).join(' / ')}</div>
+      <div class="row" style="gap:4px;margin-top:4px"><span class="chip stage">${e.vanilla ? '바닐라' : '숙련도 ' + e.lv}</span>${freshChip(ep[e.name])}</div></div></div>
+    ${metricsHtml(x, x.price)}
+    <div class="field"><label for="alDetailPrice">판매가 (쿠키 / 1병${grade !== 'common' ? ' · 공식 시세 등급 가격' : ''})</label>
+      <input class="input num" id="alDetailPrice"${grade !== 'common' ? ' readonly' : ''} data-price="${esc(e.name)}" type="number" min="0" placeholder="판매가" value="${x.price || ''}"></div>
     <div class="slots">${ings.map(i => `
       <div class="slot">
         <span class="nm">${icon(i.name, 's')}${esc(i.name)}</span><span class="qty num">×${i.qty}</span>
@@ -165,20 +115,11 @@ function renderDetail(e, ctx, ep, ip, grade = 'common') {
     </div>
     <div class="row" style="justify-content:flex-end"><a class="btn btn-sm" href="#prices" data-goto-cat="alchIng">재료 단가 수정하기 →</a></div>
     <div class="calc-lines">
-      <div class="calc-line"><span class="k">1회 제작 시간</span><span class="num">${fmtSec(x.cycle)}</span></div>
-      <div class="calc-line"><span class="k">작업당 결과</span><span class="num">${fmtNum(x.made, 2)}병</span></div>
       <div class="calc-line"><span class="k">재료 1세트 (물병 포함)</span><span class="num">${fmtNum(x.perSet)} 쿠키</span></div>
-      <div class="calc-line"><span class="k">작업당 재료비 (손실 방지 ${fmtNum(x.lossGuard, 1)}%)</span><span class="num ${x.cost ? 'loss' : 'faint'}">${x.cost ? '−' : ''}${fmtNum(x.cost)}</span></div>
-      <div class="calc-line"><span class="k">작업당 매출</span><span class="num gain">+${fmtNum(x.revenue)}</span></div>
-      <div class="calc-line"><span class="k">작업당 순익</span><span class="num ${x.profit >= 0 ? 'gain' : 'loss'}">${fmtSigned(x.profit)}</span></div>
-      <div class="calc-line"><span class="k">시간당 작업 (연금대 ${ctx.stations}개)</span><span class="num">${fmtNum(tasksPerHour, 1)}회</span></div>
-      <div class="calc-line total"><span class="k">시간당 순익</span><span class="num ${x.hourly >= 0 ? 'gain' : 'loss'}">${x.hasPrice ? fmtSigned(x.hourly) + ' 쿠키' : '판매가를 넣어 주세요'}</span></div>
+      <div class="calc-line"><span class="k">작업당 재료비 (총) · 손실 방지 ${fmtNum(x.lossGuard, 1)}%</span><span class="num">${fmtNum(x.cost)} 쿠키</span></div>
+      <div class="calc-line"><span class="k">작업당 결과${ctx.bonusPct ? ` (축복 +${ctx.bonusPct}%)` : ''}</span><span class="num">${fmtNum(x.made, 2)}병</span></div>
+      <div class="calc-line"><span class="k">1병당 원가</span><span class="num">${fmtNum(x.unitCost, 1)} 쿠키</span></div>
+      <div class="calc-line total"><span class="k">작업당 이윤</span><span class="num ${x.profit >= 0 ? 'gain' : 'loss'}">${x.hasPrice ? fmtSigned(x.profit) + ' 쿠키' : '—'}</span></div>
     </div>
-    <p class="note">기본 시간은 바닐라 30초, 그 외 56초예요. 숙련도 시간 감소와 재료 손실 방지는 위키 구간표를 레벨별로 나눠 근사했어요. 희귀 비약으로 나오는 확률은 판매가 차이를 알 수 없어 뺐어요. 판매기한은 ${ALCH_RULES.sellDeadlineH}시간이에요.</p>`;
-}
-
-
-export function selectedAlchCycle() {
-  const e = ELIXIRS.find(x => x.name === selected) || ELIXIRS[6];
-  return { name: `${e.name}의 비약`, sec: elixirEfficiency(e, 0, {}, alchContext()).cycle };
+    <p class="note">원가는 직접 수급 재료를 0원으로 넣어 계산해요. 재료 손실 방지는 위키 구간표를 레벨별로 나눠 근사했어요. 비약 판매기한은 ${ALCH_RULES.sellDeadlineH}시간이에요.</p>`;
 }

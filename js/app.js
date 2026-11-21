@@ -25,17 +25,20 @@ import { initLive, onLive } from './live.js';
 
 const VIEWS = {
   home:    { init: initHome,    render: renderHome,    tick: tickHome },
-  cook:    { init: initCook,    render: renderCook },
-  alchemy: { init: initAlchemy, render: renderAlchemy },
+  calc:    { init: () => { initCook(); initAlchemy(); }, render: () => (calcMode === 'alchemy' ? renderAlchemy() : renderCook()) },
   history: { init: initHistoryView, render: renderHistoryView },
   trade:   { init: initTrade,   render: renderTrade },
   prices:  { init: initPrices,  render: renderPrices },
 };
 
 let current = 'home';
+let calcMode = 'cook';    // 효율 계산기: #cook · #alchemy
 
 function show(name) {
+  if (name === 'cook' || name === 'alchemy') { calcMode = name; name = 'calc'; }
   if (!VIEWS[name]) name = 'home';
+  $$('.calc-pane').forEach(p => { p.hidden = p.dataset.pane !== calcMode; });
+  $$('.calc-tab').forEach(t => t.classList.toggle('is-on', t.dataset.mode === calcMode));
   current = name;
   $$('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
   $$('.menu-btn').forEach(b => b.classList.toggle('is-active', b.dataset.view === name));

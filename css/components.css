@@ -946,3 +946,77 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .mk-sub b { color: var(--ink); }
 .mk-diff { text-align: right; font-weight: 700; font-size: var(--fs-m); display: grid; line-height: 1.2; }
 .mk-diff small { font-size: 10.5px; font-weight: 300; color: var(--txt-3); }
+
+/* ══ 효율 계산기: 요리 · 연금 전환 ══ */
+.calc-switch { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 560px; }
+.calc-tab {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border: var(--bw) solid var(--ink); border-radius: var(--r); background: var(--panel);
+  color: var(--ink); text-decoration: none; box-shadow: 0 4px 0 var(--ink);
+  transition: transform .08s, box-shadow .08s, background .12s;
+}
+.calc-tab:hover { background: var(--panel-2); }
+.calc-tab:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--ink); }
+.calc-tab.is-on { background: linear-gradient(160deg, var(--y-1), var(--y-2)); }
+.ct-ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; font-weight: 700; font-size: 17px;
+  background: var(--panel); border: 2px solid var(--ink); box-shadow: 0 2px 0 var(--ink); transform: rotate(-4deg); }
+.calc-tab b { display: block; font-size: var(--fs-l); line-height: 1.2; }
+.calc-tab small { font-size: var(--fs-xs); color: var(--txt-2); }
+.calc-pane { display: grid; gap: 20px; }
+
+/* ══ 상세: 1개당 이윤 · 마진율 · 원가율 ══ */
+.kpi-hero {
+  padding: 14px 16px; border-radius: var(--r);
+  border: var(--bw) solid var(--ink); box-shadow: 0 4px 0 var(--ink);
+  background: linear-gradient(160deg, var(--y-1), var(--y-2));
+}
+.kpi-hero.is-loss { background: linear-gradient(160deg, #ffe3dc, #ffc2b5); }
+.kpi-k { font-size: var(--fs-xs); font-weight: 700; color: var(--txt-2); letter-spacing: .02em; }
+.kpi-hero .kpi-k { color: var(--ink); }
+.kpi-v { font-size: 44px; font-weight: 700; line-height: 1.05; color: var(--ink); letter-spacing: -.01em; margin-top: 2px; }
+.kpi-hero.is-gain .kpi-v { color: #0f6b3a; }
+.kpi-hero.is-loss .kpi-v { color: #a8321f; }
+.kpi-v small { font-size: var(--fs-m); margin-left: 4px; color: var(--txt-2); font-weight: 700; }
+.kpi-s { font-size: var(--fs-xs); color: var(--txt-2); margin-top: 2px; }
+.kpi-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.kpi { padding: 12px 14px; border-radius: var(--r-s); background: var(--panel-2); border: 2px solid var(--ink); box-shadow: 0 3px 0 var(--ink); display: grid; gap: 4px; min-width: 0; }
+.kpi-v2 { font-size: 28px; font-weight: 700; line-height: 1.1; color: var(--ink); }
+.kpi-meter { height: 8px; border-radius: 99px; background: rgba(61,42,18,.1); overflow: hidden; }
+.kpi-meter > i { display: block; height: 100%; border-radius: 99px; background: var(--gain); }
+.kpi-meter > i.neg { background: var(--loss); }
+.kpi-meter.cost > i { background: var(--y-4); }
+
+/* ══ 계산기 ══ */
+.cl-screen {
+  padding: 12px 14px; border-radius: var(--r-s); text-align: right;
+  background: var(--ink); color: var(--y-1); border: 2px solid var(--ink);
+  box-shadow: inset 0 3px 0 rgba(0,0,0,.25);
+  min-height: 82px; display: grid; align-content: end; gap: 2px; overflow: hidden;
+}
+.cl-expr { font-size: var(--fs-s); color: rgba(255,241,168,.65); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.cl-val { font-size: 34px; font-weight: 700; line-height: 1.1; color: var(--y-2); overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+.cl-val.is-preview { color: rgba(255,216,74,.7); }
+.cl-keys { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+.ck {
+  appearance: none; cursor: pointer; font: inherit; font-weight: 700; font-size: var(--fs-l);
+  padding: 11px 0 12px; border-radius: 10px;
+  border: 2px solid var(--ink); background: var(--panel); color: var(--ink);
+  box-shadow: 0 3px 0 var(--ink); transition: transform .06s, box-shadow .06s, background .1s;
+}
+.ck:hover { background: var(--panel-2); }
+.ck:active, .ck.is-press { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
+.ck.op { background: var(--y-1); }
+.ck.fn { background: var(--panel-2); font-size: var(--fs-m); color: var(--txt-2); }
+.ck.eq { background: linear-gradient(180deg, var(--y-1), var(--y-2) 55%, var(--y-3)); grid-row: span 1; }
+.ck.wide { grid-column: span 2; }
+.cl-actions { gap: 6px; }
+.cl-hist { display: grid; gap: 4px; }
+.cl-hist-t { font-size: var(--fs-xs); color: var(--txt-3); font-weight: 700; margin-top: 2px; }
+.cl-h {
+  appearance: none; cursor: pointer; font: inherit; display: flex; justify-content: space-between; gap: 10px;
+  padding: 5px 10px; border-radius: 8px; border: 1.5px dashed var(--line); background: var(--panel); color: var(--txt-2); font-size: var(--fs-xs);
+}
+.cl-h:hover { border-color: var(--ink); color: var(--ink); }
+.cl-h span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.cl-h b { color: var(--ink); }
+.view[data-view="trade"] > .grid-2 { align-items: start; }

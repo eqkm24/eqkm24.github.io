@@ -1,5 +1,6 @@
 /* ==========================================================================
    view-alchemy.js — 비약 효율 계산기
+   화면: 왼쪽 설정 · 보기 / 오른쪽 등급별 1위 요약 + 순위 카드 / 카드 누르면 상세 팝업
    비약마다 무별 · 은별 · 금별 3등급을 따로 계산합니다.
      1병당 원가  = 작업당 재료비 ÷ 작업당 나온 병 수 (등급과 무관)
      1병당 이윤  = 등급 판매가 − 1병당 원가
@@ -7,7 +8,7 @@
      시세 위치   = 기준가 -20% ~ +10% 범위 안에서 지금 값이 어디쯤인지
    판매가 입력은 '시세 입력' 탭에서만 합니다.
    ========================================================================== */
-import { ELIXIRS, ELIXIR_GRADES, ALCH_RULES, GRADE_KEYS, GRADE_NAME, GRADE_SUB, PRICE_RANGE } from './data.js';
+import { ELIXIRS, ALCH_RULES, GRADE_KEYS, GRADE_NAME, GRADE_SUB, PRICE_RANGE } from './data.js';
 import * as store from './store.js';
 import { KEYS } from './store.js';
 import { elixirEfficiency, elixirIngredients, unitStats, fmtNum, fmtSigned } from './calc.js';
@@ -17,11 +18,13 @@ import {
 } from './ui.js';
 
 let selected = null;
+let query = '';
 
 const TIERS = [['all', '전체'], ['0', '바닐라'], ['1', 'Lv 1'], ['10', 'Lv 10'], ['20', 'Lv 20']];
 const SORTS = [['profit', '1병당 이윤'], ['margin', '마진율'], ['pos', '시세 위치']];
 const pct = v => (v == null ? '—' : `${v.toFixed(1)}%`);
 const tone = v => (v == null ? 'faint' : v >= 0 ? 'gain' : 'loss');
+const norm = s => String(s).replace(/\s+/g, '');
 
 /* 기준가 · 범위 (공식 시세가 있을 때만) */
 export function rangeOf(name, g, cur) {
@@ -41,30 +44,37 @@ export function rangeBar(r, compact = false) {
 }
 
 export function initAlchemy() {
-  const opts = $('#alchOptions');
-  wireSteppers(opts);
-  opts.addEventListener('change', e => {
+  const side = $('.eff-side');
+  wireSteppers(side);
+  side.addEventListener('change', e => {
     const t = e.target;
     if (t.id === 'alLv') patch(KEYS.profile, { alchLv: clampLv(t.value) });
     if (t.id === 'alPestle') patch(KEYS.profile, { tools: { ...profile().tools, pestle: +t.value } });
     if (t.id === 'alScale') patch(KEYS.alchOpts, { scaleIngredients: t.checked });
     if (t.id === 'alUnlocked') patch(KEYS.alchOpts, { unlockedOnly: t.checked });
   });
-  $('#alchTierSeg').addEventListener('click', e => {
-    const b = e.target.closest('button[data-tier]');
-    if (b) patch(KEYS.alchOpts, { tier: b.dataset.tier });
-  });
-  $('#alchSortBar').addEventListener('click', e => {
-    const g = e.target.closest('[data-sg]'), s = e.target.closest('[data-sk]');
+  side.addEventListener('click', e => {
+    const g = e.target.closest('[data-sg]'), s = e.target.closest('[data-sk]'), t = e.target.closest('[data-tier]');
     if (g) patch(KEYS.alchOpts, { sortGrade: g.dataset.sg });
     if (s) patch(KEYS.alchOpts, { sort: s.dataset.sk });
+    if (t) patch(KEYS.alchOpts, { tier: t.dataset.tier });
   });
-  $('#alchTable').addEventListener('click', e => {
-    const th = e.target.closest('th[data-sg]');
-    if (th) { patch(KEYS.alchOpts, { sortGrade: th.dataset.sg }); return; }
-    const tr = e.target.closest('tr[data-name]');
-    if (tr) { selected = tr.dataset.name; renderAlchemy(); }
+  $('#effSearch').addEventListener('input', e => { query = e.target.value.trim(); renderAlchemy(); });
+
+  /* 카드 · 요약 → 상세 팝업 */
+  const open = name => { selected = name; renderAlchemy(); $('#effModal').hidden = false; document.body.classList.add('eff-lock'); $('#effModal [data-eff-close]').focus(); };
+  const close = () => { $('#effModal').hidden = true; document.body.classList.remove('eff-lock'); };
+  $('.eff-main').addEventListener('click', e => {
+    const c = e.target.closest('[data-name]');
+    if (c) open(c.dataset.name);
   });
+  $('.eff-main').addEventListener('keydown', e => {
+    const c = e.target.closest('[data-name]');
+    if (c && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); open(c.dataset.name); }
+  });
+  $('#effModal').addEventListener('click', e => { if (e.target.id === 'effModal' || e.target.closest('[data-eff-close], [data-goto-cat]')) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#effModal').hidden) close(); });
+  addEventListener('hashchange', close);
 }
 
 function rowOf(e, prices, ip, ctx) {
@@ -82,74 +92,90 @@ export function renderAlchemy() {
   const ctx = alchContext();
   const o = { sortGrade: 'common', ...alchOpts() };
   const sort = SORTS.some(([k]) => k === o.sort) ? o.sort : 'profit';
-  renderOptions(ctx, o);
+  const G = o.sortGrade;
+  renderOptions(ctx, o, sort);
 
   const prices = Object.fromEntries(GRADE_KEYS.map(g => [g, gradedPrices('elixir', g)]));
   const ip = ingPrices();
-  let rows = ELIXIRS.map(e => rowOf(e, prices, ip, ctx));
+  const all = ELIXIRS.map(e => rowOf(e, prices, ip, ctx));
+  let rows = all;
   if (o.tier !== 'all') rows = rows.filter(x => String(x.e.lv) === o.tier);
   if (o.unlockedOnly) rows = rows.filter(x => !x.locked);
+  if (query) rows = rows.filter(x => norm(`${x.e.name}의 비약`).includes(norm(query)));
 
-  const val = x => {
-    const g = x.grades[o.sortGrade];
-    if (!g.price) return -Infinity;
-    return sort === 'profit' ? g.unitProfit : sort === 'margin' ? g.margin : (g.range?.pos ?? -1);
+  const val = (x, g = G) => {
+    const v = x.grades[g];
+    if (!v.price) return -Infinity;
+    return sort === 'profit' ? v.unitProfit : sort === 'margin' ? v.margin : (v.range?.pos ?? -1);
   };
   rows.sort((a, b) => (a.locked - b.locked) || (val(b) - val(a)));
   if (!selected || !ELIXIRS.some(e => e.name === selected)) selected = rows[0]?.e.name ?? ELIXIRS[0].name;
 
-  $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
-  $('#alchSortBar').innerHTML = `
-    <span class="faint">정렬</span>
-    <div class="seg seg-sm">${GRADE_KEYS.map(g => `<button type="button" data-sg="${g}" class="${o.sortGrade === g ? 'is-on' : ''}">${GRADE_NAME[g]}</button>`).join('')}</div>
-    <div class="seg seg-sm">${SORTS.map(([k, l]) => `<button type="button" data-sk="${k}" class="${sort === k ? 'is-on' : ''}">${l}</button>`).join('')}</div>`;
+  /* 등급별 1위 (해금된 것 중 1병당 이윤) */
+  $('#effTop').innerHTML = GRADE_KEYS.map(g => {
+    const best = all.filter(x => !x.locked && x.grades[g].price).sort((a, b) => b.grades[g].unitProfit - a.grades[g].unitProfit)[0];
+    if (!best) return `<div class="eff-best g-${g} is-empty"><div class="eb-h"><span class="gchip g-${g}">${GRADE_NAME[g]}</span> 1위</div><div class="faint">판매가가 들어오면 보여요</div></div>`;
+    const v = best.grades[g];
+    return `<button type="button" class="eff-best g-${g}${G === g ? ' is-on' : ''}" data-name="${esc(best.key)}">
+      <div class="eb-h"><span class="gchip g-${g}">${GRADE_NAME[g]}</span> 1위</div>
+      <div class="eb-n">${icon(best.e.name, 's')}${esc(best.e.name)}의 비약</div>
+      <div class="eb-v num ${tone(v.unitProfit)}">${fmtSigned(v.unitProfit)}<small>/병</small></div>
+      <div class="eb-s num">판매가 ${fmtNum(v.price)} · 마진 ${pct(v.margin)}</div>
+    </button>`;
+  }).join('');
+
+  $('#effCount').textContent = `${rows.length}가지 · ${GRADE_NAME[G]} 기준 ${SORTS.find(([k]) => k === sort)[1]} 순`;
 
   let rank = 0;
-  $('#alchTable').innerHTML = `
-    <thead><tr>
-      <th class="rank">#</th><th>비약</th><th class="r">원가/병</th>
-      ${GRADE_KEYS.map(g => `<th class="r gcol${o.sortGrade === g ? ' is-sorted' : ''}" data-sg="${g}"><span class="gchip g-${g}">${GRADE_NAME[g]}</span></th>`).join('')}
-    </tr></thead>
-    <tbody>${rows.map(x => {
-      const ok = !x.locked && x.grades[o.sortGrade].price > 0;
-      if (ok) rank++;
-      return `
-      <tr data-name="${esc(x.key)}" class="${x.locked ? 'is-locked' : ''}${x.key === selected ? ' is-selected' : ''}">
-        <td class="rank">${ok ? `<span class="medal num${rank <= 3 ? ' m' + rank : ''}">${rank}</span>` : ''}</td>
-        <td><div class="item-cell">${icon(x.e.name)}<div class="item-body">
-          <div class="name">${esc(x.e.name)}의 비약</div>
-          <div class="row" style="gap:4px;margin-top:3px"><span class="chip stage">${x.e.vanilla ? '바닐라' : 'Lv ' + x.e.lv}</span>
-            ${x.locked ? `<span class="chip lock">Lv ${x.e.lv} 해금</span>` : ''}</div>
-        </div></div></td>
-        <td class="r num">${x.unitCost ? fmtNum(x.unitCost, x.unitCost < 10 ? 1 : 0) : '<span class="faint">0</span>'}</td>
-        ${GRADE_KEYS.map(g => {
-          const v = x.grades[g];
-          if (!v.price) return `<td class="r gcell${o.sortGrade === g ? ' is-sorted' : ''}"><span class="faint">—</span></td>`;
-          return `<td class="r gcell${o.sortGrade === g ? ' is-sorted' : ''}">
-            <div class="gc-price num">${fmtNum(v.price)}</div>
-            <div class="gc-profit num ${tone(v.unitProfit)}">${fmtSigned(v.unitProfit)} <small>${pct(v.margin)}</small></div>
-            ${rangeBar(v.range, true)}
-          </td>`;
-        }).join('')}
-      </tr>`;
-    }).join('')}</tbody>`;
+  $('#effGrid').innerHTML = rows.length ? rows.map(x => {
+    const v = x.grades[G];
+    const ok = !x.locked && v.price > 0;
+    const none = GRADE_KEYS.every(g => !x.grades[g].price);
+    if (ok) rank++;
+    return `
+    <article class="eff-card${x.locked ? ' is-locked' : ''}${ok && rank <= 3 ? ' is-top' : ''}${!v.price ? ' is-empty' : ''}${none ? ' is-none' : ''}" data-name="${esc(x.key)}" tabindex="0" role="button" aria-label="${esc(x.e.name)}의 비약 상세 보기">
+      <div class="ec-head">
+        ${ok ? `<span class="medal num${rank <= 3 ? ' m' + rank : ''}">${rank}</span>` : '<span class="medal is-none">–</span>'}
+        ${icon(x.e.name, 'm')}
+        <div class="ec-title"><div class="ec-name">${esc(x.e.name)}의 비약</div>
+          <div class="ec-tags"><span class="chip stage">${x.e.vanilla ? '바닐라' : 'Lv ' + x.e.lv}</span>${x.locked ? `<span class="chip lock">Lv ${x.e.lv} 해금</span>` : ''}</div></div>
+      </div>
+      ${v.price ? `
+      <div class="ec-main">
+        <div><div class="kpi-k">1병당 이윤 <span class="gchip g-${G}">${GRADE_NAME[G]}</span></div>
+          <div class="ec-profit num ${tone(v.unitProfit)}">${fmtSigned(v.unitProfit)}<small>쿠키</small></div></div>
+        <div class="ec-kv"><span>마진율</span><b class="num ${tone(v.margin)}">${pct(v.margin)}</b><span>원가율</span><b class="num">${pct(v.costRatio)}</b></div>
+      </div>
+      ${v.range ? `<div class="ec-range">${rangeBar(v.range, true)}<div class="ec-rl num"><span>판매가 ${fmtNum(v.price)}</span><span>${v.range.toMax ? `최고가까지 +${fmtNum(v.range.toMax)}` : '최고가'}</span></div></div>`
+        : `<div class="ec-rl num"><span>판매가 ${fmtNum(v.price)}</span><span>원가 ${fmtNum(x.unitCost, x.unitCost && x.unitCost < 10 ? 1 : 0)}</span></div>`}`
+      : `<div class="ec-none">${none ? '판매가가 아직 없어요 · 시세 입력에서 넣을 수 있어요' : `${GRADE_NAME[G]} 판매가가 없어요`}</div>`}
+      ${none ? '' : `<div class="ec-grades">${GRADE_KEYS.map(g => {
+        const w = x.grades[g];
+        return `<span class="ec-g${g === G ? ' is-on' : ''}"><span class="gchip g-${g}">${GRADE_NAME[g]}</span><b class="num">${w.price ? fmtNum(w.price) : '—'}</b>${w.price ? `<small class="num ${tone(w.unitProfit)}">${fmtSigned(w.unitProfit)}</small>` : ''}</span>`;
+      }).join('')}</div>`}
+    </article>`;
+  }).join('') : `<div class="empty">조건에 맞는 비약이 없어요.</div>`;
 
-  renderDetail(rows.find(r => r.key === selected) || rowOf(ELIXIRS.find(e => e.name === selected), prices, ip, ctx), ctx);
+  renderDetail(all.find(r => r.key === selected), ctx);
 }
 
-function renderOptions(ctx, o) {
+function renderOptions(ctx, o, sort) {
   const p = profile();
-  $('#alchSummary').textContent = `${ctx.tier.tier}차 · 작업당 ${ctx.tier.perTask}병 · 재료 손실 방지 ${fmtNum(ctx.lvFx.lossGuard, 1)}%`;
-  $('#alchOptions').innerHTML = `
-    <div class="opts">
+  $('#alchSummary').innerHTML = `<b>${ctx.tier.tier}차</b> · 작업당 <b>${ctx.tier.perTask}병</b> · 재료 손실 방지 <b>${fmtNum(ctx.lvFx.lossGuard, 1)}%</b>${ctx.bonusPct ? ` · 축복 <b>+${ctx.bonusPct}%</b>` : ''}`;
+  if (!$('#alLv')) {   // 처음 한 번만 그림 (입력 중 포커스 유지)
+    $('#alchOptions').innerHTML = `
       ${stepper('alLv', p.alchLv, { label: '연금술사 숙련도' })}
       <div class="field"><label for="alPestle">막자 강화 · 토트의 축복</label>
         <select class="select" id="alPestle">${toolOptions('pestle', p.tools.pestle)}</select></div>
-    </div>
-    <div class="row" style="gap:18px">
-      <label class="check"><input type="checkbox" id="alScale" ${o.scaleIngredients ? 'checked' : ''}> 작업당 개수만큼 재료 소모</label>
-      <label class="check"><input type="checkbox" id="alUnlocked" ${o.unlockedOnly ? 'checked' : ''}> 해금된 비약만</label>
-    </div>`;
+      <label class="check"><input type="checkbox" id="alScale"> 작업당 개수만큼 재료 소모</label>`;
+  }
+  if (document.activeElement !== $('#alLv')) $('#alLv').value = p.alchLv;
+  $('#alPestle').value = p.tools.pestle;
+  $('#alScale').checked = !!o.scaleIngredients;
+  $('#alUnlocked').checked = !!o.unlockedOnly;
+  $('#effGrade').innerHTML = GRADE_KEYS.map(g => `<button type="button" role="tab" aria-selected="${o.sortGrade === g}" data-sg="${g}" class="g-${g}${o.sortGrade === g ? ' is-on' : ''}"><span class="gchip g-${g}">${GRADE_NAME[g]}</span><small>${GRADE_SUB[g]}</small></button>`).join('');
+  $('#effSort').innerHTML = SORTS.map(([k, l]) => `<button type="button" data-sk="${k}" class="${sort === k ? 'is-on' : ''}">${l}</button>`).join('');
+  $('#alchTierSeg').innerHTML = TIERS.map(([k, l]) => `<button type="button" data-tier="${k}" class="${o.tier === k ? 'is-on' : ''}">${l}</button>`).join('');
 }
 
 function renderDetail(x, ctx) {

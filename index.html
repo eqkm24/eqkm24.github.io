@@ -83,33 +83,46 @@
 
     <!-- ═══════════ 비약 효율 계산기 ═══════════ -->
     <section class="view" data-view="calc">
-      <div class="calc-pane" data-pane="alchemy">
-      <article class="win">
-        <div class="win-title"><h2>연금술사 설정</h2><span class="sub" id="alchSummary"></span></div>
-        <div class="win-body" id="alchOptions"></div>
-      </article>
+      <div class="eff">
+        <!-- 왼쪽: 설정 -->
+        <aside class="eff-side">
+          <article class="win">
+            <div class="win-title"><h2>내 연금술사</h2></div>
+            <div class="win-body">
+              <div id="alchOptions"></div>
+              <p class="eff-sum" id="alchSummary"></p>
+            </div>
+          </article>
+          <article class="win">
+            <div class="win-title"><h2>보기</h2></div>
+            <div class="win-body eff-filters">
+              <div class="field"><span class="label">등급</span><div class="eff-grade" id="effGrade" role="tablist" aria-label="등급"></div></div>
+              <div class="field"><span class="label">정렬</span><div class="seg seg-sm eff-seg" id="effSort" role="group" aria-label="정렬"></div></div>
+              <div class="field"><span class="label">해금 레벨</span><div class="seg seg-sm eff-seg" id="alchTierSeg" role="group" aria-label="해금 레벨"></div></div>
+              <label class="check"><input type="checkbox" id="alUnlocked"> 해금된 비약만</label>
+            </div>
+          </article>
+        </aside>
 
-      <div class="grid-side">
-        <article class="win">
-          <div class="win-title">
-            <h2>비약 수익성</h2>
-            <span class="spacer"></span>
-            <div class="seg" id="alchTierSeg" role="group" aria-label="해금 레벨"></div>
+        <!-- 오른쪽: 요약 · 순위 카드 -->
+        <div class="eff-main">
+          <div class="eff-top" id="effTop"></div>
+          <div class="eff-bar">
+            <input class="input grow" id="effSearch" type="search" placeholder="비약 이름 찾기" autocomplete="off" aria-label="비약 이름 찾기">
+            <span class="eff-count" id="effCount"></span>
           </div>
-          <div class="sort-bar" id="alchSortBar"></div>
-          <div class="win-body tight">
-            <div class="table-wrap"><table class="table" id="alchTable"></table></div>
-          </div>
-          <div class="win-foot">등급 칸: 판매가 · 1병당 이윤(마진율) · 시세 위치 막대 (기준가 -20% ~ +10%, 세로줄이 기준가). 줄을 누르면 등급별 상세가 나와요.</div>
-        </article>
-
-        <article class="win">
-          <div class="win-title"><h2 id="alchDetailTitle">계산 내역</h2></div>
-          <div class="win-body" id="alchDetail"></div>
-        </article>
+          <div class="eff-grid" id="effGrid"></div>
+          <p class="note">카드를 누르면 무별 · 은별 · 금별 상세와 재료 내역이 나와요. 막대는 기준가 -20% ~ +10% 안에서 지금 값 위치예요 (세로줄 = 기준가).</p>
+        </div>
       </div>
 
-    </div>
+      <!-- 상세 -->
+      <div class="eff-modal" id="effModal" hidden>
+        <div class="eff-sheet win" role="dialog" aria-modal="true" aria-labelledby="alchDetailTitle">
+          <div class="win-title"><h2 id="alchDetailTitle">계산 내역</h2><span class="spacer"></span><button class="btn btn-sm btn-ghost" type="button" data-eff-close aria-label="닫기">닫기 ✕</button></div>
+          <div class="win-body" id="alchDetail"></div>
+        </div>
+      </div>
     </section>
 
     <!-- ═══════════ 시세 기록 ═══════════ -->

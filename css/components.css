@@ -236,14 +236,14 @@ input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; marg
 .table .rank.top {
   font-weight: 700;
 }
-.table .medal {
+.table .medal, .eff-card .medal {
   display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
   border: 2px solid var(--ink); font-size: 12px; font-weight: 700; color: var(--ink);
   background: var(--panel-2);
 }
-.table .medal.m1 { background: linear-gradient(180deg, var(--y-1), var(--y-3)); box-shadow: 0 2px 0 var(--ink); }
-.table .medal.m2 { background: linear-gradient(180deg, #f4f6fa, #c9d0dc); box-shadow: 0 2px 0 var(--ink); }
-.table .medal.m3 { background: linear-gradient(180deg, #ffd9b0, #e09a5c); box-shadow: 0 2px 0 var(--ink); }
+.table .medal.m1, .eff-card .medal.m1 { background: linear-gradient(180deg, var(--y-1), var(--y-3)); box-shadow: 0 2px 0 var(--ink); }
+.table .medal.m2, .eff-card .medal.m2 { background: linear-gradient(180deg, #f4f6fa, #c9d0dc); box-shadow: 0 2px 0 var(--ink); }
+.table .medal.m3, .eff-card .medal.m3 { background: linear-gradient(180deg, #ffd9b0, #e09a5c); box-shadow: 0 2px 0 var(--ink); }
 .table .price-in { width: 96px; padding: 5px 9px; font-size: var(--fs-s); }
 .table .big { font-size: var(--fs-m); font-weight: 700; }
 
@@ -1115,4 +1115,98 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
   #alchTable td.gcell { min-width: 92px; }
   #alchTable .name { font-size: var(--fs-s); }
   #alchTable .rank { width: 26px; }
+}
+
+/* ══ 비약 효율 계산기: 왼쪽 설정 · 오른쪽 카드 (2026.11 재배치) ══ */
+.eff { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 20px; align-items: start; }
+.eff-side { position: sticky; top: 84px; display: grid; gap: 16px; }
+.eff-side #alchOptions { display: grid; gap: 12px; }
+.eff-sum { margin: 12px 0 0; padding: 8px 10px; border-radius: var(--r-s); background: var(--panel-2); border: 1.5px dashed var(--line); font-size: var(--fs-xs); color: var(--txt-2); line-height: 1.6; }
+.eff-sum b { color: var(--ink); }
+.eff-filters { display: grid; gap: 14px; }
+.eff-seg { display: flex; width: 100%; border-radius: 14px; }
+.eff-seg button { flex: 1 1 auto; }
+.eff-grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.eff-grade button { display: grid; justify-items: center; gap: 3px; padding: 8px 4px 6px; border: 2px solid var(--line); border-radius: var(--r-s); background: var(--panel); cursor: pointer; font: inherit; }
+.eff-grade button .gchip { margin: 0; }
+.eff-grade button small { font-size: 10.5px; color: var(--txt-3); }
+.eff-grade button:hover { border-color: var(--ink); }
+.eff-grade button.is-on { border-color: var(--ink); background: var(--y-1); box-shadow: 0 3px 0 var(--ink); transform: translateY(-1px); }
+
+.eff-main { display: grid; gap: 14px; min-width: 0; }
+.eff-top { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.eff-best { text-align: left; font: inherit; color: inherit; cursor: pointer; display: grid; gap: 3px; padding: 12px 14px; border: var(--bw) solid var(--ink); border-radius: var(--r); background: var(--panel); box-shadow: 0 4px 0 var(--ink); min-width: 0; transition: transform .12s; }
+.eff-best:hover { transform: translateY(-2px); }
+.eff-best.g-uncommon { background: linear-gradient(160deg, #f1f3f7, var(--panel) 70%); }
+.eff-best.g-rare { background: linear-gradient(160deg, var(--y-1), var(--panel) 70%); }
+.eff-best.is-on { outline: 3px solid var(--y-3); outline-offset: 2px; }
+.eff-best.is-empty { cursor: default; box-shadow: none; border-style: dashed; border-color: var(--line); font-size: var(--fs-xs); }
+.eb-h { font-size: var(--fs-xs); font-weight: 700; color: var(--txt-2); }
+.eb-h .gchip { margin: 0 2px 0 0; }
+.eb-n { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: var(--fs-s); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.eb-v { font-size: var(--fs-xl); font-weight: 700; line-height: 1.15; }
+.eb-v small { font-size: var(--fs-xs); font-weight: 300; color: var(--txt-3); margin-left: 2px; }
+.eb-s { font-size: var(--fs-xs); color: var(--txt-2); }
+
+.eff-bar { display: flex; align-items: center; gap: 12px; }
+.eff-count { font-size: var(--fs-xs); color: var(--txt-2); white-space: nowrap; }
+.eff-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+.eff-card { display: grid; gap: 10px; align-content: start; padding: 14px; border: var(--bw) solid var(--ink); border-radius: var(--r); background: var(--panel); box-shadow: 0 4px 0 var(--ink); cursor: pointer; transition: transform .12s, box-shadow .12s; min-width: 0; }
+.eff-card:hover, .eff-card:focus-visible { transform: translateY(-3px); box-shadow: 0 7px 0 var(--ink); outline: none; }
+.eff-card.is-top { background: linear-gradient(170deg, var(--y-1), var(--panel) 55%); }
+.eff-card.is-locked, .eff-card.is-empty { box-shadow: 0 3px 0 var(--line); border-color: var(--line); }
+.eff-card.is-locked { opacity: .7; }
+.ec-head { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.eff-card .medal { flex: none; }
+.eff-card .medal.is-none { border-color: var(--line); color: var(--txt-3); }
+.ec-title { min-width: 0; }
+.ec-name { font-weight: 700; font-size: var(--fs-m); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ec-tags { display: flex; gap: 4px; margin-top: 3px; }
+.ec-main { display: flex; justify-content: space-between; align-items: end; gap: 10px; }
+.ec-main .kpi-k .gchip { margin-left: 2px; }
+.ec-profit { font-size: 28px; font-weight: 700; line-height: 1.1; }
+.ec-profit small { font-size: var(--fs-xs); font-weight: 300; color: var(--txt-3); margin-left: 3px; }
+.ec-kv { display: grid; grid-template-columns: auto auto; gap: 1px 8px; font-size: var(--fs-xs); color: var(--txt-2); text-align: right; }
+.ec-kv b { font-size: var(--fs-s); }
+.ec-range .rg { margin-top: 0; }
+.ec-rl { display: flex; justify-content: space-between; font-size: 11px; color: var(--txt-2); margin-top: 4px; }
+.ec-none { padding: 14px 0; text-align: center; font-size: var(--fs-xs); color: var(--txt-3); border: 1.5px dashed var(--line); border-radius: var(--r-s); }
+.ec-grades { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; padding-top: 8px; border-top: 1.5px dashed var(--line); }
+.ec-g { display: grid; justify-items: center; gap: 1px; padding: 4px 2px; border-radius: 10px; font-size: var(--fs-xs); min-width: 0; }
+.ec-g .gchip { margin: 0; font-size: 9.5px; }
+.ec-g small { font-size: 10px; }
+.ec-g.is-on { background: var(--panel-2); box-shadow: inset 0 0 0 1.5px var(--line); }
+
+/* 상세 팝업 */
+.eff-modal { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 24px 16px; background: rgba(40, 30, 10, .45); backdrop-filter: blur(2px); overflow-y: auto; }
+.eff-modal[hidden] { display: none; }
+.eff-sheet { width: min(760px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; animation: effIn .18s ease-out; }
+@keyframes effIn { from { transform: translateY(14px); opacity: 0; } }
+.eff-sheet .gcards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+body.eff-lock { overflow: hidden; }
+
+@media (max-width: 980px) {
+  .eff { grid-template-columns: 1fr; }
+  .eff-side { position: static; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+@media (max-width: 640px) {
+  .eff-top { grid-template-columns: 1fr; gap: 8px; }
+  .eff-best { grid-template-columns: auto 1fr auto; align-items: center; column-gap: 10px; }
+  .eff-best .eb-s { display: none; }
+  .eff-best .eb-v { font-size: var(--fs-l); }
+  .eff-grid { grid-template-columns: 1fr; }
+  .eff-sheet .gcards { grid-template-columns: 1fr; }
+  .eff-modal { place-items: end center; padding: 0; }
+  .eff-sheet { width: 100%; max-height: 90vh; border-radius: var(--r) var(--r) 0 0; }
+  .eff-bar { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { .eff-card, .eff-best, .eff-sheet { transition: none; animation: none; } }
+.eff-card.is-none { gap: 8px; padding: 12px 14px; }
+.eff-card.is-none .ec-none { padding: 6px 0; border: 0; text-align: left; }
+/* 폰: 보기(등급 · 정렬) → 결과 카드 → 내 연금술사 순서 */
+@media (max-width: 640px) {
+  .eff-side { display: contents; }
+  .eff-side > .win:first-child { order: 3; }
+  .eff-side > .win:last-child { order: 1; }
+  .eff-main { order: 2; }
 }

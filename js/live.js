@@ -11,13 +11,15 @@
    ========================================================================== */
 import * as store from './store.js';
 import { KEYS } from './store.js';
-import { RECIPES, ELIXIRS } from './data.js';
+import { RECIPES, ELIXIRS, GRADE_KEYS, gkey } from './data.js';
 import { cycleInfo, recipeIngredients, elixirIngredients } from './calc.js';
 
 export const LIVE_URL = 'https://giraffemc.com/prices.json';
+/* 연금술사 상점만 받아 트래픽을 줄임 (비면 전체로 다시 시도) */
+const LIVE_URL_ALCH = `${LIVE_URL}?shop=${encodeURIComponent('연금술사 상점')}`;
 const POLL_MS = 120e3;
 const GRADE = { common: 'common', uncommon: 'uncommon', rare: 'rare', 일반: 'common', 고급: 'uncommon', 희귀: 'rare' };
-export const GRADE_LABEL = { common: '일반', uncommon: '고급', rare: '희귀' };
+export const GRADE_LABEL = { common: '무별', uncommon: '은별', rare: '금별' };
 /* 공식 시세 이름 → 위키(이 페이지) 이름 */
 const ALIAS = { '아카시아 심재': '아카시아나무 심재', '가문비 심재': '가문비나무 심재', '정글 심재': '정글나무 심재', '맹그로브 심재': '맹그로브나무 심재' };
 
@@ -56,7 +58,7 @@ export function applyLive(json) {
     const kind = kindOf(it);
     let name = baseNameOf(it);
     let key = null;
-    if (kind === 'cook') key = COOK.get(norm(name));
+    if (kind === 'cook') continue;                 // 요리는 쓰지 않음
     else if (kind === 'elixir') key = ELIX.get(norm(name.replace(/의\s*비약$/, '')));
     else key = ING.get(norm(ALIAS[name] || name));
     const price = numOr(it.price, it.currentPrice, it.price?.current);
@@ -68,7 +70,7 @@ export function applyLive(json) {
   }
   if (JSON.stringify(grades) !== JSON.stringify(liveGrades())) store.set(KEYS.live, grades);   // 바뀔 때만
 
-  /* '일반' 등급(없으면 고급 → 희귀) 가격을 판매가 · 재료 단가에 반영 — 바뀐 것만 */
+  /* 비약: 무별 · 은별 · 금별 가격을 각각 판매가에 반영 / 재료: 일반 등급 — 바뀐 것만 */
   const pick = m => (m.common || m.uncommon || m.rare).price;
   const at = Date.parse(json.updatedAt) || Date.now();
   const cycleStart = cycleInfo().start;
@@ -76,13 +78,13 @@ export function applyLive(json) {
     const cur = store.get(key, {});
     let changed = false;
     const next = { ...cur };
-    for (const [name, m] of Object.entries(src)) {
-      const p = pick(m), e = cur[name];
-      if (!e || e.price !== p || e.at < cycleStart) { next[name] = { price: p, at, auto: true }; changed = true; }
+    for (const [name, m] of Object.entries(src)) for (const g of GRADE_KEYS) {
+      if (!m[g]) continue;
+      const k = gkey(name, g), p = m[g].price, e = cur[k];
+      if (!e || e.price !== p || e.at < cycleStart) { next[k] = { price: p, at, auto: true }; changed = true; }
     }
     if (changed) store.set(key, next);
   };
-  putProducts(KEYS.cookPrices, grades.cook);
   putProducts(KEYS.elixirPrices, grades.elixir);
   const ip = store.get(KEYS.ingPrices, {});
   const ipNext = { ...ip }; let ipChanged = false;
@@ -104,9 +106,14 @@ async function poll() {
   clearTimeout(timer);
   if (document.hidden) { timer = setTimeout(poll, POLL_MS); return; }
   try {
-    const res = await fetch(LIVE_URL, { cache: 'no-store' });
+    let res = await fetch(LIVE_URL_ALCH, { cache: 'no-store' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    applyLive(await res.json());
+    let json = await res.json();
+    if (!(json.items || []).length) {              // 상점 이름이 바뀌었으면 전체로
+      res = await fetch(LIVE_URL, { cache: 'no-store' });
+      json = await res.json();
+    }
+    applyLive(json);
   } catch (e) {
     setState({ status: 'error', error: state.at ? '최근 불러오기에 실패했어요. 잠시 뒤 다시 시도해요' : '공식 시세를 불러오지 못했어요 (이 주소에서는 외부 연결이 막혀 있을 수 있어요)' });
   }

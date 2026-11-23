@@ -10,13 +10,12 @@ import { KEYS } from './store.js';
 import { cycleInfo, fmtDuration } from './calc.js';
 import { $, $$ } from './ui.js';
 import { initHome, renderHome, tickHome } from './view-home.js';
-import { initCook, renderCook } from './view-cook.js';
 import { initAlchemy, renderAlchemy } from './view-alchemy.js';
 import { initAlarm, renderAlarm, tickAlarm } from './view-alarm.js';
 import { initDock } from './dock.js';
 import { initSettings, renderSettings } from './settings.js';
 import { initSync } from './sync.js';
-import { initSpec } from './spec.js';
+import { initMarket } from './market.js';
 import { initHistory } from './history.js';
 import { initHistoryView, renderHistoryView } from './view-history.js';
 import { initPrices, renderPrices } from './view-prices.js';
@@ -25,20 +24,17 @@ import { initLive, onLive } from './live.js';
 
 const VIEWS = {
   home:    { init: initHome,    render: renderHome,    tick: tickHome },
-  calc:    { init: () => { initCook(); initAlchemy(); }, render: () => (calcMode === 'alchemy' ? renderAlchemy() : renderCook()) },
+  calc:    { init: initAlchemy, render: renderAlchemy },
   history: { init: initHistoryView, render: renderHistoryView },
   trade:   { init: initTrade,   render: renderTrade },
   prices:  { init: initPrices,  render: renderPrices },
 };
 
 let current = 'home';
-let calcMode = 'cook';    // 효율 계산기: #cook · #alchemy
 
 function show(name) {
-  if (name === 'cook' || name === 'alchemy') { calcMode = name; name = 'calc'; }
+  if (name === 'alchemy' || name === 'cook') name = 'calc';   // 예전 주소(#cook)도 비약 계산기로
   if (!VIEWS[name]) name = 'home';
-  $$('.calc-pane').forEach(p => { p.hidden = p.dataset.pane !== calcMode; });
-  $$('.calc-tab').forEach(t => t.classList.toggle('is-on', t.dataset.mode === calcMode));
   current = name;
   $$('.view').forEach(v => v.classList.toggle('is-active', v.dataset.view === name));
   $$('.menu-btn').forEach(b => b.classList.toggle('is-active', b.dataset.view === name));
@@ -67,7 +63,7 @@ Object.values(VIEWS).forEach(v => v.init());
 initDock();
 initAlarm();
 initSettings();
-initSpec();
+initMarket();
 initHistory();
 renderSettings();
 renderAlarm();

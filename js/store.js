@@ -43,7 +43,7 @@ export function on(key, fn) {
 
 /* ── 앱에서 쓰는 키와 기본값 한 곳에 모음 ── */
 export const KEYS = {
-  profile:      'profile',       // 캐릭터 스펙 { nickname, mcUuid, 직업Lv, 설비 수, tools } → spec.js
+  profile:      'profile',       // 캐릭터 스펙 { nickname, mcUuid, 직업Lv, 설비 수, tools }
   cookOpts:     'cookOpts',      // 요리 계산 옵션
   alchOpts:     'alchOpts',      // 연금 계산 옵션
   ingPrices:    'ingPrices',     // { 재료명: 단가 }

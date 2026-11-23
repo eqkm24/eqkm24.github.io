@@ -3,22 +3,23 @@
    위: 선택한 품목의 주간 꺾은선 그래프 (1일 · 3일 · 7일)
    아래: 품목별 이번 시세 · 지난 주기 대비 · 24시간 최고/최저 · 판매 신호
    ========================================================================== */
-import { RECIPES, ELIXIRS } from './data.js';
+import { ELIXIRS, GRADE_KEYS, GRADE_NAME, splitGkey, gkey } from './data.js';
+import { rangeOf } from './view-alchemy.js';
 import { stats, sparkline, LEVEL } from './history.js';
 import { fmtNum } from './calc.js';
 import { $, esc, icon } from './ui.js';
 
 const CYCLE = 3 * 3600e3, KST = 9 * 3600e3;
 const DOW = ['일', '월', '화', '수', '목', '금', '토'];
-let kind = 'cook';
+let grade = 'all';          // 등급 탭: 전체 · 무별 · 은별 · 금별
 let selected = null;
 let days = 7;
 let current = null;            // 그래프에 그린 품목 (마우스 툴팁용)
 
 export function initHistoryView() {
   $('#histSeg').addEventListener('click', e => {
-    const b = e.target.closest('[data-kind]');
-    if (b) { kind = b.dataset.kind; selected = null; renderHistoryView(); }
+    const b = e.target.closest('[data-g]');
+    if (b) { grade = b.dataset.g; selected = null; renderHistoryView(); }
   });
   $('#histRange').addEventListener('click', e => {
     const b = e.target.closest('[data-days]');
@@ -48,12 +49,12 @@ const changeText = c => c == null ? '<span class="faint">—</span>'
   : `<span class="${c > 0 ? 'gain' : c < 0 ? 'loss' : 'muted'}">${c > 0 ? '▲' : c < 0 ? '▼' : '–'} ${Math.abs(c).toFixed(1)}%</span>`;
 
 export function renderHistoryView() {
-  $('#histSeg').querySelectorAll('button').forEach(b => b.classList.toggle('is-on', b.dataset.kind === kind));
+  $('#histSeg').innerHTML = [['all', '전체'], ...GRADE_KEYS.map(g => [g, GRADE_NAME[g]])]
+    .map(([g, l]) => `<button type="button" data-g="${g}" class="${grade === g ? 'is-on' : ''}">${l}</button>`).join('');
   $('#histRange').querySelectorAll('button').forEach(b => b.classList.toggle('is-on', +b.dataset.days === days));
-  const list = kind === 'cook'
-    ? RECIPES.map(r => ({ key: r.name, label: r.name }))
-    : ELIXIRS.map(e => ({ key: e.name, label: `${e.name}의 비약` }));
-  const rows = list.map(x => ({ ...x, s: stats(kind, x.key) })).filter(x => x.s)
+  const list = ELIXIRS.flatMap(e => GRADE_KEYS.filter(g => grade === 'all' || grade === g)
+    .map(g => ({ key: gkey(e.name, g), name: e.name, g, label: `${e.name}의 비약` })));
+  const rows = list.map(x => ({ ...x, s: stats('elixir', x.key) })).filter(x => x.s)
     .sort((a, b) => (b.s.level === 'sell') - (a.s.level === 'sell') || b.s.ratio - a.s.ratio);
 
   if (!rows.length) {
@@ -70,7 +71,7 @@ export function renderHistoryView() {
     <thead><tr><th>품목</th><th class="r">이번 시세</th><th class="r">지난 주기 대비</th><th class="r">24시간 최고 · 최저</th><th>최근 2일</th><th>신호</th></tr></thead>
     <tbody>${rows.map(x => `
       <tr data-name="${esc(x.key)}" class="${x.key === selected ? 'is-selected' : ''}">
-        <td><div class="item-cell">${icon(x.key, 's')}<span class="name" style="font-size:var(--fs-s)">${esc(x.label)}</span></div></td>
+        <td><div class="item-cell">${icon(x.name, 's')}<span class="name" style="font-size:var(--fs-s)">${esc(x.label)}</span> <span class="gchip g-${x.g}">${GRADE_NAME[x.g]}</span></div></td>
         <td class="r num big">${fmtNum(x.s.cur)}</td>
         <td class="r num">${changeText(x.s.change)}</td>
         <td class="r num muted">${fmtNum(x.s.max)} · ${fmtNum(x.s.min)}</td>
@@ -100,7 +101,8 @@ function renderChart(x) {
   const P = { l: 52, r: 18, t: 18, b: 34 };
 
   const ps = data.map(v => v.p);
-  let lo = Math.min(...ps), hi = Math.max(...ps);
+  const rg = rangeOf(x.name, x.g, s.cur);              // 이번 주기 변동 범위 (-20% ~ +10%)
+  let lo = Math.min(...ps), hi = Math.max(...ps, rg ? rg.max : -Infinity);
   const step = niceStep((hi - lo) || hi * 0.1 || 1, 4);
   lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
   if (hi === lo) hi = lo + step;
@@ -120,13 +122,14 @@ function renderChart(x) {
     ? data.map(v => ({ c: v.c, label: `${String(hourOf(v.c)).padStart(2, '0')}시`, day: hourOf(v.c) === 0 }))
     : data.filter(v => hourOf(v.c) === 0).map(v => ({ c: v.c, label: dayLabel(v.c), day: true }));
   const max24 = s.max;
+  void splitGkey;
   const showPts = days <= 3;
 
   box.innerHTML = `
     <div class="wk-head">
-      <div class="detail-hero">${icon(x.key, 'l')}<div><div class="dh-name">${esc(x.label)}</div>
+      <div class="detail-hero">${icon(x.name, 'l')}<div><div class="dh-name">${esc(x.label)} <span class="gchip g-${x.g}">${GRADE_NAME[x.g]}</span></div>
         <div class="row" style="gap:6px;margin-top:4px"><span class="sig ${LEVEL[s.level].cls}">${LEVEL[s.level].label}</span><span class="faint" style="font-size:var(--fs-xs)">최근 24시간 최고가의 ${(s.ratio * 100).toFixed(0)}%</span></div></div></div>
-      <div class="wk-legend"><span><i class="lg-line"></i>시세</span><span><i class="lg-max"></i>24시간 최고</span></div>
+      <div class="wk-legend"><span><i class="lg-line"></i>시세</span><span><i class="lg-max"></i>24시간 최고</span>${rg ? '<span><i class="lg-cap"></i>변동 최고가</span>' : ''}</div>
     </div>
     <div class="wk-wrap">
       <svg class="wk-chart" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(x.label)} 최근 ${days}일 시세 꺾은선 그래프">
@@ -135,6 +138,8 @@ function renderChart(x) {
         ${xTicks.map(t => `${t.day ? `<line x1="${X(t.c).toFixed(1)}" x2="${X(t.c).toFixed(1)}" y1="${P.t}" y2="${H - P.b}" class="wk-day"/>` : ''}
           <text x="${X(t.c).toFixed(1)}" y="${H - P.b + 18}" class="wk-x">${t.label}</text>`).join('')}
         <line x1="${P.l}" x2="${W - P.r}" y1="${Y(max24).toFixed(1)}" y2="${Y(max24).toFixed(1)}" class="wk-max"/>
+        ${rg ? `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(rg.max).toFixed(1)}" y2="${Y(rg.max).toFixed(1)}" class="wk-cap"/>
+          <text x="${W - P.r}" y="${(Y(rg.max) - 5).toFixed(1)}" class="wk-cap-t">최고가 ${fmtNum(Math.floor(rg.max))} (+10%)</text>` : ''}
         <polygon points="${pts[0].x.toFixed(1)},${H - P.b} ${line} ${pts[pts.length - 1].x.toFixed(1)},${H - P.b}" class="wk-area"/>
         <polyline points="${line}" class="wk-line"/>
         ${showPts ? pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.6" class="wk-pt"/>`).join('') : ''}
@@ -150,6 +155,7 @@ function renderChart(x) {
       <div class="stat"><div class="k">지난 주기 대비</div><div class="v num" style="font-size:var(--fs-m)">${changeText(s.change)}</div></div>
       <div class="stat"><div class="k">${days}일 최고</div><div class="v num">${fmtNum(Math.max(...ps))}</div></div>
       <div class="stat"><div class="k">${days}일 최저</div><div class="v num">${fmtNum(Math.min(...ps))}</div></div>
+      ${rg ? `<div class="stat"><div class="k">최고가까지</div><div class="v num">${rg.toMax ? '+' + fmtNum(rg.toMax) : '최고'}</div></div>` : ''}
       <div class="stat"><div class="k">${days}일 평균</div><div class="v num">${fmtNum(ps.reduce((a, b) => a + b, 0) / ps.length)}</div></div>
     </div>`;
   showTip(pts.length - 1);

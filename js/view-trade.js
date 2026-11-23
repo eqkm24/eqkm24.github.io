@@ -4,25 +4,25 @@
    2) 계산기: 사칙연산 · 괄호 · % · ×64(세트) · 최근 기록, 결과를 수량·단가 칸으로 보내기
    입력값은 이 브라우저에만 저장합니다 (공유하지 않음).
    ========================================================================== */
-import { RECIPES, ELIXIRS } from './data.js';
+import { ELIXIRS, GRADE_KEYS, GRADE_NAME, gkey } from './data.js';
 import * as store from './store.js';
-import { recipeIngredients, elixirIngredients, fmtNum } from './calc.js';
-import { $, esc, cookPrices, elixirPrices, ingPricesRaw, toast } from './ui.js';
+import { elixirIngredients, fmtNum } from './calc.js';
+import { $, esc, elixirPrices, ingPricesRaw, toast } from './ui.js';
 
 const SAVE = 'trade';    // KEYS 에 넣지 않음 → 입력할 때마다 화면 전체를 다시 그리지 않음
-const DEF = { name: '', box: 0, set: 0, each: 0, stack: 64, unit: '', total: '', fee: 0, calcHist: [] };
+const DEF = { name: '', box: 0, set: 0, each: 0, stack: 64, unit: '', total: '', fee: 3, calcHist: [] };   // 거래소 수수료 3% 기본
 let st = { ...DEF, ...store.get(SAVE, {}) };
 const save = () => store.set(SAVE, st);
 const num = v => (Number.isFinite(+v) ? +v : 0);
 
 /* ── 기준 가격 목록 (시세 · 재료 단가) ── */
 function catalog() {
-  const cp = cookPrices(), ep = elixirPrices(), ip = ingPricesRaw();
+  const ep = elixirPrices(), ip = ingPricesRaw();
   const list = [];
-  RECIPES.forEach(r => list.push({ label: r.name, price: cp[r.name]?.price || 0, kind: '요리' }));
-  ELIXIRS.forEach(e => list.push({ label: `${e.name}의 비약`, price: ep[e.name]?.price || 0, kind: '비약' }));
+  ELIXIRS.forEach(e => GRADE_KEYS.forEach(g => list.push({
+    label: g === 'common' ? `${e.name}의 비약` : `${e.name}의 비약 (${GRADE_NAME[g]})`, price: ep[gkey(e.name, g)]?.price || 0, kind: `비약 ${GRADE_NAME[g]}` })));
   const seen = new Set();
-  [...RECIPES.flatMap(recipeIngredients), ...ELIXIRS.flatMap(elixirIngredients)].forEach(i => {
+  ELIXIRS.flatMap(elixirIngredients).forEach(i => {
     if (seen.has(i.name)) return; seen.add(i.name);
     list.push({ label: i.name, price: num(ip[i.name]), kind: '재료' });
   });
@@ -51,6 +51,10 @@ export function initTrade() {
     if (act === 'resetQty') { Object.assign(st, { name: '', box: 0, set: 0, each: 0, unit: '', total: '' }); save(); renderTrade(); }
     if (act === 'copy') copy(b.dataset.text);
   });
+  $('#tqFeeSeg').addEventListener('click', e => {
+    const b = e.target.closest('[data-fee]');
+    if (b) { st.fee = +b.dataset.fee; save(); renderTrade(); }
+  });
 
   initCalculator();
 }
@@ -66,6 +70,7 @@ export function renderTrade() {
   $('#tqStack').innerHTML = [64, 16, 1].map(n =>
     `<button type="button" data-act="stack" data-v="${n}" class="${st.stack === n ? 'is-on' : ''}">${n === 1 ? '안 쌓임' : n + '개씩'}</button>`).join('');
   ['name', 'box', 'set', 'each', 'unit', 'total', 'fee'].forEach(f => { const el = $(`[data-f="${f}"]`); if (el) el.value = st[f] ?? ''; });
+  $('#tqFeeSeg').querySelectorAll('[data-fee]').forEach(b => b.classList.toggle('is-on', num(st.fee) === +b.dataset.fee));
   calcQty();
   drawCalc();
 }
@@ -101,7 +106,7 @@ function calcQty() {
     <div class="calc-line"><span class="k">개당</span><span class="num">${fmtNum(unit, 2)} 쿠키</span></div>
     ${st.stack > 1 ? `<div class="calc-line"><span class="k">세트당 (${st.stack}개)</span><span class="num">${fmtNum(unit * st.stack)} 쿠키</span></div>` : ''}
     ${fee ? `<div class="calc-line"><span class="k">수수료 ${fee}%</span><span class="num loss">−${fmtNum(feeAmt)}</span></div>
-      <div class="calc-line total"><span class="k">받는 사람 실수령</span><span class="num gain">${fmtNum(total - feeAmt)} 쿠키</span></div>
+      <div class="calc-line total"><span class="k">판매자 실수령</span><span class="num gain">${fmtNum(total - feeAmt)} 쿠키</span></div>
       <div class="calc-line"><span class="k">실수령을 ${fmtNum(total)}로 맞추려면 보낼 돈</span><span class="num">${fmtNum(total / (1 - Math.min(fee, 99.9) / 100))} 쿠키</span></div>` : ''}
     <div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn btn-sm" type="button" data-act="copy" data-text="${esc(line)}">계산 결과 복사</button></div>`;
 }

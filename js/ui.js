@@ -192,17 +192,16 @@ export function toolOptions(tool, current) {
 }
 
 /* ── 등급별 판매가 ──
-   일반: 저장된 판매가(공식 시세 일반 등급 또는 직접 입력)
-   고급 · 희귀: 공식 시세의 해당 등급 가격 (없는 품목은 빠짐) */
-export const GRADES = [['common', '일반'], ['uncommon', '고급'], ['rare', '희귀']];
+   비약 판매가는 등급마다 따로 저장: '화덕'(무별) · '화덕|uncommon'(은별) · '화덕|rare'(금별)
+   gradedPrices(kind, g) → { 비약이름: { price, at, auto } } */
+export const GRADES = [['common', '무별'], ['uncommon', '은별'], ['rare', '금별']];
 export function gradedPrices(kind, grade = 'common') {
-  const base = kind === 'cook' ? cookPrices() : elixirPrices();
-  if (grade === 'common') return base;
-  const live = (store.get(KEYS.live, {}) || {})[kind] || {};
+  const all = kind === 'cook' ? cookPrices() : elixirPrices();
+  if (grade === 'common') return Object.fromEntries(Object.entries(all).filter(([k]) => !k.includes('|')));
   const out = {};
-  for (const [n, m] of Object.entries(live)) if (m[grade]) out[n] = { price: m[grade].price, at: base[n]?.at || Date.now(), auto: true, grade };
+  for (const [k, v] of Object.entries(all)) { const [n, g] = k.split('|'); if (g === grade) out[n] = v; }
   return out;
 }
 export function gradeSelect(id, current) {
-  return `<select class="select" id="${id}">${GRADES.map(([g, l]) => `<option value="${g}"${current === g ? ' selected' : ''}>${l}${g === 'common' ? '' : ' (공식 시세)'}</option>`).join('')}</select>`;
+  return `<select class="select" id="${id}">${GRADES.map(([g, l]) => `<option value="${g}"${current === g ? ' selected' : ''}>${l} (${{ common: '일반', uncommon: '고급', rare: '희귀' }[g]})</option>`).join('')}</select>`;
 }

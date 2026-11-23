@@ -937,7 +937,9 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 /* ── 등급 칩 · 기준가 대비 순위 ── */
 .gchip { display: inline-block; margin-left: 4px; padding: 0 7px; border-radius: 999px; font-size: 10px; font-weight: 700; line-height: 1.7; border: 1.5px solid var(--ink); vertical-align: middle; }
 .gchip.g-common { background: var(--panel); color: var(--txt-2); border-color: var(--line); }
-.gchip.g-uncommon { background: #e6f0ff; color: #3a6fc4; border-color: #a9c6f0; }
+.gchip.g-uncommon { background: #eef1f5; color: #5b6472; border-color: #b9c0cb; }
+.gchip.g-uncommon::before { content: "★ "; color: #a3abb8; }
+.gchip.g-rare::before { content: "★ "; color: #d99a00; }
 .gchip.g-rare { background: var(--y-2); color: var(--ink); }
 .seg-sm button { padding: 3px 9px; font-size: var(--fs-xs); }
 .make-rank .it { align-items: start; }
@@ -1020,3 +1022,97 @@ button.tile { font: inherit; text-align: left; cursor: pointer; width: 100%; }
 .cl-h span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
 .cl-h b { color: var(--ink); }
 .view[data-view="trade"] > .grid-2 { align-items: start; }
+
+/* ══ 비약 등급 · 변동 범위 (2026.11) ══ */
+.sort-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 16px; border-bottom: var(--bw) solid var(--line); font-size: var(--fs-xs); }
+.table th.gcol { cursor: pointer; text-align: center; }
+.table th.gcol .gchip { margin: 0; }
+.table td.gcell { min-width: 108px; vertical-align: middle; }
+.table td.gcell.is-sorted { background: color-mix(in srgb, var(--y-1) 35%, transparent); }
+.gc-price { font-weight: 700; font-size: var(--fs-s); }
+.gc-profit { font-size: var(--fs-xs); font-weight: 700; }
+.gc-profit small { font-weight: 300; color: var(--txt-3); }
+
+/* 범위 막대: 왼쪽 = 기준가 -20% · 오른쪽 = +10% */
+.rg { position: relative; height: 8px; margin: 6px 0 2px; border-radius: 99px; border: 1.5px solid var(--line);
+  background: linear-gradient(90deg, var(--loss-bg), var(--panel-2) 60%, var(--gain-bg)); }
+.rg-sm { height: 6px; margin: 4px 0 0; }
+.rg-base { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--txt-3); border-radius: 2px; }
+.rg-dot { position: absolute; top: 50%; width: 11px; height: 11px; margin: -5.5px 0 0 -5.5px; border-radius: 50%; background: var(--y-3); border: 2px solid var(--ink); }
+.rg-sm .rg-dot { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; }
+.rg-lbl { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--txt-3); }
+
+/* 계산 내역: 등급 카드 3장 */
+.gcards { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 12px 0; }
+.gcard { border: var(--bw) solid var(--ink); border-radius: var(--r-s); padding: 10px 12px; background: var(--panel); display: grid; gap: 4px; align-content: start; min-width: 0; }
+.gcard.g-uncommon { background: linear-gradient(170deg, #f4f6f9, var(--panel)); }
+.gcard.g-rare { background: linear-gradient(170deg, var(--y-1), var(--panel)); }
+.gcard.is-empty { border-style: dashed; border-color: var(--line); }
+.gcard-h { display: flex; align-items: center; gap: 6px; font-size: var(--fs-xs); flex-wrap: wrap; }
+.gcard-h .gchip { margin: 0; }
+.gcard-v { font-size: var(--fs-xl); font-weight: 700; line-height: 1.1; }
+.gcard.is-gain .gcard-v { color: var(--gain); }
+.gcard.is-loss .gcard-v { color: var(--loss); }
+.gcard-v small { font-size: var(--fs-xs); font-weight: 300; color: var(--txt-3); margin-left: 3px; }
+.gcard-m { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 4px; padding-top: 6px; border-top: 1.5px dashed var(--line); }
+.gcard-m > div { display: grid; }
+.gcard-m b { font-size: var(--fs-m); }
+.gcard-r { margin-top: 4px; padding-top: 6px; border-top: 1.5px dashed var(--line); }
+
+
+/* 시세 입력: 비약 × 3등급 */
+.pe-list { display: grid; gap: 4px; }
+.pe-head, .pe-row { display: grid; grid-template-columns: minmax(150px, 1.4fr) repeat(3, minmax(0, 1fr)); gap: 8px; align-items: center; }
+.pe-head { position: sticky; top: 0; z-index: 1; background: var(--panel); padding: 4px 0 6px; font-size: var(--fs-xs); border-bottom: 1.5px solid var(--line); }
+.pe-head .gchip { margin: 0; }
+.pe-row { padding: 5px 0; border-bottom: 1px dashed var(--line); align-items: start; }
+.pe-row .pr-name { padding-top: 6px; }
+.pe-cell { display: grid; gap: 2px; min-width: 0; }
+.pe-g { display: none; justify-self: start; margin: 0; }
+.pe-cell .input { width: 100%; text-align: right; padding-top: 6px; padding-bottom: 6px; }
+.pe-cell .input.is-stale { color: var(--txt-3); }
+.pe-meta { display: flex; align-items: center; gap: 4px; font-size: 10.5px; color: var(--txt-3); }
+.pe-meta .spacer { flex: 1; }
+.pe-tag { font-weight: 700; padding: 0 5px; border-radius: 99px; font-size: 10px; line-height: 1.6; }
+.pe-tag.is-auto { background: var(--sky-bg); color: var(--sky); }
+.pe-tag.is-fresh { background: var(--gain-bg); color: var(--gain); }
+.pe-tag.is-stale { background: var(--panel-2); color: var(--txt-3); }
+@media (max-width: 640px) {
+  .pe-head { display: none; }
+  .pe-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pe-row .pr-name { grid-column: 1 / -1; }
+  .pe-g { display: inline-block; }
+}
+
+/* 시세 기록: 변동 최고가 선 */
+.wk-cap { stroke: var(--gain); stroke-width: 1.5; stroke-dasharray: 2 4; }
+.wk-cap-t { font-size: 10.5px; fill: var(--gain); text-anchor: end; font-family: inherit; }
+.lg-cap { display: inline-block; width: 16px; border-top: 2px dotted var(--gain); vertical-align: middle; margin-right: 4px; }
+
+/* 거래소 시세 검색 */
+.mk-form { display: flex; gap: 8px; }
+.mk-form .input { min-width: 0; }
+.mk-refs { display: grid; gap: 4px; margin-top: 10px; padding: 8px 10px; border: 1.5px solid var(--line); border-radius: var(--r-s); background: var(--panel-2); }
+.mk-ref { display: flex; align-items: center; gap: 6px; font-size: var(--fs-s); min-width: 0; }
+.mk-ref .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mk-v { font-size: var(--fs-xs); white-space: nowrap; }
+.mk-v .gchip { margin-left: 4px; }
+.mk-recent { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 10px; font-size: var(--fs-xs); }
+.mk-recent .chip { cursor: pointer; }
+.mk-live:not(:empty) { margin-top: 10px; display: grid; gap: 4px; }
+.mk-link { display: inline-block; margin-top: 6px; font-size: var(--fs-xs); font-weight: 700; color: var(--ink); }
+.mk-out .note { margin-top: 8px; }
+
+.tq-fee { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+
+.gcard-h .spacer, .mk-ref .spacer { flex: 1; }
+/* 폰: 등급 칸은 정렬 중인 등급만 (위 '정렬' 버튼으로 바꿔 보기) */
+@media (max-width: 640px) {
+  #alchTable th.gcol:not(.is-sorted), #alchTable td.gcell:not(.is-sorted) { display: none; }
+}
+@media (max-width: 640px) {
+  #alchTable th, #alchTable td { padding-left: 6px; padding-right: 6px; }
+  #alchTable td.gcell { min-width: 92px; }
+  #alchTable .name { font-size: var(--fs-s); }
+  #alchTable .rank { width: 26px; }
+}

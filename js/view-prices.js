@@ -1,22 +1,18 @@
 /* ==========================================================================
    view-prices.js — 시세 · 단가 모아보기 + 디스코드 시세 붙여넣기
-   카테고리: 요리 판매가 · 비약 판매가 · 요리 재료 · 연금 재료
-   요리/비약 탭 아래쪽 재료 목록과 같은 값을 쓰므로 어디서 고쳐도 함께 바뀝니다.
+   카테고리: 비약 판매가 (무별 · 은별 · 금별) · 연금 재료
+   비약 판매가는 '화덕' · '화덕|uncommon' · '화덕|rare' 키로 따로 저장합니다.
    ========================================================================== */
-import { RECIPES, ELIXIRS } from './data.js';
-import { liveState, liveGrades, refreshLive, GRADE_LABEL, LIVE_URL } from './live.js';
+import { ELIXIRS, GRADE_KEYS, GRADE_NAME, GRADE_SUB, gkey } from './data.js';
+import { liveState, liveGrades, refreshLive, LIVE_URL } from './live.js';
 import * as store from './store.js';
 import { KEYS } from './store.js';
-import { parsePriceText, fmtNum, recipeIngredients, elixirIngredients } from './calc.js';
+import { parsePriceText, fmtNum, elixirIngredients } from './calc.js';
 import {
-  $, esc, icon, toast, cookPrices, elixirPrices, setProductPrice, setIngPrice, freshness, freshChip, armButton,
+  $, esc, icon, toast, elixirPrices, setProductPrice, setIngPrice, freshness, freshChip, armButton,
   ingPricesRaw, selfSupply, toggleSelf,
 } from './ui.js';
-
-const NAMES = [
-  ...RECIPES.map(r => ({ key: r.name, type: 'cook', label: r.name })),
-  ...ELIXIRS.map(e => ({ key: e.name, type: 'elixir', label: `${e.name}의 비약` })),
-];
+import { rangeOf } from './view-alchemy.js';
 
 /* ── 재료 목록: 레시피에서 자동으로 모음 + 어디에 쓰이는지 ── */
 function collect(list, getIngs, groupOf) {
@@ -27,19 +23,20 @@ function collect(list, getIngs, groupOf) {
   }));
   return [...map.values()];
 }
-const COOK_ING = collect(RECIPES, recipeIngredients,
-  i => ({ fish: '물고기 (희귀)', veg: '바닐라 작물', farm: '농부 작물 (희귀)' }[i.kind]));
 const ALCH_ING = collect(ELIXIRS, elixirIngredients,
   i => i.name.includes('심재') ? '심재' : /강화된|순수한/.test(i.name) ? '광물' : '기타 재료');
 
+const NAMES = [
+  ...ELIXIRS.map(e => ({ key: e.name, type: 'elixir', label: `${e.name}의 비약` })),
+  ...ALCH_ING.map(i => ({ key: i.name, type: 'ing', label: i.name })),
+];
+
 const CATS = [
-  { id: 'cook',    name: '요리 판매가', sub: '26가지 요리' },
-  { id: 'elixir',  name: '비약 판매가', sub: '17가지 비약' },
-  { id: 'cookIng', name: '요리 재료',   sub: '물고기 · 작물' },
+  { id: 'elixir',  name: '비약 판매가', sub: `${ELIXIRS.length}가지 × 무별 · 은별 · 금별` },
   { id: 'alchIng', name: '연금 재료',   sub: '심재 · 광물 · 기타' },
 ];
 
-let cat = 'cook';
+let cat = 'elixir';
 export function setPriceCat(id) { if (CATS.some(c => c.id === id)) cat = id; }
 let query = '';
 let onlyEmpty = false;
@@ -56,15 +53,15 @@ export function initPrices() {
     const { matched, unmatched } = parsePriceText($('#pasteArea').value, NAMES);
     const now = Date.now();
     if (matched.length) {
-      store.update(KEYS.cookPrices, {}, m => { matched.filter(x => x.type === 'cook').forEach(x => { m[x.key] = { price: x.price, at: now }; }); return m; });
-      store.update(KEYS.elixirPrices, {}, m => { matched.filter(x => x.type === 'elixir').forEach(x => { m[x.key] = { price: x.price, at: now }; }); return m; });
+      store.update(KEYS.elixirPrices, {}, m => { matched.filter(x => x.type === 'elixir').forEach(x => { m[gkey(x.key, x.grade)] = { price: x.price, at: now }; }); return m; });
+      store.update(KEYS.ingPrices, {}, m => { matched.filter(x => x.type === 'ing').forEach(x => { m[x.key] = x.price; }); return m; });
     }
     $('#pasteResult').innerHTML = `
       <div class="calc-lines">
         <div class="calc-line"><span class="k">반영됨</span><span class="gain num">${matched.length}개</span></div>
         ${unmatched.length ? `<div class="calc-line"><span class="k">못 찾은 이름</span><span class="loss">${unmatched.map(esc).join(', ')}</span></div>` : ''}
       </div>
-      ${matched.length ? `<p class="note" style="margin-top:8px">${matched.map(x => `${esc(x.label)} <b>${fmtNum(x.price)}</b>`).join(' · ')}</p>` : ''}`;
+      ${matched.length ? `<p class="note" style="margin-top:8px">${matched.map(x => `${x.type === 'elixir' ? `<span class="gchip g-${x.grade}">${GRADE_NAME[x.grade]}</span> ` : ''}${esc(x.label)} <b>${fmtNum(x.price)}</b>`).join(' · ')}</p>` : ''}`;
     toast(matched.length ? `시세 ${matched.length}개를 반영했어요` : '읽을 수 있는 줄이 없어요');
   });
   $('#liveBand').addEventListener('click', e => { if (e.target.closest('#liveRefresh')) refreshLive(); });
@@ -81,8 +78,8 @@ export function initPrices() {
 
   /* 값 입력 · 직접 수급 · 전부 지우기 */
   $('#priceList').addEventListener('change', e => {
-    const p = e.target.closest('input[data-kind]');
-    if (p) setProductPrice(p.dataset.kind === 'cook' ? KEYS.cookPrices : KEYS.elixirPrices, p.dataset.name, p.value);
+    const p = e.target.closest('input[data-gk]');
+    if (p) setProductPrice(KEYS.elixirPrices, p.dataset.gk, p.value);
     const i = e.target.closest('input[data-ing]');
     if (i) setIngPrice(i.dataset.ing, i.value);
   });
@@ -95,10 +92,9 @@ export function initPrices() {
     if (!b) return;
     const label = b.dataset.label;
     armButton(b, label, () => {
-      if (cat === 'cook') store.set(KEYS.cookPrices, {});
-      else if (cat === 'elixir') store.set(KEYS.elixirPrices, {});
+      if (cat === 'elixir') store.set(KEYS.elixirPrices, {});
       else {
-        const names = new Set((cat === 'cookIng' ? COOK_ING : ALCH_ING).map(x => x.name));
+        const names = new Set(ALCH_ING.map(x => x.name));
         store.update(KEYS.ingPrices, {}, m => { names.forEach(n => delete m[n]); return m; });
       }
       toast(`${CATS.find(c => c.id === cat).name}을 비웠어요`);
@@ -108,20 +104,11 @@ export function initPrices() {
 
 /* ── 카테고리별 현황 ── */
 function summary() {
-  const cp = cookPrices(), ep = elixirPrices(), ip = ingPricesRaw(), self = selfSupply();
-  const prod = (map, list) => {
-    const vals = list.map(n => map[n]).filter(Boolean);
-    return { done: vals.length, total: list.length, fresh: vals.filter(v => freshness(v) === 'fresh').length };
-  };
-  const ing = list => ({
-    done: list.filter(x => ip[x.name] > 0 || self[x.name]).length, total: list.length,
-    self: list.filter(x => self[x.name]).length,
-  });
+  const ep = elixirPrices(), ip = ingPricesRaw(), self = selfSupply();
+  const vals = ELIXIRS.flatMap(e => GRADE_KEYS.map(g => ep[gkey(e.name, g)])).filter(Boolean);
   return {
-    cook: prod(cp, RECIPES.map(r => r.name)),
-    elixir: prod(ep, ELIXIRS.map(e => e.name)),
-    cookIng: ing(COOK_ING),
-    alchIng: ing(ALCH_ING),
+    elixir: { done: vals.length, total: ELIXIRS.length * GRADE_KEYS.length, fresh: vals.filter(v => freshness(v) === 'fresh').length },
+    alchIng: { done: ALCH_ING.filter(x => ip[x.name] > 0 || self[x.name]).length, total: ALCH_ING.length, self: ALCH_ING.filter(x => self[x.name]).length },
   };
 }
 
@@ -130,10 +117,10 @@ function renderLiveBand() {
   const t = ms => { const d = new Date(ms); return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`; };
   const cls = { online: 'is-on', loading: 'is-wait', idle: 'is-wait', error: 'is-err' }[st.status];
   const main = st.status === 'online'
-    ? `<b>기린월드 공식 시세 자동 반영 중</b><span>${t(st.at)} 기준 · 요리 ${st.counts.cook} · 비약 ${st.counts.elixir}${st.counts.ing ? ` · 재료 ${st.counts.ing}` : ''}${st.nextChangeAt ? ` · 다음 변경 ${t(st.nextChangeAt)}` : ''}</span>`
+    ? `<b>기린월드 공식 시세 자동 반영 중</b><span>${t(st.at)} 기준 · 비약 ${st.counts.elixir}가지 (무별 · 은별 · 금별)${st.counts.ing ? ` · 재료 ${st.counts.ing}` : ''}${st.nextChangeAt ? ` · 다음 변경 ${t(st.nextChangeAt)}` : ''}</span>`
     : st.status === 'error' ? `<b>공식 시세 연결 안 됨</b><span>${esc(st.error)}</span>`
     : `<b>공식 시세 불러오는 중…</b><span></span>`;
-  const missing = [...RECIPES.filter(r => !liveGrades().cook[r.name]).map(r => r.name), ...ELIXIRS.filter(e => !liveGrades().elixir[e.name]).map(e => e.name + '의 비약')];
+  const missing = ELIXIRS.filter(e => !liveGrades().elixir?.[e.name]).map(e => e.name + '의 비약');
   $('#liveBand').className = 'live-band ' + cls;
   $('#liveBand').innerHTML = `<span class="lb-dot" aria-hidden="true"></span><div class="lb-text">${main}
     ${st.status === 'online' && missing.length ? `<small>공식 시세에 없어서 직접 넣어야 하는 것: ${esc(missing.join(', '))}</small>` : ''}
@@ -162,14 +149,6 @@ export function renderPrices() {
   renderList();
 }
 
-/* 공식 시세 등급별 가격 한 줄: "고급 279 ▲ · 희귀 349 ▼" */
-function gradeLine(kind, key) {
-  const m = liveGrades()[kind]?.[key];
-  if (!m) return '';
-  const arrow = g => g.trend === 'up' ? '▲' : g.trend === 'down' ? '▼' : '';
-  return ['common', 'uncommon', 'rare'].filter(g => m[g]).map(g => `${GRADE_LABEL[g]} ${fmtNum(m[g].price)}${arrow(m[g])}`).join(' · ');
-}
-
 function renderList() {
   const c = CATS.find(x => x.id === cat);
   $('#catTitle').textContent = c.name;
@@ -178,30 +157,38 @@ function renderList() {
   let html = '';
 
   const live = liveGrades();
-  if (cat === 'cook' || cat === 'elixir') {
-    const map = cat === 'cook' ? cookPrices() : elixirPrices();
-    const groups = cat === 'cook'
-      ? [['바닐라', RECIPES.filter(r => r.vanilla)], ['1단계', RECIPES.filter(r => r.stage === 1 && !r.vanilla)],
-         ['2단계', RECIPES.filter(r => r.stage === 2)], ['3단계', RECIPES.filter(r => r.stage === 3)]]
-          .map(([g, l]) => [g, l.map(r => ({ key: r.name, label: r.name, note: r.season ? r.season : '' }))])
-      : [['바닐라', ELIXIRS.filter(e => e.vanilla)], ['숙련도 1', ELIXIRS.filter(e => e.lv === 1)],
-         ['숙련도 10', ELIXIRS.filter(e => e.lv === 10)], ['숙련도 20', ELIXIRS.filter(e => e.lv === 20)]]
-          .map(([g, l]) => [g, l.map(e => ({ key: e.name, label: `${e.name}의 비약`, note: e.effect }))]);
-    html = groups.map(([g, items]) => {
-      const rows = items.filter(x => match(x.label) && (!onlyEmpty || !map[x.key]));
+  if (cat === 'elixir') {
+    const map = elixirPrices();
+    const has = e => GRADE_KEYS.some(g => map[gkey(e.name, g)]);
+    const full = e => GRADE_KEYS.every(g => map[gkey(e.name, g)]);
+    const groups = [['바닐라', ELIXIRS.filter(e => e.vanilla)], ['숙련도 1', ELIXIRS.filter(e => e.lv === 1)],
+      ['숙련도 10', ELIXIRS.filter(e => e.lv === 10)], ['숙련도 20', ELIXIRS.filter(e => e.lv === 20)]];
+    html = `<div class="pe-head"><span></span>${GRADE_KEYS.map(g => `<span><span class="gchip g-${g}">${GRADE_NAME[g]}</span> <small class="faint">${GRADE_SUB[g]}</small></span>`).join('')}</div>` +
+    groups.map(([gname, items]) => {
+      const rows = items.filter(e => match(`${e.name}의 비약`) && (!onlyEmpty || !full(e)));
       if (!rows.length) return '';
-      return `<div class="pl-group"><h3>${g} <span class="chip">${items.filter(x => map[x.key]).length}/${items.length}</span></h3>
-        ${rows.map(x => `
-          <div class="pl-row">
-            <span class="pr-name">${icon(x.key, 's')}<span class="pl-label">${esc(x.label)}<small>${gradeLine(cat, x.key) || esc(x.note)}</small></span></span>
-            ${map[x.key]?.auto && live[cat]?.[x.key] ? '<span class="chip auto">자동</span>' : (freshChip(map[x.key]) || '<span></span>')}
-            <input class="input num" data-kind="${cat}" data-name="${esc(x.key)}" type="number" min="0" inputmode="numeric" placeholder="—" value="${map[x.key]?.price ?? ''}" aria-label="${esc(x.label)} 판매가">
+      return `<div class="pl-group"><h3>${gname} <span class="chip">${items.filter(has).length}/${items.length}</span></h3>
+        ${rows.map(e => `
+          <div class="pe-row">
+            <span class="pr-name">${icon(e.name, 's')}<span class="pl-label">${esc(e.name)}의 비약<small>${esc(e.effect)}</small></span></span>
+            ${GRADE_KEYS.map(g => {
+              const k = gkey(e.name, g), v = map[k], r = rangeOf(e.name, g, v?.price);
+              const auto = v?.auto && live.elixir?.[e.name]?.[g];
+              const trend = live.elixir?.[e.name]?.[g]?.trend;
+              const f = auto ? 'auto' : freshness(v);
+              const tag = { auto: '<span class="pe-tag is-auto">자동</span>', fresh: '<span class="pe-tag is-fresh">이번</span>', stale: '<span class="pe-tag is-stale">지난</span>' }[f] || '';
+              return `<label class="pe-cell g-${g}">
+                <span class="gchip g-${g} pe-g">${GRADE_NAME[g]}</span>
+                <input class="input num${f === 'stale' ? ' is-stale' : ''}" data-gk="${esc(k)}" type="number" min="0" inputmode="numeric" placeholder="—" value="${v?.price ?? ''}" aria-label="${esc(e.name)}의 비약 ${GRADE_NAME[g]} 판매가">
+                ${tag || r ? `<small class="pe-meta num">${tag}${trend === 'up' ? '<span class="gain">▲</span>' : trend === 'down' ? '<span class="loss">▼</span>' : ''}<span class="spacer"></span>${r ? `${fmtNum(Math.ceil(r.min))}~${fmtNum(Math.floor(r.max))}` : ''}</small>` : ''}
+              </label>`;
+            }).join('')}
           </div>`).join('')}</div>`;
     }).join('');
   } else {
-    const list = cat === 'cookIng' ? COOK_ING : ALCH_ING;
+    const list = ALCH_ING;
     const ip = ingPricesRaw(), self = selfSupply();
-    const order = cat === 'cookIng' ? ['물고기 (희귀)', '바닐라 작물', '농부 작물 (희귀)'] : ['심재', '광물', '기타 재료'];
+    const order = ['심재', '광물', '기타 재료'];
     html = order.map(g => {
       const items = list.filter(x => x.group === g);
       const rows = items.filter(x => match(x.name) && (!onlyEmpty || !(ip[x.name] > 0 || self[x.name])));
@@ -217,14 +204,14 @@ function renderList() {
   }
 
   $('#priceList').innerHTML = html
-    ? `<div class="pl-cols">${html}</div>`
+    ? `<div class="${cat === 'elixir' ? 'pe-list' : 'pl-cols'}">${html}</div>`
     : `<div class="empty">${onlyEmpty ? '빈 칸이 없어요. 다 채웠어요!' : '찾는 이름이 없어요.'}</div>`;
 
-  const isProd = cat === 'cook' || cat === 'elixir';
+  const isProd = cat === 'elixir';
   const label = isProd ? '판매가 전부 지우기' : '이 재료 단가 전부 지우기';
   $('#catFoot').innerHTML = `
     <div class="row" style="justify-content:space-between;align-items:center">
-      <span>${isProd ? '지난 주기에 넣은 값은 <b>지난 시세</b>로 표시돼요. 판매가는 다 같이 공유돼요.' : '재료 단가는 다 같이 공유되고, <b>직접</b> 표시는 내 브라우저에만 저장돼요.'}</span>
+      <span>${isProd ? '칸 아래 숫자는 이번 주기 변동 범위(기준가 -20% ~ +10%)예요. 지난 주기에 넣은 값은 <b>지난 시세</b>로 표시되고, 판매가는 다 같이 공유돼요.' : '재료 단가는 다 같이 공유되고, <b>직접</b> 표시는 내 브라우저에만 저장돼요.'}</span>
       <button class="btn btn-ghost btn-sm" id="clearCat" type="button" data-label="${label}">${label}</button>
     </div>`;
 }

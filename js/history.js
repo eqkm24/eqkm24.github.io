@@ -36,7 +36,6 @@ export function record(kind, map) {
 }
 
 export function initHistory() {
-  store.on(KEYS.cookPrices, m => record('cook', m));
   store.on(KEYS.elixirPrices, m => record('elixir', m));
 }
 

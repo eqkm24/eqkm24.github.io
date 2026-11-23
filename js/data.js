@@ -58,7 +58,6 @@ export const RECIPES = [
   { stage: 2, name: '오이 샐러드',     lv: 10, fish: ['연어', 1],       veg: [['비트', 8]],       farm: [['오이', 4], ['양파', 4]],   season: '봄' },
   { stage: 2, name: '양배추전골',      lv: 10, fish: ['비단잉어', 1],   veg: [['당근', 16]],      farm: [['양배추', 4], ['양파', 4]], season: '겨울' },
   { stage: 2, name: '레몬 세비체',     lv: 10, fish: ['쏠배감펭', 1],   veg: [['달콤한 열매', 8]], farm: [['레몬', 4], ['상추', 4]],  season: '봄' },
-  { stage: 2, name: '레몬에이드',      lv: 10, lemonade: true, fish: null, veg: [['사탕수수', 8]], farm: [['레몬', 4]],               season: '봄·겨울' },
   { stage: 3, name: '쑤기미 매운탕',   lv: 20, fish: ['쑤기미', 1],     veg: [['감자', 16]],      farm: [['고추', 4], ['무', 4]],     season: '가을' },
   { stage: 3, name: '토마토 파스타',   lv: 20, fish: ['왕게', 1],       veg: [['밀', 8]],         farm: [['토마토', 4], ['양파', 4]], season: '봄' },
   { stage: 3, name: '고구마 조림',     lv: 20, fish: ['해삼', 1],       veg: [['당근', 16]],      farm: [['고구마', 4], ['양배추', 4]], season: '가을·겨울' },
@@ -97,7 +96,6 @@ export const ALCH_LV_CURVE = [
 export const ELIXIRS = [
   { name: '이슬',     lv: 0,  vanilla: true, effect: '마나 회복',          vals: [5, 7.5, 10],     unit: '',   ings: [['수박 조각', 12]] },
   { name: '산들바람', lv: 0,  vanilla: true, effect: '마나 회복 속도',     vals: [5, 7.5, 10],     unit: '%',  ings: [['설탕', 12]] },
-  { name: '활력',     lv: 1,  effect: '마나 회복',          vals: [25, 37.5, 50],   unit: '',   ings: [['참나무 심재(등급무관)', 1], ['강화된 다이아몬드 이상', 1], ['꿀병', 1]] },
   { name: '풍요',     lv: 1,  effect: '가이아의 축복 확률', vals: [4.5, 6.75, 9],   unit: '%p', ings: [['자작나무 심재', 1], ['강화된 구리 이상', 1], ['수박 조각', 8]] },
   { name: '물결',     lv: 1,  effect: '기척 · 입질 단축',   vals: [10, 15, 20],     unit: '%',  ings: [['가문비나무 심재', 1], ['강화된 청금석 이상', 1], ['말린 켈프', 8]] },
   { name: '숲',       lv: 1,  effect: '고다마의 축복 확률', vals: [4.5, 6.75, 9],   unit: '%p', ings: [['참나무 심재', 1], ['강화된 레드스톤 이상', 1], ['뼛가루', 8]] },
@@ -106,7 +104,7 @@ export const ELIXIRS = [
   { name: '파도',     lv: 10, effect: '트리톤의 축복 확률', vals: [7.5, 11, 15],    unit: '%p', ings: [['아카시아나무 심재', 3], ['순수한 청금석', 1], ['말린 켈프', 16]] },
   { name: '나이테',   lv: 10, effect: '희귀 심재 확률',     vals: [6, 9, 12],       unit: '%p', ings: [['짙은 참나무 심재', 3], ['순수한 구리', 1], ['뼛가루', 6]] },
   { name: '볼칸',     lv: 10, effect: '볼칸의 축복 확률',   vals: [9, 13.5, 18],    unit: '%p', ings: [['짙은 참나무 심재', 3], ['순수한 레드스톤', 1], ['발광 열매', 4]] },
-  { name: '담금질',   lv: 10, effect: '순수한 광물 확률',   vals: [6, 9, 12],       unit: '%p', ings: [['아카시아나무 심재', 3], ['순수한 석탄', 1], ['코코아 콩', 12]] },
+  { name: '담금질',   lv: 10, effect: '순수한 광물 확률',   vals: [4.4, 6.7, 8.9],  unit: '%p', ings: [['아카시아나무 심재', 3], ['순수한 석탄', 1], ['코코아 콩', 12]] },
   { name: '미식',     lv: 10, effect: '요리 재료 손실 방지', vals: [5, 7.5, 10],    unit: '%p', ings: [['정글나무 심재', 3], ['순수한 석탄', 1], ['코코아 콩', 8]] },
   { name: '결실',     lv: 20, effect: '희귀 작물 확률',     vals: [6, 9, 12],       unit: '%p', ings: [['벚나무 심재', 3], ['순수한 구리', 1], ['뼛가루', 2]] },
   { name: '제련',     lv: 20, effect: '추가 채굴 확률',     vals: [12, 18, 24],     unit: '%p', ings: [['맹그로브나무 심재', 3], ['순수한 레드스톤', 1], ['발광 열매', 6]] },
@@ -200,3 +198,14 @@ export const TOOLS = {
   pickaxe: { name: '곡괭이', bless: '볼칸의 축복',   points: { 1: 6.2, 5: 16.2, 10: 24.5, 15: 31.2, 20: 50 } },
   axe:     { name: '도끼',   bless: '고다마의 축복', points: { 1: 4.7, 5: 12.1, 10: 18.4, 15: 23.4, 20: 40 } },
 };
+
+/* ── 비약 등급 · 변동 시세 범위 (위키 '상점 창' · 2026.11.23 확인) ──
+   같은 비약도 무별(일반) · 은별(고급) · 금별(희귀) 값이 따로 움직입니다.
+   시세는 기준가의 -20% ~ +10% 안에서만 바뀝니다. */
+export const GRADE_KEYS = ['common', 'uncommon', 'rare'];
+export const GRADE_NAME = { common: '무별', uncommon: '은별', rare: '금별' };
+export const GRADE_SUB  = { common: '일반', uncommon: '고급', rare: '희귀' };
+export const PRICE_RANGE = { min: -20, max: 10 };
+/* 저장 키: 무별은 '화덕', 은별은 '화덕|uncommon', 금별은 '화덕|rare' */
+export const gkey = (name, g = 'common') => (g === 'common' ? name : `${name}|${g}`);
+export const splitGkey = k => { const [name, g] = k.split('|'); return { name, g: g || 'common' }; };

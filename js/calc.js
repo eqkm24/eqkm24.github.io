@@ -155,8 +155,11 @@ export function parsePriceText(text, names) {
   const index = new Map(names.map(n => [norm(n.key), n]));
   const matched = [], unmatched = [];
   for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
+    let line = raw.trim();
     if (!line) continue;
+    // 등급: 은별 · 고급 · 🩶 → uncommon / 금별 · 희귀 · 🌟 → rare / 없으면 무별(common)
+    const grade = /금별|희귀|🌟/u.test(line) ? 'rare' : /은별|고급|🩶/u.test(line) ? 'uncommon' : 'common';
+    line = line.replace(/[(（]?\s*(?:금별|은별|무별|희귀|고급|일반)\s*[)）]?/gu, ' ').replace(/[🌟🩶]/gu, ' ').trim();
     let name = null, price = null;
     let m = line.match(/\[([^\]]+)\][^\d\[]*?([\d,]+)\s*(?:→|->|=>)\s*([\d,]+)/u);
     if (m) { name = m[1]; price = m[3]; }
@@ -167,7 +170,7 @@ export function parsePriceText(text, names) {
     if (!name) continue;
     const hit = index.get(norm(name.trim()));
     const value = parseInt(String(price).replace(/,/g, ''), 10);
-    if (hit && Number.isFinite(value)) matched.push({ ...hit, price: value });
+    if (hit && Number.isFinite(value)) matched.push({ ...hit, grade, price: value });
     else unmatched.push(name.trim());
   }
   return { matched, unmatched };

@@ -34,7 +34,7 @@
   <!-- ═══════════ 메뉴 ═══════════ -->
   <nav class="menu" id="menu" aria-label="메뉴">
     <a class="menu-btn" href="#home"    data-view="home">홈</a>
-    <a class="menu-btn" href="#cook"    data-view="calc">효율 계산기</a>
+    <a class="menu-btn" href="#alchemy" data-view="calc">비약 효율 계산기</a>
     <a class="menu-btn" href="#history" data-view="history">시세 기록 <span class="new-tag">NEW</span></a>
     <a class="menu-btn" href="#trade"   data-view="trade">거래 계산기</a>
     <a class="menu-btn" href="#prices"  data-view="prices">시세 입력</a>
@@ -53,35 +53,25 @@
           </div>
         </article>
         <article class="win">
-          <div class="win-title"><h2>내 캐릭터 상세 스펙</h2><span class="sub">계산기 전체에 적용돼요</span></div>
-          <div class="win-body" id="profilePanel"></div>
-        </article>
-        <div class="grid-2">
-        <article class="win">
-          <div class="win-title"><h2>지금 만들면 좋은 요리</h2><span class="spacer"></span><div class="seg seg-sm" data-hkind="cook" role="group" aria-label="등급"></div></div>
-          <div class="win-body" id="homeCookTop"></div>
-        </article>
-        <article class="win">
           <div class="win-title"><h2>지금 만들면 좋은 비약</h2><span class="spacer"></span><div class="seg seg-sm" data-hkind="elixir" role="group" aria-label="등급"></div></div>
           <div class="win-body" id="homeAlchTop"></div>
         </article>
-        </div>
         <article class="win">
           <div class="win-title"><h2>바로가기</h2></div>
           <div class="win-body">
             <div class="tiles">
-              <a class="tile" href="#cook" data-ico="요"><span class="t">효율 계산기 · 요리</span><span class="d">요리마다 1개당 이윤, 마진율, 원가율</span></a>
-              <a class="tile" href="#alchemy" data-ico="연"><span class="t">효율 계산기 · 연금</span><span class="d">비약마다 1병당 이윤, 마진율, 원가율</span></a>
+              <a class="tile" href="#alchemy" data-ico="연"><span class="t">비약 효율 계산기</span><span class="d">무별 · 은별 · 금별마다 1병당 이윤, 마진율, 원가율</span></a>
+              <a class="tile" href="#history" data-ico="기"><span class="t">시세 기록</span><span class="d">등급별 일주일 시세 그래프</span></a>
               <button class="tile tile-alarm" type="button" data-open="alarm" data-ico=""><span class="t">알람</span><span class="d">오른쪽 아래 버튼으로 언제든 열 수 있어요</span></button>
-              <a class="tile" href="#prices" data-ico="시"><span class="t">시세 입력</span><span class="d">디스코드 시세 메시지를 붙여넣으면 한 번에 반영</span></a>
+              <a class="tile" href="#prices" data-ico="시"><span class="t">시세 입력</span><span class="d">비약 판매가 · 재료 단가 (공식 시세 자동 반영)</span></a>
             </div>
           </div>
         </article>
         </div>
         <aside class="home-aside" aria-label="판매 신호">
         <article class="win">
-          <div class="win-title"><h2>지금 팔면 좋은 요리</h2><span class="spacer"></span><a class="btn btn-sm" href="#history">기록</a></div>
-          <div class="win-body" id="homeSellCook"></div>
+          <div class="win-title"><h2>거래소 시세 검색</h2></div>
+          <div class="win-body" data-market="home"></div>
         </article>
         <article class="win">
           <div class="win-title"><h2>지금 팔면 좋은 비약</h2><span class="spacer"></span><a class="btn btn-sm" href="#history">기록</a></div>
@@ -91,41 +81,11 @@
       </div>
     </section>
 
-    <!-- ═══════════ 효율 계산기 (요리 · 연금) ═══════════ -->
+    <!-- ═══════════ 비약 효율 계산기 ═══════════ -->
     <section class="view" data-view="calc">
-      <nav class="calc-switch" aria-label="계산기 종류">
-        <a class="calc-tab" href="#cook" data-mode="cook"><span class="ct-ico" aria-hidden="true">요</span><span><b>요리</b><small>26가지 요리</small></span></a>
-        <a class="calc-tab" href="#alchemy" data-mode="alchemy"><span class="ct-ico" aria-hidden="true">연</span><span><b>연금</b><small>17가지 비약</small></span></a>
-      </nav>
-      <div class="calc-pane" data-pane="cook">
-      <article class="win">
-        <div class="win-title"><h2>요리 설정</h2><span class="sub" id="cookSummary"></span></div>
-        <div class="win-body" id="cookOptions"></div>
-      </article>
-
-      <div class="grid-side">
-        <article class="win">
-          <div class="win-title">
-            <h2>요리 수익성</h2>
-            <span class="spacer"></span>
-            <div class="seg" id="cookStageSeg" role="group" aria-label="단계"></div>
-          </div>
-          <div class="win-body tight">
-            <div class="table-wrap"><table class="table" id="cookTable"></table></div>
-          </div>
-          <div class="win-foot">줄을 누르면 오른쪽에 1개당 이윤 · 마진율 · 원가율이 크게 나와요. 열 제목을 누르면 그 기준으로 정렬돼요.</div>
-        </article>
-
-        <article class="win" id="cookDetailWin">
-          <div class="win-title"><h2 id="cookDetailTitle">계산 내역</h2></div>
-          <div class="win-body" id="cookDetail"></div>
-        </article>
-      </div>
-
-    </div>
       <div class="calc-pane" data-pane="alchemy">
       <article class="win">
-        <div class="win-title"><h2>연금 설정</h2><span class="sub" id="alchSummary"></span></div>
+        <div class="win-title"><h2>연금술사 설정</h2><span class="sub" id="alchSummary"></span></div>
         <div class="win-body" id="alchOptions"></div>
       </article>
 
@@ -136,10 +96,11 @@
             <span class="spacer"></span>
             <div class="seg" id="alchTierSeg" role="group" aria-label="해금 레벨"></div>
           </div>
+          <div class="sort-bar" id="alchSortBar"></div>
           <div class="win-body tight">
             <div class="table-wrap"><table class="table" id="alchTable"></table></div>
           </div>
-          <div class="win-foot">비약은 만든 때부터 12시간 안에 팔아야 해요. 지속 10분, 같은 비약은 최대 60분까지 쌓여요.</div>
+          <div class="win-foot">등급 칸: 판매가 · 1병당 이윤(마진율) · 시세 위치 막대 (기준가 -20% ~ +10%, 세로줄이 기준가). 줄을 누르면 등급별 상세가 나와요.</div>
         </article>
 
         <article class="win">
@@ -161,10 +122,10 @@
 
       <article class="win">
         <div class="win-title"><h2>시세 기록</h2><span class="sub">줄을 누르면 위 그래프가 바뀌어요</span><span class="spacer"></span>
-          <div class="seg" id="histSeg" role="group" aria-label="종류"><button type="button" data-kind="cook" class="is-on">요리</button><button type="button" data-kind="elixir">비약</button></div></div>
+          <div class="seg" id="histSeg" role="group" aria-label="등급"></div></div>
         <div class="win-body tight">
           <div class="table-wrap"><table class="table" id="histTable"></table></div>
-          <div class="empty" id="histEmpty" style="margin:16px">아직 기록이 없어요. 시세를 넣을 때마다 주기별로 쌓여요.<br>위쪽 시세 입력 탭에서 디스코드 시세를 붙여넣으면 바로 첫 점이 생겨요.</div>
+          <div class="empty" id="histEmpty" style="margin:16px">아직 기록이 없어요. 시세를 넣을 때마다 주기별로 쌓여요.<br>공식 시세가 반영되면 3시간마다 자동으로 한 점씩 생겨요.</div>
         </div>
         <div class="win-foot">신호 기준: 이번 시세가 최근 24시간 최고가의 97% 이상이면 지금 팔기, 90% 이상이면 괜찮음, 그 아래는 기다리기.</div>
       </article>
@@ -178,7 +139,7 @@
           <div class="win-title"><h2>수량 · 단가 계산</h2><span class="spacer"></span><button class="btn btn-sm btn-ghost" type="button" data-act="resetQty">비우기</button></div>
           <div class="win-body">
             <div class="field"><label for="tqName">품목 <span class="faint">(고르면 현재 시세 · 단가와 비교해요)</span></label>
-              <input class="input" id="tqName" list="tradeList" data-f="name" placeholder="예: 토마토 파스타, 왕게, 순수한 구리" autocomplete="off"></div>
+              <input class="input" id="tqName" list="tradeList" data-f="name" placeholder="예: 화덕의 비약, 순수한 구리, 물병" autocomplete="off"></div>
             <div class="field"><span class="label">한 칸에 쌓이는 개수</span><div class="seg" id="tqStack" role="group" aria-label="쌓이는 개수"></div></div>
             <div class="tq-qty">
               <div class="field"><label for="tqBox">상자 <span class="faint">27칸</span></label><input class="input num" id="tqBox" type="number" min="0" data-f="box"></div>
@@ -191,12 +152,20 @@
               <div class="field"><label for="tqTotal">총액 <span class="faint">(넣으면 개당 가격 계산)</span></label><input class="input num" id="tqTotal" type="number" min="0" data-f="total"></div>
             </div>
             <div id="tqRef"></div>
-            <div class="field" style="max-width:200px"><label for="tqFee">수수료 % <span class="faint">(없으면 0)</span></label><input class="input num" id="tqFee" type="number" min="0" max="99" step="0.1" data-f="fee"></div>
+            <div class="tq-fee">
+              <div class="field" style="max-width:150px"><label for="tqFee">수수료 %</label><input class="input num" id="tqFee" type="number" min="0" max="99" step="0.1" data-f="fee"></div>
+              <div class="field"><span class="label">거래소 수수료 <span class="faint">(대금 받을 때 빠져요)</span></span>
+                <div class="seg seg-sm" id="tqFeeSeg" role="group" aria-label="거래소 수수료"><button type="button" data-fee="0">직거래 0%</button><button type="button" data-fee="3">일반 3%</button><button type="button" data-fee="2">VIP 2%</button><button type="button" data-fee="1">MVP 1%</button></div></div>
+            </div>
             <div class="calc-lines" id="tqResult"></div>
           </div>
         </article>
 
         <div style="display:grid;gap:20px;align-content:start">
+          <article class="win">
+            <div class="win-title"><h2>거래소 시세 검색</h2></div>
+            <div class="win-body" data-market="trade"></div>
+          </article>
           <article class="win calc-win">
             <div class="win-title"><h2>계산기</h2><span class="sub">키보드로도 입력돼요</span></div>
             <div class="win-body">
@@ -258,7 +227,7 @@
           </div>
           <div class="win-body">
             <div class="row">
-              <input class="input grow" id="priceSearch" type="search" placeholder="이름으로 찾기 (예: 심재, 파스타)" autocomplete="off">
+              <input class="input grow" id="priceSearch" type="search" placeholder="이름으로 찾기 (예: 심재, 화덕)" autocomplete="off">
             </div>
             <div id="priceList"></div>
           </div>
@@ -269,8 +238,8 @@
           <div class="win-title"><h2>직접 입력 · 붙여넣기</h2></div>
           <details class="win-body paste-fold" id="pasteFold">
             <summary>공식 시세에 없는 품목이나, 자동 반영이 멈췄을 때 디스코드 시세를 붙여넣어요</summary>
-            <p class="note">한 줄에 하나씩, <b>[이름] | 이전 → 지금</b> 또는 <b>이름 : 가격</b> 형식을 읽어요. 요리와 비약 이름을 모두 알아봐요. 비약은 “화덕”, “화덕의 비약” 둘 다 돼요.</p>
-            <textarea class="textarea" id="pasteArea" placeholder="🍳[감자 수프] | 120 → 135&#10;🧪[화덕의 비약] | 300 → 320&#10;토마토 파스타 : 980"></textarea>
+            <p class="note">한 줄에 하나씩, <b>[이름] | 이전 → 지금</b> 또는 <b>이름 : 가격</b> 형식을 읽어요. 비약은 “화덕”, “화덕의 비약” 둘 다 돼요. 이름 앞에 <b>은별 · 고급 · 🩶</b> 또는 <b>금별 · 희귀 · 🌟</b>가 있으면 그 등급으로, 없으면 무별로 넣어요. 재료는 <b>이름 : 단가</b>로 넣어요.</p>
+            <textarea class="textarea" id="pasteArea" placeholder="🧪[화덕의 비약] | 300 → 320&#10;은별 화덕의 비약 : 410&#10;금별 담금질 : 620&#10;순수한 구리 : 12"></textarea>
             <div class="row">
               <button class="btn btn-gold" id="pasteApply" type="button">시세 반영</button>
               <button class="btn btn-ghost" id="pasteClear" type="button">지우기</button>
@@ -369,16 +338,7 @@
   </footer>
 </section>
 
-<section class="pop pop-wide" id="popSpec" data-pop="spec" role="dialog" aria-label="스펙 입력" hidden>
-  <header class="pop-head" title="잡고 끌어서 옮길 수 있어요 · 두 번 누르면 제자리로">
-    <span class="pop-grip" aria-hidden="true"></span>
-    <h2>스펙 입력</h2>
-    <span class="spacer"></span>
-    <button class="pop-x" type="button" data-close aria-label="닫기">✕</button>
-  </header>
-  <div class="pop-body" id="specBody"></div>
-  <footer class="pop-foot"><span class="faint">바꾸면 바로 저장돼요</span><span class="spacer"></span><button class="btn btn-sm btn-gold" type="button" data-close>완료</button></footer>
-</section>
+
 
 <section class="pop" id="popSettings" data-pop="settings" role="dialog" aria-label="설정" hidden>
   <header class="pop-head" title="잡고 끌어서 옮길 수 있어요 · 두 번 누르면 제자리로">

@@ -15,7 +15,7 @@ import { KEYS } from './store.js';
 import { FIREBASE_CONFIG, DB_ROOT } from './firebase-config.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2';
-const SHARED = [KEYS.cookPrices, KEYS.elixirPrices, KEYS.ingPrices, KEYS.history];
+const SHARED = [KEYS.elixirPrices, KEYS.ingPrices, KEYS.history];   // 요리 판매가는 더 이상 쓰지 않음
 const HIST = KEYS.history;
 const HIST_KEEP = 56;   // 7일
 

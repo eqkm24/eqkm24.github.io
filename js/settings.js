@@ -70,7 +70,7 @@ const SYNC_TEXT = {
 function liveRow() {
   const s = liveState();
   const [cls, label] = s.status === 'online' ? ['chip fresh', '자동 반영 중'] : s.status === 'error' ? ['chip stale', '연결 안 됨'] : ['chip season', '불러오는 중…'];
-  const desc = s.status === 'online' ? `요리 ${s.counts.cook} · 비약 ${s.counts.elixir}${s.counts.ing ? ` · 재료 ${s.counts.ing}` : ''} 품목을 2분마다 확인해요` : (s.error || '기린월드 prices.json 을 불러오고 있어요');
+  const desc = s.status === 'online' ? `연금술사 상점 비약 ${s.counts.elixir}가지 (무별 · 은별 · 금별)를 2분마다 확인해요` : (s.error || '기린월드 prices.json 을 불러오고 있어요');
   return `
     <div class="set-row">
       <div class="set-text"><div class="set-title">기린월드 공식 시세</div><div class="set-desc">${esc(desc)}</div></div>
